@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="~/favicon.ico" />
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedules - @ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="~/lib/materialize/css/materialize.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <style type="text/css">
+        .fa {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    @* Header *@
+    <header>
+        <nav class="grey darken-4" role="navigation">
+            <div class="nav-wrapper container">
+                <a href="#!" class="brand-logo">Schedules<i class="fa fa-list-alt" aria-hidden="true"></i></a>
+
+                <ul id="slide-out" class="side-nav fixed">
+                    @*<li>
+                        <div class="user-view">
+                            <div class="background">
+                                <img src="~/images/schedules.svg" />
+                            </div>
+                            
+                            <a href="#!user"><img class="circle" src="~/images/icon-schedule.png" /></a>
+                            <a href="#!name"><span class="blue-text text-darken-2 name">Efrain Bastidas</span></a>
+                            <a href="#!name"><span class="green-text lighten-2 email">Ip:10.2.5.125</span></a>
+                        </div>
+                    </li>*@
+                    @*<li class="search blue-grey blue-grey-text">
+                        <div class="search-wrapper card">
+                            <input id="search"><i class="material-icons">search</i>
+                            <div class="search-results"></div>
+                        </div>
+                    </li>*@
+                    <li><div class="divider"></div></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index" class="waves-effect waves-red">Inicio<i class="fa fa-home fa-2x" aria-hidden="true"></i></a></li>
+                    <li><a asp-area="" asp-controller="Profesor" asp-action="Index" class="waves-effect waves-red">Secciones<i class="fa fa-code-fork fa-2x" aria-hidden="true"></i></a></li>
+                    <li><a asp-area="" asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
+                    <li><a asp-area="" asp-controller="Editar" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></i></a></li>
+                    <li><a class="red-text waves-effect waves-red" href="#!">Cerrar Sesión<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a></li>
+                    <li><div class="divider"></div></li>
+                    <li class="no-padding">
+                        <ul class="collapsible collapsible-accordion">
+                            <li>
+                                <a class="collapsible-header">Dropdown
+                                    <i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
+                                @*<i class="material-icons right">arrow_drop_down</i>*@
+                                </a>
+                                <div class="collapsible-body">
+                                    <ul>
+                                        <li><a class="waves-effect" href="#!">Dropdown1</a></li>
+                                        <li><a class="waves-effect" href="#!">Dropdown2<i class="material-icons">cloud</i></a></li>
+                                        <li><a class="waves-effect" href="#!">Dropdown3</a></li>
+                                        <li><a class="waves-effect" href="#!">Dropdown4</a></li>
+                                        <li><a class="waves-effect" href="#!">Dropdown5</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                @* Esto activa el sidenav cuando estas en movil *@
+                <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+
+            </div>
+
+        </nav>
+    </header>
+
+    @* Main *@
+    <main>
+        <div>
+            @RenderBody()
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+    </main>
+
+    @* Footer *@
+    <footer class="page-footer grey darken-4">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">© Copyright 2017</h5>
+                    <p class="grey-text text-lighten-4">Wolfteam20. All rights reserved.</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text"><a class="grey-text text-lighten-3" href="https://github.com/Wolfteam">GitHub<i class="fa fa-github" aria-hidden="true"></i></a></h5>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @* Scripts *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/materialize/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $('.button-collapse').sideNav({
+            //menuWidth: 300, // Default is 300
+            //edge: 'right', // Choose the horizontal origin
+            //closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+            //draggable: true, // Choose whether you can drag to open on touch screens,
+            //onOpen: function (el) {
+            //},
+            //onClose: function (el) {
+            //}
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

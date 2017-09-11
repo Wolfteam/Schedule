@@ -1,0 +1,28 @@
+﻿@model Schedule.Web.ViewModels.ProfesorListingViewModel
+
+@{ 
+    ViewData["Title"] = "Profesores";
+}
+
+<div class="container">
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Cedula</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var asset in Model.Profesores)
+            {
+                <tr>
+                    <td>@asset.Cedula</td>
+                    <td>@asset.Nombre</td>
+                    <td>@asset.Apellido</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
