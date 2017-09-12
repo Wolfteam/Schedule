@@ -5,11 +5,13 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.Web", "Schedule.Web\Schedule.Web.csproj", "{382B93A1-FBE8-4C60-ACF9-07B6862F02DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schedule.DAO", "Schedule.DAO\Schedule.DAO.csproj", "{AA6E702E-0852-4047-954A-0EE37902E0DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.DAO", "Schedule.DAO\Schedule.DAO.csproj", "{AA6E702E-0852-4047-954A-0EE37902E0DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schedule.BLL", "Schedule.BLL\Schedule.BLL.csproj", "{39E6DCAC-2370-45FE-939D-CCA49B08D451}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.BLL", "Schedule.BLL\Schedule.BLL.csproj", "{39E6DCAC-2370-45FE-939D-CCA49B08D451}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.Entities", "Schedule.Entities\Schedule.Entities.csproj", "{44631AE0-262C-4A1F-B2EB-CA2BD3F3CA5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schedule.API", "Schedule.API\Schedule.API.csproj", "{8C61C667-B851-4027-A2B0-8AEE451A8FB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{44631AE0-262C-4A1F-B2EB-CA2BD3F3CA5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44631AE0-262C-4A1F-B2EB-CA2BD3F3CA5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44631AE0-262C-4A1F-B2EB-CA2BD3F3CA5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
