@@ -8,6 +8,7 @@ namespace Schedule.Data
         public ScheduleContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Profesor> Profesores { get; set; }
+
     }
 
     /// <summary>
@@ -27,4 +28,5 @@ namespace Schedule.Data
     //        return context;
     //    }
     //}
+
 }

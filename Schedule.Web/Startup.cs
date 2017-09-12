@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Schedule.Data;
-using Schedule.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Schedule.Web
@@ -26,9 +24,9 @@ namespace Schedule.Web
         {
             services.AddMvc();
             services.AddSingleton(Configuration);
-            services.AddScoped<IProfesor, ProfesoresService>();
-            services.AddDbContext<ScheduleContext>(options 
-                => options.UseMySql(Configuration.GetConnectionString("MySQL")));
+            //services.AddScoped<IProfesor, ProfesoresService>();
+            //services.AddDbContext<ScheduleContext>(options 
+            //    => options.UseMySql(Configuration.GetConnectionString("MySQL")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +48,7 @@ namespace Schedule.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Login}/{action=Index}/{id?}");
             });
         }
     }

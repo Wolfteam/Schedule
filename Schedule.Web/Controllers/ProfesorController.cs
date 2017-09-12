@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Schedule.Data;
+using Schedule.DAO;
 using Schedule.Web.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,28 +10,17 @@ namespace Schedule.Web.Controllers
 {
     public class ProfesorController : Controller
     {
-        private IProfesor _assets;
-        public ProfesorController(IProfesor assets)
+  
+        public ProfesorController()
         {
-            _assets = assets;
+         
         }
 
         public IActionResult Index()
         {
-            var assetsModels = _assets.GetAll();
-            var listaProfesores = assetsModels.Select(result => new ProfesorViewModel
-            {
-                Cedula = result.Cedula,
-                Nombre = result.Nombre,
-                Apellido = result.Apellido
-            });
+            DBConnection db = new DBConnection();
 
-            var model = new ProfesorListingViewModel
-            {
-                Profesores = listaProfesores
-            };
-
-            return View(model);
+            return View();
         }
     }
 }
