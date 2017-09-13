@@ -20,7 +20,13 @@ namespace Schedule.API.Controllers
                 Nombre = "Efrain",
                 Apellido = "Bastidas"
             };
-            return new List<ProfesorModel>() { profesor };
+            ProfesorModel profesor2 = new ProfesorModel()
+            {
+                Cedula = 1020224,
+                Nombre = "Maria",
+                Apellido = "Berrios"
+            };
+            return new List<ProfesorModel>() { profesor, profesor2 };
         }
 
         // GET api/values/5

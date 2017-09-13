@@ -23,6 +23,8 @@ namespace Schedule.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Con esto puedes hacer el ajax
+            services.AddCors();
             services.AddMvc();
         }
 
@@ -33,8 +35,13 @@ namespace Schedule.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            //Con esto puedes hacer el ajax, abria q checar bien las opciones
+            app.UseCors(builder 
+                => builder.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
             app.UseMvc();
+
         }
     }
 }
