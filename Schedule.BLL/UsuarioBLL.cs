@@ -7,8 +7,7 @@ namespace Schedule.BLL
     {
         public bool AuthenticateUser(string username, string password)
         {
-            UsuarioDAO usuario = new UsuarioDAO();
-            return usuario.AuthenticateUser(username, password);           
+            return new UsuarioDAO().AuthenticateUser(username, password);
         }
     }
 }

@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\js\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Schedule.BLL\Schedule.BLL.csproj" />
     <ProjectReference Include="..\Schedule.Entities\Schedule.Entities.csproj" />
   </ItemGroup>

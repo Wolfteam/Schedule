@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="~/lib/materialize/css/materialize.min.css" rel="stylesheet" />
-    <link href="~/lib/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <link href="~/css/Login.css" rel="stylesheet" />
 
 </head>
@@ -33,19 +33,19 @@
             <h2>Iniciar Sesion</h2>
             <div class="row">
                 <div clas="col s12 ">
-                    <form class="login" method="post" asp-action="AuthenticateUser" asp-controller="Login">
+                    <form id="formLogin" class="login" method="post" asp-action="AuthenticateUser" asp-controller="Login">
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="fa fa-user prefix"></i>
-                                <input id="username" name="username" type="text" class="validate" data-length="10">
-                                <label for="username">Usermane</label>
+                                <input id="username" name="username" type="text" class="validate" data-length="10" placeholder="Username">
+                                @*<label for="username">Usermane</label>*@
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="fa fa-lock prefix"></i>
-                                <input id="password" name="password" type="password" class="validate" data-length="10">
-                                <label for="password">Password</label>
+                                <input id="password" name="password" type="password" class="validate" data-length="10" placeholder="******">
+                                @*<label for="password">Password</label>*@
                             </div>
                         </div>
                         <div class="row">
@@ -79,11 +79,8 @@
     <!-- ======================== Javascript ======================== -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/materialize/js/materialize.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            
-        });
-    </script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/js/login.js"></script>
 </body>
 
 </html>

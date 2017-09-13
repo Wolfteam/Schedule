@@ -22,6 +22,7 @@ namespace Schedule.Web.Controllers
             {
                 return RedirectToAction("Index","Login");
             }
+
             return RedirectToAction("Index", "Home");
         }
     }

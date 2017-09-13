@@ -1,0 +1,37 @@
+{
+  "name": "jquery-confirm",
+  "authors": [
+    "Matthieu Napoli http://mnapoli.fr"
+  ],
+  "description": "Confirm dialogs for buttons and links using jQuery and Bootstrap",
+  "main": "jquery.confirm.js",
+  "keywords": [
+    "jquery",
+    "dialogue",
+    "confirm"
+  ],
+  "license": "MIT",
+  "homepage": "https://myclabs.github.io/jquery.confirm/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "3.*",
+    "jquery": ">=1.6"
+  },
+  "version": "2.7.0",
+  "_release": "2.7.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.7.0",
+    "commit": "d5118aca0b01d2db2a0a6aeb8240ac2322c9a6f4"
+  },
+  "_source": "https://github.com/myclabs/jquery.confirm.git",
+  "_target": "2.7.0",
+  "_originalSource": "jquery-confirm",
+  "_direct": true
+}
