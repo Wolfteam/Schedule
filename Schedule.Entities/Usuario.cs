@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Schedule.Entities
 {
-    class Usuario
+    public enum Privilegios
     {
-        public enum Privilegios
-        {
-            Profesor = 1,
-            Administrador = 2
-        }
-
+        Profesor = 1,
+        Administrador = 2
+    }
+    public class Usuario
+    {
+        [Key]
         public int Cedula { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
