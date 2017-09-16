@@ -1,4 +1,5 @@
-﻿@{ 
+﻿@model Schedule.Web.ViewModels.LoginViewModel
+@{
     Layout = "";
 }
 
@@ -33,19 +34,17 @@
             <h2>Iniciar Sesion</h2>
             <div class="row">
                 <div clas="col s12 ">
-                    <form id="formLogin" class="login" method="post" asp-action="AuthenticateUser" asp-controller="Login">
+                    <form id="formLogin" class="login" method="post" asp-controller="Account" asp-action="Login">
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="fa fa-user prefix"></i>
-                                <input id="username" name="username" type="text" class="validate" data-length="10" placeholder="Username">
-                                @*<label for="username">Usermane</label>*@
+                                <input asp-for="Username" id="username" name="username" type="text" class="validate" data-length="10" placeholder="Username">
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">
                                 <i class="fa fa-lock prefix"></i>
-                                <input id="password" name="password" type="password" class="validate" data-length="10" placeholder="******">
-                                @*<label for="password">Password</label>*@
+                                <input asp-for="Password" id="password" name="password" type="password" class="validate" data-length="10" placeholder="******">
                             </div>
                         </div>
                         <div class="row">
@@ -59,6 +58,14 @@
                     </form>
                 </div>
             </div>
+            @* Si existe algun error en el modelo se genera esto *@
+            @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+            {
+                @foreach (var modelError in Html.ViewData.ModelState.SelectMany(keyValuePair => keyValuePair.Value.Errors))
+                {
+                    <input type="hidden" class="error" value="@modelError.ErrorMessage" />               
+                }
+            }
         </div>
     </main>
 
@@ -80,6 +87,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/materialize/js/materialize.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/js/utilidades.js"></script>
     <script src="~/js/login.js"></script>
 </body>
 

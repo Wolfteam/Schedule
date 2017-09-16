@@ -1,4 +1,15 @@
 ﻿$(document).ready(function () {
+    //Si existen errores en el formulario muestra un toast con los mismos
+    $(".error").each(function () {
+        toast($(this).val());
+    });
+
+    //Para que se borren todos los toast
+    $(".dismissToast").click(function () {
+        Materialize.Toast.removeAll();
+    });
+
+    //Valida el formulario de lado cliente
     $("#formLogin").validate({
         rules: {
             username: {
