@@ -16,4 +16,9 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Schedule.BLL\Schedule.BLL.csproj" />
+    <ProjectReference Include="..\Schedule.Entities\Schedule.Entities.csproj" />
+  </ItemGroup>
+
 </Project>
