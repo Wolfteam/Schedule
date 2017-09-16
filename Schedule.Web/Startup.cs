@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Schedule.Entities;
 
 namespace Schedule.Web
 {
@@ -24,6 +25,7 @@ namespace Schedule.Web
         {
             services.AddMvc();
             services.AddSingleton(Configuration);
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddScoped<IProfesor, ProfesoresService>();
             //services.AddDbContext<ScheduleContext>(options 
             //    => options.UseMySql(Configuration.GetConnectionString("MySQL")));

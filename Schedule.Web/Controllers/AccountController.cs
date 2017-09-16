@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json;
 using Schedule.Entities;
@@ -12,8 +13,12 @@ namespace Schedule.Web.Controllers
 {
     public class AccountController : Controller
     {
-        string baseURL = "http://localhost:60340/";
-       
+        IOptions<AppSettings> _appSettings;
+        public AccountController(IOptions<AppSettings> appSettings)
+        {
+            _appSettings = appSettings;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -26,7 +31,7 @@ namespace Schedule.Web.Controllers
                 bool result = false;
                 var client = new HttpClient
                 {
-                    BaseAddress = new Uri(baseURL)
+                    BaseAddress = new Uri(_appSettings.Value.URLBaseAPI)
                 };
                 
                 client.DefaultRequestHeaders.Clear();
@@ -48,6 +53,8 @@ namespace Schedule.Web.Controllers
                     result = Convert.ToBoolean(userResponse);
 
                     if (result) return RedirectToAction("Index", "Home");
+                    ModelState.AddModelError("", "Usuario o clave invalidas");
+                    return View("Index", model);
                 }
             }
             return View("Index",model);
