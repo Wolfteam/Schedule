@@ -20,7 +20,14 @@ namespace Schedule.DAO
             connection.CreateCommand("sp_AuthenticateUser", CommandType.StoredProcedure);
             connection.AssignParameter(true, "@username", username);
             connection.AssignParameter(true, "@password", password);
-            connection.OpenConnection();
+            try
+            {
+                connection.OpenConnection();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             bool result = connection.ExecuteConsulta().HasRows;
             connection.CloseConnection();
             return result;
