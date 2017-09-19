@@ -25,6 +25,7 @@ namespace Schedule.Web
         {
             services.AddMvc();
             services.AddSingleton(Configuration);
+            //Para que lea la seccion AppSettings definida por nosostros en el appsettings.json
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddScoped<IProfesor, ProfesoresService>();
             //services.AddDbContext<ScheduleContext>(options 
