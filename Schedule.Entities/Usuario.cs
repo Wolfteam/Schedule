@@ -14,8 +14,10 @@ namespace Schedule.Entities
     {
         [Key]
         public int Cedula { get; set; }
+        [Required]
         public string Username { get; set; }
+        [Required]
         public string Password { get; set; }
-        public Privilegios IdPrivilegios { get; set; }
+        public Privilegios IdPrivilegio { get; set; }
     }
 }
