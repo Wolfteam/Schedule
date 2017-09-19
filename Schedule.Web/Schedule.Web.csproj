@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Schedule.Entities\Schedule.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>
