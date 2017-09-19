@@ -1,9 +1,81 @@
-﻿@{
+﻿@model IEnumerable<Schedule.Entities.Privilegios>
+
+@{
     ViewData["Title"] = "Home";
 }
+
+@section SideNav{
+<nav class="grey darken-4" role="navigation">
+    <div class="nav-wrapper container">
+        <a href="#!" class="brand-logo center">Schedules<i class="fa fa-list-alt hide-on-small-only" aria-hidden="true"></i></a>
+        <ul id="slide-out" class="side-nav">
+            <li>
+                <div class="user-view">
+                    <div class="background">
+                        <img src="~/images/miku.jpg" />
+                    </div>
+                    <a href="#!user"><img class="circle" src="~/images/logo.jpg" /></a>
+                    <a href="#!name"><span class="red-text text-darken-2 name">Efrain Bastidas</span></a>
+                    <a href="#!name"><span class="red-text lighten-2 name">IP:10.2.5.125</span></a>
+                </div>
+            </li>
+
+            <li id="search-li" class="blue-grey blue-grey-text hoverable">
+                <div class="search-wrapper card">
+                    <input id="search" placeholder="Filtrar.." class="autocomplete-content" maxlength="10">
+                    @*<i class="material-icons">search</i>*@
+                    <div class="search-results"></div>
+                </div>
+            </li>
+            <li><div class="divider"></div></li>
+            <li><a asp-controller="Home" asp-action="Index" class="waves-effect waves-red">Inicio<i class="fa fa-home fa-2x" aria-hidden="true"></i></a></li>
+            <li><a asp-controller="Profesor" asp-action="Index" class="waves-effect waves-red">Secciones<i class="fa fa-code-fork fa-2x" aria-hidden="true"></i></a></li>
+            <li><a asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
+            @if (Model.Contains(Schedule.Entities.Privilegios.Administrador))
+            { 
+                <li><a asp-controller="Editar" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></a></li>
+            }
+            <li><div class="divider"></div></li>
+            <li class="no-padding">
+                <ul class="collapsible collapsible-accordion">
+                    <li>
+                        <a class="collapsible-header">
+                            Dropdown
+                            @*<i class="nav-drop-icon material-icons">keyboard_arrow_right</i>*@
+                            <i class="material-icons">arrow_drop_down</i>
+                        </a>
+                        <div class="collapsible-body">
+                            <ul>
+                                <li><a class="waves-effect" href="#!">Dropdown1</a></li>
+                                <li><a class="waves-effect" href="#!">Dropdown2<i class="material-icons">cloud</i></a></li>
+                                <li><a class="waves-effect" href="#!">Dropdown3</a></li>
+                                <li><a class="waves-effect" href="#!">Dropdown4</a></li>
+                                <li><a class="waves-effect" href="#!">Dropdown5</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li><div class="divider"></div></li>
+            <li><a asp-controller="Account" asp-action="Logout" class="red-text waves-effect waves-red">Cerrar Sesión<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a></li>
+            <li><div class="divider"></div></li>
+        </ul>
+        <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
+
+    </div>
+</nav>
+}
+
+
+
+
 <div class="container">
     <div class="row">
         <div class="col s12">
+            <div class="section">
+                <h5>Section 1</h5>
+                <p>Stuff</p>
+            </div>
             <h4>Bienvenido</h4>
         </div>
     </div>

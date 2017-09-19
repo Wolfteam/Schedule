@@ -9,12 +9,31 @@ main {
     flex: 1 0 auto;
 }
 
-header, main, footer {
+/*Ya no es necesario puesto que estoy ocultando el sidenav por defecto*/
+/*header, main, footer {
     padding-left: 300px;
-}
+}*/
 
 @media only screen and (max-width : 992px) {
     header, main, footer {
         padding-left: 0;
     }
+}
+
+/*Esto para los iconos esten centrados*/
+.fa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+/*Estos 2 para el input search del sidenav*/
+#search-li {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#search {
+    text-align: center;
 }

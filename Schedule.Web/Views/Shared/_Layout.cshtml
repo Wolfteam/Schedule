@@ -10,73 +10,11 @@
     <link href="~/lib/materialize/css/materialize.min.css" rel="stylesheet" />
     <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" />
-    <style type="text/css">
-        .fa {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-        }
-    </style>
 </head>
 <body>
     @* Header *@
     <header>
-        <nav class="grey darken-4" role="navigation">
-            <div class="nav-wrapper container">
-                <a href="#!" class="brand-logo">Schedules<i class="fa fa-list-alt" aria-hidden="true"></i></a>
-
-                <ul id="slide-out" class="side-nav fixed">
-                    @*<li>
-                        <div class="user-view">
-                            <div class="background">
-                                <img src="~/images/schedules.svg" />
-                            </div>
-                            
-                            <a href="#!user"><img class="circle" src="~/images/icon-schedule.png" /></a>
-                            <a href="#!name"><span class="blue-text text-darken-2 name">Efrain Bastidas</span></a>
-                            <a href="#!name"><span class="green-text lighten-2 email">Ip:10.2.5.125</span></a>
-                        </div>
-                    </li>*@
-                    @*<li class="search blue-grey blue-grey-text">
-                        <div class="search-wrapper card">
-                            <input id="search"><i class="material-icons">search</i>
-                            <div class="search-results"></div>
-                        </div>
-                    </li>*@
-                    <li><div class="divider"></div></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index" class="waves-effect waves-red">Inicio<i class="fa fa-home fa-2x" aria-hidden="true"></i></a></li>
-                    <li><a asp-area="" asp-controller="Profesor" asp-action="Index" class="waves-effect waves-red">Secciones<i class="fa fa-code-fork fa-2x" aria-hidden="true"></i></a></li>
-                    <li><a asp-area="" asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
-                    <li><a asp-area="" asp-controller="Editar" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></i></a></li>
-                    <li><a class="red-text waves-effect waves-red" href="#!">Cerrar Sesión<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a></li>
-                    <li><div class="divider"></div></li>
-                    <li class="no-padding">
-                        <ul class="collapsible collapsible-accordion">
-                            <li>
-                                <a class="collapsible-header">Dropdown
-                                    <i class="nav-drop-icon material-icons">keyboard_arrow_right</i>
-                                @*<i class="material-icons right">arrow_drop_down</i>*@
-                                </a>
-                                <div class="collapsible-body">
-                                    <ul>
-                                        <li><a class="waves-effect" href="#!">Dropdown1</a></li>
-                                        <li><a class="waves-effect" href="#!">Dropdown2<i class="material-icons">cloud</i></a></li>
-                                        <li><a class="waves-effect" href="#!">Dropdown3</a></li>
-                                        <li><a class="waves-effect" href="#!">Dropdown4</a></li>
-                                        <li><a class="waves-effect" href="#!">Dropdown5</a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-                @* Esto activa el sidenav cuando estas en movil *@
-                <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
-
-            </div>
-
-        </nav>
+        @RenderSection("SideNav", true)
     </header>
 
     @* Main *@
@@ -118,6 +56,7 @@
             //onClose: function (el) {
             //}
         });
+        //$('.button-collapse').sideNav('hide');
     </script>
     @RenderSection("Scripts", required: false)
 </body>
