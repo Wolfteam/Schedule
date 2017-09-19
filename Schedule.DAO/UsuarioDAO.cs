@@ -1,37 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
-using System.Text;
 
 namespace Schedule.DAO
 {
     public class UsuarioDAO
     {
+        private DBConnection _connection = new DBConnection();
+
         public UsuarioDAO()
         {
+            _connection.CreateMySqlConnection();
         }
 
+        /// <summary>
+        /// Autentica un usuario contra la base de datos
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>True en caso de existir</returns>
         public bool AuthenticateUser(string username, string password)
         {
-            DBConnection connection = new DBConnection();
-            connection.CreateMySqlConnection();
-            connection.CreateCommand("sp_AuthenticateUser", CommandType.StoredProcedure);
-            connection.AssignParameter(true, "@username", username);
-            connection.AssignParameter(true, "@password", password);
+            bool result = false;
             try
             {
-                connection.OpenConnection();
+                _connection.OpenConnection();
+                _connection.CreateMySqlConnection();
+                _connection.CreateCommand("sp_AuthenticateUser", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@username", username);
+                _connection.AssignParameter(true, "@password", password);
+                result = _connection.ExecuteConsulta().HasRows;
             }
             catch (Exception)
             {
-                return false;
+                return result;
             }
-            bool result = connection.ExecuteConsulta().HasRows;
-            connection.CloseConnection();
+            finally
+            {
+                if (_connection != null) _connection.CloseConnection();
+            }
             return result;
         }
-
     }
 }
