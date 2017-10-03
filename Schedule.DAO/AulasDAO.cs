@@ -169,5 +169,10 @@ namespace Schedule.DAO
             }
             return result;
         }
+
+        public bool Delete()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

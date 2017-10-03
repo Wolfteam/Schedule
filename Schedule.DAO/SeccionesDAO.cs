@@ -71,6 +71,30 @@ namespace Schedule.DAO
         }
 
         /// <summary>
+        /// Borra todas las secciones
+        /// </summary>
+        /// <returns>True en caso de exito</returns>
+        public bool Delete()
+        {
+            bool result = false;
+            try
+            {
+                _connection.OpenConnection();
+                _connection.CreateCommand("sp_DeleteSecciones", CommandType.StoredProcedure);
+                result = _connection.ExecuteCommand() > 0 ? true : false;
+            }
+            catch (Exception)
+            {
+                return result;
+            }
+            finally
+            {
+                if (_connection != null) _connection.CloseConnection();
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Obtiene una seccion en particular
         /// </summary>
         /// <param name="codigo">Id de la materia a buscar</param>

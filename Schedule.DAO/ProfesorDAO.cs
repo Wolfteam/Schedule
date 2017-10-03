@@ -29,7 +29,7 @@ namespace Schedule.DAO
                 _connection.AssignParameter(true, "@cedula", profesor.Cedula);
                 _connection.AssignParameter(true, "@nombre", profesor.Nombre);
                 _connection.AssignParameter(true, "@apellido", profesor.Apellido);
-                _connection.AssignParameter(true, "@idPrioridad", profesor.IDPrioridad);
+                _connection.AssignParameter(true, "@idPrioridad", profesor.Prioridad.ID);
 
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
@@ -67,7 +67,7 @@ namespace Schedule.DAO
                         Cedula = cedula,
                         Nombre = (string)result["nombre"],
                         Apellido = (string)result["apellido"],
-                        IDPrioridad = Convert.ToInt32(result["id_prioridad"])
+                        Prioridad = GetPrioridad(cedula)  
                     };
                 }
             }
@@ -103,7 +103,7 @@ namespace Schedule.DAO
                         Cedula = Convert.ToInt32(result["cedula"]),
                         Nombre = (string)result["nombre"],
                         Apellido = (string)result["apellido"],
-                        IDPrioridad = Convert.ToInt32(result["id_prioridad"])
+                        Prioridad = GetPrioridad(Convert.ToInt32(result["cedula"]))
                     };
                     listaProfesores.Add(aula);
                 }
@@ -159,7 +159,7 @@ namespace Schedule.DAO
                 _connection.CreateCommand("sp_UpdateProfesores", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@apellido", profesor.Apellido);
                 _connection.AssignParameter(true, "@cedula", profesor.Cedula);
-                _connection.AssignParameter(true, "@idPrioridad", profesor.IDPrioridad);
+                _connection.AssignParameter(true, "@idPrioridad", profesor.Prioridad.ID);
                 _connection.AssignParameter(true, "@idPrivilegio", profesor.IdPrivilegio);
                 _connection.AssignParameter(true, "@nombre", profesor.Nombre);
                 result = _connection.ExecuteCommand() > 0 ? true : false;
@@ -173,6 +173,48 @@ namespace Schedule.DAO
                 if (_connection != null) _connection.CloseConnection();
             }
             return result;
+        }
+
+        public bool Delete()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Obtiene la prioridad de un profesor en particular
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        /// <returns>Objeto de tipo PrioridadProfesor</returns>
+        public PrioridadProfesor GetPrioridad(int cedula)
+        {
+            PrioridadProfesor prioridad = null;
+            try
+            {
+                _connection.OpenConnection();
+                _connection.CreateCommand("sp_GetPrioridad", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@cedula", cedula);
+
+                var result = _connection.ExecuteConsulta();
+
+                while (result.Read())
+                {
+                    prioridad = new PrioridadProfesor
+                    {
+                        ID = Convert.ToInt32(result["id_prioridad"]),
+                        CodigoPrioridad = (string)result["codigo_prioridad"],
+                        HorasACumplir = Convert.ToInt32(result["horas_a_cumplir"])          
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                return prioridad;
+            }
+            finally
+            {
+                if (_connection != null) _connection.CloseConnection();
+            }
+            return prioridad;
         }
     }
 }

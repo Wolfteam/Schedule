@@ -8,6 +8,7 @@ namespace Schedule.DAO
         T Get(int id);
         List<T> GetAll();
         bool Delete(int id);
+        bool Delete();
         bool Update(T objeto);
     }
 }
