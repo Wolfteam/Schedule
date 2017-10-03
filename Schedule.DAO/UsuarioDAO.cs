@@ -24,7 +24,6 @@ namespace Schedule.DAO
             try
             {
                 _connection.OpenConnection();
-                _connection.CreateMySqlConnection();
                 _connection.CreateCommand("sp_AuthenticateUser", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@username", username);
                 _connection.AssignParameter(true, "@password", password);

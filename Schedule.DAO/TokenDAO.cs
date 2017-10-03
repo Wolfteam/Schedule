@@ -18,7 +18,7 @@ namespace Schedule.DAO
         /// Guarda el token generado en la base de datos
         /// </summary>
         /// <param name="token">Objeto de tipo Token</param>
-        public void SaveToken(Token token)
+        public void Save(Token token)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="tokenID">Token de autenticacion</param>
         /// <returns>True en caso de existir</returns>
-        public bool ValidateToken(string tokenID)
+        public bool Validate(string tokenID)
         {
             bool result = false;
             try
@@ -73,7 +73,7 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="tokenID">TokenId</param>
         /// <returns>Objeto de la clase Token</returns>
-        public Token GetToken(string tokenID)
+        public Token Get(string tokenID)
         {
             Token token = null;
             try
@@ -107,7 +107,7 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="token">Objeto de tipo Token</param>
         /// <returns>True en caso de exito</returns>
-        public bool UpdateToken(Token token)
+        public bool Update(Token token)
         {
             bool result = false;
             try
@@ -136,7 +136,7 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="tokenID">Token a eliminar</param>
         /// <returns>True en caso de exito</returns>
-        public bool DeleteToken(string tokenID)
+        public bool Delete(string tokenID)
         {
             bool result = false;
             try
@@ -162,7 +162,7 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="tokenID">Token</param>
         /// <returns>Lista de tipo Privilegios</returns>
-        public List<Privilegios> PrivilegiosByToken(string tokenID)
+        public List<Privilegios> GetAllPrivilegiosByToken(string tokenID)
         {
             List<Privilegios> listaPrivilegios = null;
             try

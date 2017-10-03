@@ -23,7 +23,7 @@ namespace Schedule.BLL
         /// <returns>True en caso de exito</returns>
         public bool DeleteToken(string tokenId)
         {
-            return _tokenDAO.DeleteToken(tokenId);
+            return _tokenDAO.Delete(tokenId);
         }
 
         public bool DeleteTokenByUserId(int userId)
@@ -52,7 +52,7 @@ namespace Schedule.BLL
                 ExpiricyDate = DateTime.Now.AddSeconds(_expiricyTime),
                 Username = username
             };
-            _tokenDAO.SaveToken(tokenModel);
+            _tokenDAO.Save(tokenModel);
 
             return tokenModel;
         }
@@ -65,11 +65,11 @@ namespace Schedule.BLL
         /// <returns>True en caso de existir</returns>
         public bool ValidateToken(string tokenId)
         {
-            Token token = _tokenDAO.GetToken(tokenId);
+            Token token = _tokenDAO.Get(tokenId);
             if (token != null && !(DateTime.Now > token.ExpiricyDate))
             {
                 token.ExpiricyDate = token.ExpiricyDate.AddSeconds(_expiricyTime);
-                _tokenDAO.UpdateToken(token);
+                _tokenDAO.Update(token);
                 return true;
             }
             return false;
@@ -83,7 +83,7 @@ namespace Schedule.BLL
         /// <returns>Lista de tipo Privilegios</returns>
         public List<Privilegios> GetAllPrivilegiosByToken(string tokenID)
         {
-            return _tokenDAO.PrivilegiosByToken(tokenID);
+            return _tokenDAO.GetAllPrivilegiosByToken(tokenID);
         }
     }
 }

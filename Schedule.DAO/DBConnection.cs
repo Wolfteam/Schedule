@@ -23,6 +23,12 @@ namespace Schedule.DAO
             }
             return _connection;
         }
+
+        internal void AssignParameter(bool v1, string v2, object username)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Abre la conexion con la BD
         /// </summary>
