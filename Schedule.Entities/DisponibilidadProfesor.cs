@@ -3,8 +3,8 @@
     public class DisponibilidadProfesor
     {
         public int Cedula { get; set; }
-        public int IDDia { get; set; }
-        public int IDHoraInicio { get; set; }
-        public int IDHoraFin { get; set; }
+        public DiasHabiles Dia { get; set; }
+        public Horas HoraInicio { get; set; }
+        public Horas HoraFin { get; set; }
     }
 }

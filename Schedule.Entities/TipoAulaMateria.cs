@@ -3,6 +3,6 @@
     public class TipoAulaMateria
     {
         public int ID { get; set; }
-        public int Nombre { get; set; }
+        public string Nombre { get; set; }
     }
 }

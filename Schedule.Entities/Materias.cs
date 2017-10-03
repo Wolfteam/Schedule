@@ -4,9 +4,9 @@
     {
         public int Codigo { get; set; }
         public string Nombre { get; set; }
-        public int IDSemestre { get; set; }
-        public int IDTipoMateria { get; set; }
-        public int IDCarrera { get; set; }
+        public Semestre Semestre { get; set; }
+        public TipoAulaMateria TipoMateria { get; set; }
+        public Carrera Carrera { get; set; }
         public int HorasAcademicasTotales { get; set; }
         public int HorasAcademicasSemanales { get; set; }
     }

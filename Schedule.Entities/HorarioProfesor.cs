@@ -3,7 +3,7 @@
     public class HorarioProfesor : DisponibilidadProfesor
     {
         public int Codigo { get; set; }
-        public int IDAula { get; set; }
-        public int NumeroSeccion { get; set; }
+        public Aulas Aula { get; set; }
+        public Secciones Seccion { get; set; }
     }
 }
