@@ -47,18 +47,16 @@ namespace Schedule.DAO
         /// <summary>
         /// Borra una relacion entre profesor y materia
         /// </summary>
-        /// <param name="cedula">Cedula del profesor</param>
-        /// <param name="codigo">Codigo de la materia</param>
+        /// <param name="id">ID de la tabla</param>
         /// <returns>True en caso de exito</returns>
-        public bool Delete(int cedula, int codigo)
+        public bool Delete(int id)
         {
             bool result = false;
             try
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteProfesorxMateria", CommandType.StoredProcedure);
-                _connection.AssignParameter(true, "@cedula", cedula);
-                _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.AssignParameter(true, "@id", id);
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)

@@ -18,9 +18,9 @@ namespace Schedule.BLL
             return _profesorMateriaDAO.Create(pm.Profesor.Cedula, pm.Materia.Codigo);
         }
 
-        public bool Delete(ProfesorMateria pm)
+        public bool Delete(int id)
         {
-            return _profesorMateriaDAO.Delete(pm.Profesor.Cedula, pm.Materia.Codigo);
+            return _profesorMateriaDAO.Delete(id);
         }
 
         public List<ProfesorMateria> GetAll()

@@ -19,16 +19,22 @@ namespace Schedule.API.Controllers
             return new ProfesorMateriaBLL().Create(pm);
         }
 
-        // DELETE api/ProfesorMateria/Delete/21255727
-        [HttpDelete("Delete/{cedula}")]
+        // DELETE api/ProfesorMateria/Delete/10
+        [HttpDelete("Delete/{id}")]
         //[AuthenticateAttribute]
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Delete(int cedula)
+        public bool Delete(int id)
         {
-            //TODO: PENSAR ESTO MEJOR
-            //return new ProfesorMateriaBLL().Delete(cedula);
+            //TODO: Agregar un campo autoincrement a la tabla
+            return new ProfesorMateriaBLL().Delete(id);
         }
 
-
+        // GET api/ProfesorMateria/GetAll
+        [HttpGet("GetAll")]
+        //[AuthenticateAttribute]
+        public List<ProfesorMateria> GetAll()
+        {
+            return new ProfesorMateriaBLL().GetAll();
+        }
     }
 }
