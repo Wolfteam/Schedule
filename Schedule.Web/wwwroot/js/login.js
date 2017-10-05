@@ -34,6 +34,9 @@ $(document).ready(function () {
                 required: "La password es requerida",
                 minlength: "La longitud minima es de 4 caracteres"
             }
-        }
+        },
+        invalidHandler: function (event, validator) { //display error alert on form submit              
+            $(".progress").hide();
+        },
     });
 });

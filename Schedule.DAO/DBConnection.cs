@@ -1,7 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
-using System;
 using System.Data;
-using System.Diagnostics;
 
 namespace Schedule.DAO
 {
@@ -22,11 +20,6 @@ namespace Schedule.DAO
                 _connection = new MySqlConnection(myConnString);
             }
             return _connection;
-        }
-
-        internal void AssignParameter(bool v1, string v2, object username)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
