@@ -80,6 +80,7 @@ CREATE TABLE profesores(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE profesores_materias (
+	id INT UNSIGNED AUTO_INCREMENT,
 	cedula INT UNSIGNED,
 	codigo SMALLINT UNSIGNED NOT NULL,
 	PRIMARY KEY (cedula,codigo),
