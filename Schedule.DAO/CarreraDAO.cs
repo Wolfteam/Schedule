@@ -40,7 +40,7 @@ namespace Schedule.DAO
             try
             {
                 _connection.OpenConnection();
-                _connection.CreateCommand("sp_GetDiasHabiles", CommandType.StoredProcedure);
+                _connection.CreateCommand("sp_GetCarreras", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
 
                 var result = _connection.ExecuteConsulta();

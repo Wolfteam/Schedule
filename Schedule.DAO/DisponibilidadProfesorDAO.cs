@@ -122,7 +122,7 @@ namespace Schedule.DAO
                         Cedula = Convert.ToInt32(result["cedula"]),
                         Dia = new DiasDAO().Get(Convert.ToInt32(result["id_dia"])),
                         HoraInicio = new HorasDAO().Get(Convert.ToInt32(result["id_hora_inicio"])),
-                        HoraFin = new HorasDAO().Get(Convert.ToInt32(result["id_hora_inicio"]))
+                        HoraFin = new HorasDAO().Get(Convert.ToInt32(result["id_hora_fin"]))
                     };
                     listaDisponibilidad.Add(disponibilidad);
                 }

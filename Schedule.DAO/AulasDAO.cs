@@ -90,6 +90,7 @@ namespace Schedule.DAO
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetAulas", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@id", null);
 
                 var result = _connection.ExecuteConsulta();
 
@@ -152,7 +153,7 @@ namespace Schedule.DAO
             try
             {
                 _connection.OpenConnection();
-                _connection.CreateCommand("sp_UpdateMaterias", CommandType.StoredProcedure);
+                _connection.CreateCommand("sp_UpdateAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@capacidad", aula.Capacidad);
                 _connection.AssignParameter(true, "@id", aula.ID);
                 _connection.AssignParameter(true, "@idTipoAula", aula.IDTipoAula);

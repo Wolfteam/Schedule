@@ -86,20 +86,8 @@ namespace Schedule.DAO
                 {
                     ProfesorMateria pm = new ProfesorMateria
                     {
-                        Materia = new Materias 
-                        {
-                            Codigo = Convert.ToInt32("codigo"),
-                            Nombre = (string)result["asignatura"],
-                            Semestre = new SemestreDAO().Get(Convert.ToInt32(result["id_semestre"])),
-                            Carrera = new CarreraDAO().Get(Convert.ToInt32(result["id_carrera"])),
-                            TipoMateria = new TipoAulaMateriaDAO().Get(Convert.ToInt32(result["id_tipo_materia"]))
-                        },
-                        Profesor = new Profesor
-                        {
-                            Cedula = Convert.ToInt32("cedula"),
-                            Nombre = (string)result["nombre"],
-                            Apellido = (string)result["apellido"]
-                        }
+                        Materia = new MateriasDAO().Get(Convert.ToInt32(result["codigo"])),
+                        Profesor = new ProfesorDAO().Get(Convert.ToInt32(result["cedula"]))
                     };
                     lista.Add(pm);
                 }

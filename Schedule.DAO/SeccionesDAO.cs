@@ -173,14 +173,15 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="seccion">Objeto seccion a actualizar</param>
         /// <returns>True en caso de exito</returns>
-        public bool Update(Secciones seccion)
+        public bool Update(int codigo, Secciones seccion)
         {
             bool result = false;
             try
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateSecciones", CommandType.StoredProcedure);
-                _connection.AssignParameter(true, "@codigo", seccion.CodigoMateria);
+                _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.AssignParameter(true, "@codigoNuevo", seccion.CodigoMateria);
                 _connection.AssignParameter(true, "@cantidadAlumnos", seccion.CantidadAlumnos);
                 _connection.AssignParameter(true, "@numeroSecciones", seccion.NumeroSecciones);
 

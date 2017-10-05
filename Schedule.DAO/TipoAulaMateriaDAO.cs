@@ -49,7 +49,7 @@ namespace Schedule.DAO
                     tipo = new TipoAulaMateria
                     {
                         ID = Convert.ToInt32(result["id_tipo"]),
-                        Nombre = (string)result["nombre_aula"]
+                        Nombre = (string)result["nombre_tipo"]
                     };
                 }
             }

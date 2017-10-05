@@ -67,7 +67,7 @@ namespace Schedule.DAO
                         Cedula = cedula,
                         Nombre = (string)result["nombre"],
                         Apellido = (string)result["apellido"],
-                        Prioridad = GetPrioridad(cedula)  
+                        Prioridad = GetPrioridad(cedula)
                     };
                 }
             }
@@ -93,6 +93,7 @@ namespace Schedule.DAO
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetProfesores", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@cedula", null);
 
                 var result = _connection.ExecuteConsulta();
 
@@ -150,17 +151,17 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="profesor">Objeto profesor a actualizar</param>
         /// <returns>True en caso de exito</returns>
-        public bool Update(Profesor profesor)
+        public bool Update(int cedula, Profesor profesor)
         {
             bool result = false;
             try
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateProfesores", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@cedula", cedula);
                 _connection.AssignParameter(true, "@apellido", profesor.Apellido);
-                _connection.AssignParameter(true, "@cedula", profesor.Cedula);
+                _connection.AssignParameter(true, "@cedulaNueva", profesor.Cedula);
                 _connection.AssignParameter(true, "@idPrioridad", profesor.Prioridad.ID);
-                _connection.AssignParameter(true, "@idPrivilegio", profesor.IdPrivilegio);
                 _connection.AssignParameter(true, "@nombre", profesor.Nombre);
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
@@ -202,7 +203,7 @@ namespace Schedule.DAO
                     {
                         ID = Convert.ToInt32(result["id_prioridad"]),
                         CodigoPrioridad = (string)result["codigo_prioridad"],
-                        HorasACumplir = Convert.ToInt32(result["horas_a_cumplir"])          
+                        HorasACumplir = Convert.ToInt32(result["horas_a_cumplir"])
                     };
                 }
             }

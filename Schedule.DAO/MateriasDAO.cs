@@ -156,16 +156,18 @@ namespace Schedule.DAO
         /// <summary>
         /// Actualiza una materia en especifico
         /// </summary>
+        /// <param name="codigo">Codigo de la materia a actualizar</param>
         /// <param name="materia">Objeto materia a actualizar</param>
         /// <returns>True en caso de exito</returns>
-        public bool Update(Materias materia)
+        public bool Update(int codigo, Materias materia)
         {
             bool result = false;
             try
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateMaterias", CommandType.StoredProcedure);
-                _connection.AssignParameter(true, "@codigo", materia.Codigo);
+                _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.AssignParameter(true, "@codigoNuevo", materia.Codigo);
                 _connection.AssignParameter(true, "@horasAcademicasSemanales", materia.HorasAcademicasSemanales);
                 _connection.AssignParameter(true, "@horasAcademicasTotales", materia.HorasAcademicasTotales);
                 _connection.AssignParameter(true, "@idCarrera", materia.Carrera.ID);
