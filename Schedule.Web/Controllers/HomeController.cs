@@ -29,7 +29,7 @@ namespace Schedule.Web.Controllers
             if (_httpClient == null)
             {
                 _httpClient = new HttpClient();
-                InitializeHttpClient(_appSettings.Value.URLBaseAPI);
+                HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI);
             }
         }
         #endregion
@@ -61,13 +61,6 @@ namespace Schedule.Web.Controllers
             }
 
             return listaPrivilegios;
-        }
-
-        static void InitializeHttpClient(string urlBaseAPI)
-        {
-            _httpClient.BaseAddress = new Uri(urlBaseAPI);
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public IActionResult Error()

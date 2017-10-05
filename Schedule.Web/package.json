@@ -1,0 +1,28 @@
+{
+  "name": "schedule",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": ["npm install", "gulp clean", "gulp min"]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
+    "jquery-confirm": "^3.3.2",
+    "jquery-validation": "^1.17.0",
+    "materialize-css": "^0.100.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "rimraf": "^2.5.4",
+    "gulp-concat": "2.6.1",
+    "gulp-cssmin": "^0.1.7",
+    "gulp-uglify": "^2.0.0",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-ext-replace": "^0.3.0"
+  }
+}
