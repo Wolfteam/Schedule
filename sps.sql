@@ -322,7 +322,7 @@ CREATE PROCEDURE sp_DeleteProfesores(
     IN cedula INT
 )
 BEGIN
-    DELETE p FROM profesor p WHERE p.cedula = cedula;
+    DELETE p FROM profesores p WHERE p.cedula = cedula;
 END$$
 DELIMITER ;
 
