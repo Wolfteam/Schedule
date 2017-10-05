@@ -43,9 +43,9 @@ namespace Schedule.API.Controllers
 
         // PUT api/Secciones/Update/44056
         [HttpPut("Update/{codigo}")]
-        public bool Update(int cedula, [FromBody] Secciones seccion)
+        public bool Update(int codigo, [FromBody] Secciones seccion)
         {
-            return new SeccionesBLL().Update(seccion);
+            return new SeccionesBLL().Update(codigo, seccion);
         }
     }
 }

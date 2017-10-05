@@ -38,9 +38,9 @@ namespace Schedule.BLL
             return _seccionesDAO.GetAll();
         }
 
-        public bool Update(Secciones secciones)
+        public bool Update(int codigo, Secciones seccion)
         {
-            return _seccionesDAO.Update(secciones);
+            return _seccionesDAO.Update(codigo, seccion);
         }
     }
 }
