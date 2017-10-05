@@ -33,9 +33,9 @@ namespace Schedule.BLL
             return _profesorDAO.GetAll();
         }
 
-        public bool Update(Profesor profesor)
+        public bool Update(int cedula, Profesor profesor)
         {
-            return _profesorDAO.Update(profesor);
+            return _profesorDAO.Update(cedula, profesor);
         }
     }
 }

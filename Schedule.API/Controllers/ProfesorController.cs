@@ -48,7 +48,7 @@ namespace Schedule.API.Controllers
         [HttpPut("Update/{cedula}")]
         public bool Update(int cedula, [FromBody] Profesor profesor)
         {
-            return new ProfesorBLL().Update(profesor);
+            return new ProfesorBLL().Update(cedula, profesor);
         }
     }
 }
