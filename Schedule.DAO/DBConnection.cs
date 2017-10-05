@@ -60,7 +60,7 @@ namespace Schedule.DAO
         /// <param name="parametersValue">Valor del parametro</param>
         /// <param name="parametersDirection">Direccion del parametro (input/output)</param>
         /// <param name="parametersType">Tipo del parametro</param>
-        public void AssignParameter(bool isStoredProcedure, string parametersName, object parametersValue, 
+        public void AssignParameter(bool isStoredProcedure, string parametersName, object parametersValue,
             ParameterDirection parametersDirection = ParameterDirection.Input, DbType parametersType = DbType.Object)
         {
             if (isStoredProcedure)

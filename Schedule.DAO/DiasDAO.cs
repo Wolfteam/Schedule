@@ -76,5 +76,10 @@ namespace Schedule.DAO
         {
             throw new NotImplementedException();
         }
+
+        public bool Update(int id, DiasHabiles objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -197,5 +197,10 @@ namespace Schedule.DAO
             }
             return result;
         }
+
+        public bool Update(Secciones objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

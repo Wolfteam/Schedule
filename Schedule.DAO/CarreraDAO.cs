@@ -74,5 +74,10 @@ namespace Schedule.DAO
         {
             throw new NotImplementedException();
         }
+
+        public bool Update(int id, Carrera objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

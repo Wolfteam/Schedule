@@ -73,5 +73,10 @@ namespace Schedule.DAO
         {
             throw new NotImplementedException();
         }
+
+        public bool Update(int id, TipoAulaMateria objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

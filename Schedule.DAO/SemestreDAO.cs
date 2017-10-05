@@ -73,6 +73,11 @@ namespace Schedule.DAO
         {
             throw new NotImplementedException();
         }
+
+        public bool Update(int id, Semestre objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

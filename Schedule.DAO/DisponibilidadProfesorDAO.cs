@@ -147,5 +147,10 @@ namespace Schedule.DAO
         {
             throw new NotImplementedException();
         }
+
+        public bool Update(int id, DisponibilidadProfesor objeto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

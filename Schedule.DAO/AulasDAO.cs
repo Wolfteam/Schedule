@@ -62,6 +62,7 @@ namespace Schedule.DAO
                 {
                     aula = new Aulas
                     {
+                        ID = Convert.ToInt32(result["id_aula"]),
                         Capacidad = Convert.ToInt32(result["capacidad"]),
                         IDTipoAula = Convert.ToInt32(result["id_tipo"]),
                         Nombre = (string)result["nombre_aula"]
@@ -98,6 +99,7 @@ namespace Schedule.DAO
                 {
                     Aulas aula = new Aulas
                     {
+                        ID = Convert.ToInt32(result["id_aula"]),
                         Capacidad = Convert.ToInt32(result["capacidad"]),
                         IDTipoAula = Convert.ToInt32(result["id_tipo"]),
                         Nombre = (string)result["nombre_aula"]
@@ -172,6 +174,11 @@ namespace Schedule.DAO
         }
 
         public bool Delete()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Update(int id, Aulas objeto)
         {
             throw new NotImplementedException();
         }

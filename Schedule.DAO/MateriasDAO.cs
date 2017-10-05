@@ -98,6 +98,7 @@ namespace Schedule.DAO
             {
                 _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetMaterias", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@codigo", null);
 
                 var result = _connection.ExecuteConsulta();
 
@@ -188,6 +189,11 @@ namespace Schedule.DAO
         }
 
         public bool Delete()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Update(Materias objeto)
         {
             throw new NotImplementedException();
         }

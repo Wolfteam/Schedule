@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 
 namespace Schedule.DAO
 {
@@ -71,8 +72,9 @@ namespace Schedule.DAO
                     };
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine(e.Message);
                 return profesor;
             }
             finally
@@ -109,8 +111,9 @@ namespace Schedule.DAO
                     listaProfesores.Add(aula);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine(e.Message);
                 return listaProfesores;
             }
             finally
@@ -149,6 +152,7 @@ namespace Schedule.DAO
         /// <summary>
         /// Actualiza un profesor en especifico
         /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
         /// <param name="profesor">Objeto profesor a actualizar</param>
         /// <returns>True en caso de exito</returns>
         public bool Update(int cedula, Profesor profesor)
@@ -207,8 +211,9 @@ namespace Schedule.DAO
                     };
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine(e.Message);
                 return prioridad;
             }
             finally
@@ -216,6 +221,11 @@ namespace Schedule.DAO
                 if (_connection != null) _connection.CloseConnection();
             }
             return prioridad;
+        }
+
+        public bool Update(Profesor objeto)
+        {
+            throw new NotImplementedException();
         }
     }
 }
