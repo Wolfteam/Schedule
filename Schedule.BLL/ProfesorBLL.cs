@@ -25,12 +25,19 @@ namespace Schedule.BLL
 
         public Profesor Get(int cedula)
         {
-            return _profesorDAO.Get(cedula);
+            Profesor profesor = _profesorDAO.Get(cedula);
+            profesor.Prioridad = _profesorDAO.GetPrioridad(profesor.Cedula);
+            return profesor;
         }
 
         public List<Profesor> GetAll()
         {
-            return _profesorDAO.GetAll();
+            List<Profesor> listaProfesores = _profesorDAO.GetAll();
+            foreach (var profesor in listaProfesores)
+            {
+                profesor.Prioridad = _profesorDAO.GetPrioridad(profesor.Cedula);
+            }
+            return listaProfesores;
         }
 
         public bool Update(int cedula, Profesor profesor)
