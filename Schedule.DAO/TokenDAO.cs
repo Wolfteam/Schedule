@@ -22,12 +22,13 @@ namespace Schedule.DAO
         {
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_SaveToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", token.AuthenticationToken);
                 _connection.AssignParameter(true, "@createDate", token.CreateDate);
                 _connection.AssignParameter(true, "@expiricyDate", token.ExpiricyDate);
                 _connection.AssignParameter(true, "@username", token.Username);
+                _connection.OpenConnection();
+
                 _connection.ExecuteCommand();
             }
             catch (Exception)
@@ -37,7 +38,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
         }
 
@@ -51,10 +52,11 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_ValidateToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", tokenID);
                 _connection.AssignParameter(true, "@expiricyDate", DateTime.Now);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteConsulta().HasRows;
             }
             catch (Exception)
@@ -63,7 +65,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -79,9 +81,10 @@ namespace Schedule.DAO
             try
             {
                 token = new Token();
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", tokenID);
+                _connection.OpenConnection();
+
                 var result = _connection.ExecuteConsulta();
                 while (result.Read())
                 {
@@ -97,7 +100,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return token;
         }
@@ -112,12 +115,13 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", token.AuthenticationToken);
                 _connection.AssignParameter(true, "@createDate", token.CreateDate);
                 _connection.AssignParameter(true, "@expiricyDate", token.ExpiricyDate);
                 _connection.AssignParameter(true, "@username", token.Username);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteConsulta().RecordsAffected > 0;
             }
             catch (Exception)
@@ -126,7 +130,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -141,9 +145,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", tokenID);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteConsulta().RecordsAffected > 0;
             }
             catch (Exception)
@@ -152,7 +157,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -168,9 +173,10 @@ namespace Schedule.DAO
             try
             {
                 listaPrivilegios = new List<Privilegios>();
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_PrivilegiosByToken", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@token", tokenID);
+                _connection.OpenConnection();
+
                 var result = _connection.ExecuteConsulta();
                 while (result.Read())
                 {
@@ -184,7 +190,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaPrivilegios;
         }

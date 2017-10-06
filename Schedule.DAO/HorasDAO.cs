@@ -42,9 +42,9 @@ namespace Schedule.DAO
             Horas horas = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetHoras", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -52,7 +52,7 @@ namespace Schedule.DAO
                 {
                     horas = new Horas
                     {
-                        ID = Convert.ToInt32(result["id_hora"]),          
+                        ID = Convert.ToInt32(result["id_hora"]),
                         Hora = (string)result["nombre_hora"]
                     };
                 }
@@ -63,7 +63,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return horas;
         }

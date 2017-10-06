@@ -24,11 +24,12 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateSecciones", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", seccion.CodigoMateria);
                 _connection.AssignParameter(true, "@numeroSecciones", seccion.NumeroSecciones);
                 _connection.AssignParameter(true, "@cantidadAlumnos", seccion.CantidadAlumnos);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -37,7 +38,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
 
@@ -53,9 +54,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteSecciones", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -64,7 +66,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
 
@@ -79,8 +81,9 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteSecciones", CommandType.StoredProcedure);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -89,7 +92,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -104,9 +107,9 @@ namespace Schedule.DAO
             Secciones seccion = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetSecciones", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -114,9 +117,9 @@ namespace Schedule.DAO
                 {
                     seccion = new Secciones
                     {
-                         CodigoMateria = codigo,
-                         NumeroSecciones = Convert.ToInt32(result["numero_secciones"]),
-                         CantidadAlumnos = Convert.ToInt32(result["cantidad_alumnos"])
+                        CodigoMateria = codigo,
+                        NumeroSecciones = Convert.ToInt32(result["numero_secciones"]),
+                        CantidadAlumnos = Convert.ToInt32(result["cantidad_alumnos"])
                     };
                 }
             }
@@ -126,7 +129,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return seccion;
         }
@@ -141,8 +144,8 @@ namespace Schedule.DAO
             List<Secciones> listaSecciones = new List<Secciones>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetSecciones", CommandType.StoredProcedure);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -163,7 +166,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaSecciones;
         }
@@ -171,19 +174,20 @@ namespace Schedule.DAO
         /// <summary>
         /// Actualiza una seccion en especifico
         /// </summary>
-        /// <param name="seccion">Objeto seccion a actualizar</param>
+        /// <param name="codigo">Codigo de la seccion a actualizar</param>
+        /// <param name="seccion">Objeto seccion que contiene la nueva data</param>
         /// <returns>True en caso de exito</returns>
         public bool Update(int codigo, Secciones seccion)
         {
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateSecciones", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
                 _connection.AssignParameter(true, "@codigoNuevo", seccion.CodigoMateria);
                 _connection.AssignParameter(true, "@cantidadAlumnos", seccion.CantidadAlumnos);
                 _connection.AssignParameter(true, "@numeroSecciones", seccion.NumeroSecciones);
+                _connection.OpenConnection();
 
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
@@ -193,7 +197,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }

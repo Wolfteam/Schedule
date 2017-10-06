@@ -23,10 +23,11 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_AuthenticateUser", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@username", username);
                 _connection.AssignParameter(true, "@password", password);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteConsulta().HasRows;
             }
             catch (Exception)
@@ -35,7 +36,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }

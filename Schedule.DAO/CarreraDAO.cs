@@ -39,9 +39,9 @@ namespace Schedule.DAO
             Carrera carrera = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetCarreras", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -50,7 +50,7 @@ namespace Schedule.DAO
                     carrera = new Carrera
                     {
                         ID = Convert.ToInt32(result["id_carrera"]),
-                        NombreCarrera = (string)result["nombre_carrera"]        
+                        NombreCarrera = (string)result["nombre_carrera"]
                     };
                 }
             }
@@ -60,7 +60,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return carrera;
         }

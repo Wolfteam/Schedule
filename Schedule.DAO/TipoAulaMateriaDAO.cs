@@ -38,9 +38,9 @@ namespace Schedule.DAO
             TipoAulaMateria tipo = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetTipoAulaMateria", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -59,7 +59,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return tipo;
         }

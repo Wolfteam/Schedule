@@ -24,11 +24,11 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@nombre", aula.Nombre);
                 _connection.AssignParameter(true, "@capacidad", aula.Capacidad);
                 _connection.AssignParameter(true, "@tipo", aula.IDTipoAula);
+                _connection.OpenConnection();
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -37,7 +37,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -52,9 +52,9 @@ namespace Schedule.DAO
             Aulas aula = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -75,7 +75,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return aula;
         }
@@ -89,9 +89,9 @@ namespace Schedule.DAO
             List<Aulas> listaAulas = new List<Aulas>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", null);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -113,7 +113,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaAulas;
         }
@@ -128,9 +128,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -139,7 +140,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -154,12 +155,13 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateAulas", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@capacidad", aula.Capacidad);
                 _connection.AssignParameter(true, "@id", aula.ID);
                 _connection.AssignParameter(true, "@idTipoAula", aula.IDTipoAula);
                 _connection.AssignParameter(true, "@nombre", aula.Nombre);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -168,7 +170,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }

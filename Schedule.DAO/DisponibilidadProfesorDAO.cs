@@ -1,7 +1,5 @@
-using MySql.Data.MySqlClient;
 using System;
 using System.Data;
-using System.Diagnostics;
 using Schedule.Entities;
 using System.Collections.Generic;
 
@@ -26,12 +24,13 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateDisponibilidadProfesor", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", disponibilidad.Cedula);
                 _connection.AssignParameter(true, "@idDia", disponibilidad.Dia.ID);
                 _connection.AssignParameter(true, "@idHoraInicio", disponibilidad.HoraInicio.ID);
                 _connection.AssignParameter(true, "@idHoraFin", disponibilidad.HoraFin.ID);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -40,7 +39,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -55,9 +54,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteDisponibilidadProfesor", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -66,7 +66,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -80,8 +80,9 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteDisponibilidadProfesor", CommandType.StoredProcedure);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -90,7 +91,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
 
@@ -110,8 +111,8 @@ namespace Schedule.DAO
             List<DisponibilidadProfesor> listaDisponibilidad = new List<DisponibilidadProfesor>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetDisponibilidadesProfesor", CommandType.StoredProcedure);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -133,7 +134,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaDisponibilidad;
         }

@@ -27,6 +27,10 @@ namespace Schedule.DAO
         /// </summary>
         public void OpenConnection()
         {
+            if (_connection.State == ConnectionState.Open && _connection != null)
+            {
+                return;
+            }
             _connection.Open();
         }
 
@@ -35,7 +39,7 @@ namespace Schedule.DAO
         /// </summary>
         public void CloseConnection()
         {
-            _connection.Close();
+            if (_connection != null) _connection.Close();
         }
         /// <summary>
         /// Crea un comando a ejecutar

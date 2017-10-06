@@ -27,10 +27,11 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateProfesorxMateria", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
                 _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -39,7 +40,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -54,9 +55,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteProfesorxMateria", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -65,7 +67,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -79,10 +81,11 @@ namespace Schedule.DAO
             List<ProfesorMateria> lista = new List<ProfesorMateria>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetProfesoresxMaterias", CommandType.StoredProcedure);
+                _connection.OpenConnection();
+
                 var result = _connection.ExecuteConsulta();
-                while(result.Read())
+                while (result.Read())
                 {
                     ProfesorMateria pm = new ProfesorMateria
                     {
@@ -98,7 +101,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return lista;
         }
@@ -116,12 +119,13 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateProfesorxMateria", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
                 _connection.AssignParameter(true, "@codigo", codigo);
                 _connection.AssignParameter(true, "@cedulaNueva", cedulaNueva);
                 _connection.AssignParameter(true, "@codigoNuevo", codigoNuevo);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -130,7 +134,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }

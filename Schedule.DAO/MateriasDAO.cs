@@ -24,7 +24,6 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateMaterias", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", materia.Codigo);
                 _connection.AssignParameter(true, "@nombre", materia.Nombre);
@@ -33,6 +32,8 @@ namespace Schedule.DAO
                 _connection.AssignParameter(true, "@idTipoMateria", materia.TipoMateria.ID);
                 _connection.AssignParameter(true, "@horasSemanales", materia.HorasAcademicasSemanales);
                 _connection.AssignParameter(true, "@horasAcademicasTotales", materia.HorasAcademicasTotales);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -41,7 +42,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -56,9 +57,9 @@ namespace Schedule.DAO
             Materias materia = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetMaterias", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -82,7 +83,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return materia;
         }
@@ -96,9 +97,9 @@ namespace Schedule.DAO
             List<Materias> listaMaterias = new List<Materias>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetMaterias", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", null);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -123,7 +124,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaMaterias;
         }
@@ -138,9 +139,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteMaterias", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -149,7 +151,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -165,7 +167,6 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateMaterias", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
                 _connection.AssignParameter(true, "@codigoNuevo", materia.Codigo);
@@ -175,6 +176,8 @@ namespace Schedule.DAO
                 _connection.AssignParameter(true, "@idSemestre", materia.Semestre.ID);
                 _connection.AssignParameter(true, "@idTipoMateria", materia.TipoMateria.ID);
                 _connection.AssignParameter(true, "@nombre", materia.Nombre);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -183,7 +186,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }

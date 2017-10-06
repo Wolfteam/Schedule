@@ -41,9 +41,9 @@ namespace Schedule.DAO
             DiasHabiles dia = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetDiasHabiles", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@id", id);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -51,7 +51,7 @@ namespace Schedule.DAO
                 {
                     dia = new DiasHabiles
                     {
-                        ID = Convert.ToInt32(result["id_dia"]),          
+                        ID = Convert.ToInt32(result["id_dia"]),
                         NombreDia = (string)result["nombre_dia"]
                     };
                 }
@@ -62,7 +62,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return dia;
         }

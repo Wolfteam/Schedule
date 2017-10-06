@@ -25,12 +25,12 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_CreateProfesor", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", profesor.Cedula);
                 _connection.AssignParameter(true, "@nombre", profesor.Nombre);
                 _connection.AssignParameter(true, "@apellido", profesor.Apellido);
                 _connection.AssignParameter(true, "@idPrioridad", profesor.Prioridad.ID);
+                _connection.OpenConnection();
 
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
@@ -40,7 +40,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -55,9 +55,9 @@ namespace Schedule.DAO
             Profesor profesor = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetProfesores", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -68,7 +68,7 @@ namespace Schedule.DAO
                         Cedula = cedula,
                         Nombre = (string)result["nombre"],
                         Apellido = (string)result["apellido"],
-                        Prioridad = GetPrioridad(cedula)
+                        //Prioridad = GetPrioridad(cedula)
                     };
                 }
             }
@@ -79,7 +79,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return profesor;
         }
@@ -93,22 +93,22 @@ namespace Schedule.DAO
             List<Profesor> listaProfesores = new List<Profesor>();
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetProfesores", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", null);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
                 while (result.Read())
                 {
-                    Profesor aula = new Profesor
+                    Profesor profesor = new Profesor
                     {
                         Cedula = Convert.ToInt32(result["cedula"]),
                         Nombre = (string)result["nombre"],
-                        Apellido = (string)result["apellido"],
-                        Prioridad = GetPrioridad(Convert.ToInt32(result["cedula"]))
+                        Apellido = (string)result["apellido"]
+                        //Prioridad = GetPrioridad(Convert.ToInt32(result["cedula"]))
                     };
-                    listaProfesores.Add(aula);
+                    listaProfesores.Add(profesor);
                 }
             }
             catch (Exception e)
@@ -118,7 +118,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return listaProfesores;
         }
@@ -133,9 +133,10 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_DeleteProfesores", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -144,7 +145,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -160,13 +161,14 @@ namespace Schedule.DAO
             bool result = false;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_UpdateProfesores", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
                 _connection.AssignParameter(true, "@apellido", profesor.Apellido);
                 _connection.AssignParameter(true, "@cedulaNueva", profesor.Cedula);
                 _connection.AssignParameter(true, "@idPrioridad", profesor.Prioridad.ID);
                 _connection.AssignParameter(true, "@nombre", profesor.Nombre);
+                _connection.OpenConnection();
+
                 result = _connection.ExecuteCommand() > 0 ? true : false;
             }
             catch (Exception)
@@ -175,7 +177,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return result;
         }
@@ -195,9 +197,9 @@ namespace Schedule.DAO
             PrioridadProfesor prioridad = null;
             try
             {
-                _connection.OpenConnection();
                 _connection.CreateCommand("sp_GetPrioridad", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@cedula", cedula);
+                _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
 
@@ -218,7 +220,7 @@ namespace Schedule.DAO
             }
             finally
             {
-                if (_connection != null) _connection.CloseConnection();
+                _connection.CloseConnection();
             }
             return prioridad;
         }
