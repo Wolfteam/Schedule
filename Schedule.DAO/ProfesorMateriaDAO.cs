@@ -89,6 +89,7 @@ namespace Schedule.DAO
                 {
                     ProfesorMateria pm = new ProfesorMateria
                     {
+                        ID = Convert.ToInt32(result["id"]),
                         Materia = new MateriasDAO().Get(Convert.ToInt32(result["codigo"])),
                         Profesor = new ProfesorDAO().Get(Convert.ToInt32(result["cedula"]))
                     };

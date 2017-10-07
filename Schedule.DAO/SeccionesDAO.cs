@@ -82,6 +82,8 @@ namespace Schedule.DAO
             try
             {
                 _connection.CreateCommand("sp_DeleteSecciones", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@codigo", null);
+
                 _connection.OpenConnection();
 
                 result = _connection.ExecuteCommand() > 0 ? true : false;
@@ -145,6 +147,8 @@ namespace Schedule.DAO
             try
             {
                 _connection.CreateCommand("sp_GetSecciones", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@codigo", null);
+
                 _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();

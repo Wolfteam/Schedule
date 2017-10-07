@@ -361,7 +361,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE sp_CreateProfesorxMateria(
     IN cedula INT,
-    IN codigo SMALLINT
+    IN codigo SMALLINT UNSIGNED
 )
 BEGIN
     INSERT INTO profesores_materias (cedula, codigo) VALUES (cedula, codigo);
@@ -404,19 +404,19 @@ DELIMITER ;
 -- *******************Sps Secciones*******************
 DELIMITER $$
 CREATE PROCEDURE sp_CreateSecciones(
-    IN codigo SMALLINT,
+    IN codigo SMALLINT UNSIGNED,
     IN numeroSecciones TINYINT,
     IN cantidadAlumnos TINYINT
 )
 BEGIN
-    INSERT INTO secciones (codigo, numeroSecciones, cantidadAlumnos) 
+    INSERT INTO secciones (codigo, numero_secciones, cantidad_alumnos) 
     VALUES (codigo, numeroSecciones, cantidadAlumnos);
 END$$
 DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE sp_DeleteSecciones(
-    IN codigo SMALLINT
+    IN codigo SMALLINT UNSIGNED
 )
 BEGIN
     IF (codigo IS NULL) THEN
@@ -430,7 +430,7 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE sp_GetSecciones(
-    IN codigo SMALLINT
+    IN codigo SMALLINT UNSIGNED
 )
 BEGIN
     IF (codigo IS NULL) THEN
@@ -441,10 +441,11 @@ BEGIN
 END$$
 DELIMITER ;
 
+
 DELIMITER $$
 CREATE PROCEDURE sp_UpdateSecciones(
-    IN codigo SMALLINT,
-    IN codigoNuevo SMALLINT,
+    IN codigo SMALLINT UNSIGNED,
+    IN codigoNuevo SMALLINT UNSIGNED,
     IN numeroSecciones TINYINT,
     IN cantidadAlumnos TINYINT
 )

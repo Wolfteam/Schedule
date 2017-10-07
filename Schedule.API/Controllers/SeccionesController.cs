@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
-    public class SeccionesController:Controller
+    [Route("api/[controller]")]
+    public class SeccionesController : Controller
     {
         // POST api/Secciones/Create
         [HttpPost("Create")]

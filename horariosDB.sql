@@ -84,6 +84,7 @@ CREATE TABLE profesores_materias (
 	cedula INT UNSIGNED,
 	codigo SMALLINT UNSIGNED NOT NULL,
 	PRIMARY KEY (cedula,codigo),
+    KEY (id),
 	FOREIGN KEY (cedula) REFERENCES profesores (cedula),
 	FOREIGN KEY (codigo) REFERENCES materias (codigo)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
