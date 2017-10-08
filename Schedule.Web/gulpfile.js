@@ -28,4 +28,40 @@ gulp.task("copy-files", function () {
 
     gulp.src(paths.npmSrc + '/jquery-validation/dist/*')
         .pipe(gulp.dest(paths.libs + '/jquery-validation/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net/js/*')
+        .pipe(gulp.dest(paths.libs + '/datatables.net/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-dt/**/*.*')
+        .pipe(gulp.dest(paths.libs + '/datatables.net/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-buttons/js/*.min.js')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-buttons/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-buttons-dt/css/*.min.css')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-buttons/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-keytable/js/*.min.js')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-keytable/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-keytable-dt/css/*.min.css')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-keytable/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-responsive/js/*.min.js')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-responsive/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-responsive-dt/css/*.min.css')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-responsive/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-select/js/*.min.js')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-select/'));
+
+    gulp.src(paths.npmSrc + '/datatables.net-select-dt/css/*.min.css')
+        .pipe(gulp.dest(paths.libs + '/datatables.net-select/'));
+
+    gulp.src(paths.npmSrc + '/jszip/dist/*.min.js')
+        .pipe(gulp.dest(paths.libs + '/jszip/'));
+
+    gulp.src(paths.npmSrc + '/pdfmake/build/*')
+        .pipe(gulp.dest(paths.libs + '/pdfmake/'));
 });
