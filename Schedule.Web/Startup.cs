@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Schedule.Web
 {
@@ -27,6 +28,7 @@ namespace Schedule.Web
             services.AddSingleton(Configuration);
             //Para que lea la seccion AppSettings definida por nosostros en el appsettings.json
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddScoped<IProfesor, ProfesoresService>();
             //services.AddDbContext<ScheduleContext>(options 
             //    => options.UseMySql(Configuration.GetConnectionString("MySQL")));
