@@ -1,5 +1,4 @@
-//TODO: Revisar bien cual es la url de la api
 //Development
-var urlBaseAPI = "http://" + window.location.host;
+var urlBaseAPI = "http://localhost:60341";
 //Production
-//var urlBaseAPI = "http://" + window.location.host+"/ScheduleWeb";
+// var urlBaseAPI = "http://localhost/ScheduleAPI";
