@@ -206,10 +206,15 @@ DELIMITER ;
 
 
 DELIMITER $$
-CREATE PROCEDURE sp_GetDisponibilidadesProfesor()
+CREATE PROCEDURE sp_GetDisponibilidadesProfesor(IN cedula INT)
 BEGIN
-    SELECT * FROM disponibilidad_profesores;
-END$$
+    SELECT
+    	*
+    FROM
+        disponibilidad_profesores dp
+    WHERE
+        dp.cedula = cedula ;
+END $$
 DELIMITER ;
 
 -- *******************Sps Horas*******************
