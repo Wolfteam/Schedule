@@ -12,11 +12,13 @@ namespace Schedule.BLL
             if (_disponibilidadDAO == null) _disponibilidadDAO = new DisponibilidadProfesorDAO();
         }
 
-        public bool Create(List<DisponibilidadProfesor> disponibilidades)
+        public bool Create(DisponibilidadProfesor disponibilidad)
         {
-            foreach (var disponibilidad in disponibilidades)
+            for (int i = 0; i < disponibilidad.IDHoraInicio.Count; i++)
             {
-                bool result = _disponibilidadDAO.Create(disponibilidad);
+                bool result = _disponibilidadDAO.Create(disponibilidad.Cedula,
+                                disponibilidad.IDDias[i], disponibilidad.IDHoraInicio[i], 
+                                disponibilidad.IDHoraFin[i]);
                 if (!result) return false;
             }
             return true;
@@ -32,9 +34,11 @@ namespace Schedule.BLL
             return _disponibilidadDAO.Delete();
         }
 
-        public List<DisponibilidadProfesor> GetAll()
+        public DisponibilidadProfesor Get(int cedula)
         {
-            return _disponibilidadDAO.GetAll();
+            DisponibilidadProfesor disponibilidad = _disponibilidadDAO.Get(cedula);
+            disponibilidad.HorasACumplir = new ProfesorDAO().GetPrioridad(cedula).HorasACumplir;
+            return disponibilidad;
         }
     }
 }

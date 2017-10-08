@@ -25,7 +25,7 @@ namespace Schedule.DAO
             try
             {
                 _connection.CreateCommand("sp_CreateSecciones", CommandType.StoredProcedure);
-                _connection.AssignParameter(true, "@codigo", seccion.CodigoMateria);
+                _connection.AssignParameter(true, "@codigo", seccion.Materia.Codigo);
                 _connection.AssignParameter(true, "@numeroSecciones", seccion.NumeroSecciones);
                 _connection.AssignParameter(true, "@cantidadAlumnos", seccion.CantidadAlumnos);
                 _connection.OpenConnection();
@@ -119,7 +119,7 @@ namespace Schedule.DAO
                 {
                     seccion = new Secciones
                     {
-                        CodigoMateria = codigo,
+                        Materia = new MateriasDAO().Get(codigo),
                         NumeroSecciones = Convert.ToInt32(result["numero_secciones"]),
                         CantidadAlumnos = Convert.ToInt32(result["cantidad_alumnos"])
                     };
@@ -157,7 +157,7 @@ namespace Schedule.DAO
                 {
                     Secciones seccion = new Secciones
                     {
-                        CodigoMateria = Convert.ToInt32(result["codigo"]),
+                        Materia = new MateriasDAO().Get(Convert.ToInt32(result["codigo"])),
                         NumeroSecciones = Convert.ToInt32(result["numero_secciones"]),
                         CantidadAlumnos = Convert.ToInt32(result["cantidad_alumnos"])
                     };
@@ -188,7 +188,7 @@ namespace Schedule.DAO
             {
                 _connection.CreateCommand("sp_UpdateSecciones", CommandType.StoredProcedure);
                 _connection.AssignParameter(true, "@codigo", codigo);
-                _connection.AssignParameter(true, "@codigoNuevo", seccion.CodigoMateria);
+                _connection.AssignParameter(true, "@codigoNuevo", seccion.Materia.Codigo);
                 _connection.AssignParameter(true, "@cantidadAlumnos", seccion.CantidadAlumnos);
                 _connection.AssignParameter(true, "@numeroSecciones", seccion.NumeroSecciones);
                 _connection.OpenConnection();

@@ -13,7 +13,7 @@ namespace Schedule.API.Controllers
         // POST api/Disponibilidad/Create
         [HttpPost("Create")]
         //[AuthenticateAttribute].
-        public bool Create([FromBody] List<DisponibilidadProfesor> disponibilidad)
+        public bool Create([FromBody] DisponibilidadProfesor disponibilidad)
         {
             return new DisponibilidadProfesorBLL().Create(disponibilidad);
         }
@@ -34,12 +34,12 @@ namespace Schedule.API.Controllers
             return new DisponibilidadProfesorBLL().Delete();
         }
 
-        // GET api/Disponibilidad/GetAll
-        [HttpGet("GetAll")]
+        // GET api/Disponibilidad/Get/21255727
+        [HttpGet("Get/{cedula}")]
         //[AuthenticateAttribute]
-        public List<DisponibilidadProfesor> GetAll()
+        public DisponibilidadProfesor Get(int cedula)
         {
-            return new DisponibilidadProfesorBLL().GetAll();
+            return new DisponibilidadProfesorBLL().Get(cedula);
         }
     }
 }

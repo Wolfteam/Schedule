@@ -2,10 +2,12 @@ using System;
 using System.Data;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
 
 namespace Schedule.DAO
 {
-    public class DisponibilidadProfesorDAO : ICommon<DisponibilidadProfesor>
+    public class DisponibilidadProfesorDAO
     {
         private DBConnection _connection = new DBConnection();
         public DisponibilidadProfesorDAO()
@@ -19,16 +21,16 @@ namespace Schedule.DAO
         /// </summary>
         /// <param name="disponibilidad">Objeto de tipo disponibilidad</param>
         /// <returns>True en caso de exito</returns>
-        public bool Create(DisponibilidadProfesor disponibilidad)
+        public bool Create(int cedula, int idDia, int idHoraInicio, int idHoraFin)
         {
             bool result = false;
             try
             {
                 _connection.CreateCommand("sp_CreateDisponibilidadProfesor", CommandType.StoredProcedure);
-                _connection.AssignParameter(true, "@cedula", disponibilidad.Cedula);
-                _connection.AssignParameter(true, "@idDia", disponibilidad.Dia.ID);
-                _connection.AssignParameter(true, "@idHoraInicio", disponibilidad.HoraInicio.ID);
-                _connection.AssignParameter(true, "@idHoraFin", disponibilidad.HoraFin.ID);
+                _connection.AssignParameter(true, "@cedula", cedula);
+                _connection.AssignParameter(true, "@idDia", idDia);
+                _connection.AssignParameter(true, "@idHoraInicio", idHoraInicio);
+                _connection.AssignParameter(true, "@idHoraFin", idHoraFin);
                 _connection.OpenConnection();
 
                 result = _connection.ExecuteCommand() > 0 ? true : false;
@@ -97,61 +99,40 @@ namespace Schedule.DAO
 
         }
 
-        public DisponibilidadProfesor Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
-        /// Obtiene una lista con todas las disponibilidades de los profesores
+        /// Obtiene una lista con todas las disponibilidad del profesor indicado
         /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
         /// <returns>Lista de disponibilidades</returns>
-        public List<DisponibilidadProfesor> GetAll()
+        public DisponibilidadProfesor Get(int cedula)
         {
-            List<DisponibilidadProfesor> listaDisponibilidad = new List<DisponibilidadProfesor>();
+            DisponibilidadProfesor disponibilidad = new DisponibilidadProfesor();
             try
             {
                 _connection.CreateCommand("sp_GetDisponibilidadesProfesor", CommandType.StoredProcedure);
+                _connection.AssignParameter(true, "@cedula", cedula);
                 _connection.OpenConnection();
 
                 var result = _connection.ExecuteConsulta();
-
+                disponibilidad.Cedula = cedula;
                 while (result.Read())
                 {
-                    DisponibilidadProfesor disponibilidad = new DisponibilidadProfesor
-                    {
-                        Cedula = Convert.ToInt32(result["cedula"]),
-                        Dia = new DiasDAO().Get(Convert.ToInt32(result["id_dia"])),
-                        HoraInicio = new HorasDAO().Get(Convert.ToInt32(result["id_hora_inicio"])),
-                        HoraFin = new HorasDAO().Get(Convert.ToInt32(result["id_hora_fin"]))
-                    };
-                    listaDisponibilidad.Add(disponibilidad);
+                    disponibilidad.IDDias.Add(Convert.ToInt32(result["id_dia"]));
+                    disponibilidad.IDHoraInicio.Add(Convert.ToInt32(result["id_hora_inicio"]));
+                    disponibilidad.IDHoraFin.Add(Convert.ToInt32(result["id_hora_fin"]));
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return listaDisponibilidad;
+                Debug.WriteLine(e.Message);
+                return disponibilidad;
             }
             finally
             {
                 _connection.CloseConnection();
             }
-            return listaDisponibilidad;
-        }
-
-        public bool Update(List<DisponibilidadProfesor> objeto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(DisponibilidadProfesor objeto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(int id, DisponibilidadProfesor objeto)
-        {
-            throw new NotImplementedException();
+            disponibilidad.HorasAsignadas = disponibilidad.IDHoraFin.Sum() - disponibilidad.IDHoraInicio.Sum();
+            return disponibilidad;
         }
     }
 }
