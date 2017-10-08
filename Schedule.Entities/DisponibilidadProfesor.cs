@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Schedule.Entities
 {
@@ -8,12 +9,15 @@ namespace Schedule.Entities
         public int Cedula { get; set; }
 
         [Required]
-        public DiasHabiles Dia { get; set; }
+        public List<int> IDDias = new List<int>();
 
         [Required]
-        public Horas HoraInicio { get; set; }
+        public List<int> IDHoraInicio = new List<int>();
 
         [Required]
-        public Horas HoraFin { get; set; }
+        public List<int> IDHoraFin = new List<int>();
+
+        public int HorasACumplir { get; set; }
+        public int HorasAsignadas { get; set; }
     }
 }
