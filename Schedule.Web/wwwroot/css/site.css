@@ -37,3 +37,8 @@ main {
 #search {
     text-align: center;
 }
+
+/*Esto sirve para cambiar el color por defecto de los items dentro de un select*/
+ul.dropdown-content.select-dropdown li:not(.disabled) span {
+    color: #1976d2; 
+}
