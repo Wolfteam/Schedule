@@ -118,7 +118,7 @@ CREATE TABLE horario_profesores(
 	id_aula TINYINT UNSIGNED NOT NULL,
 	numero_seccion TINYINT UNSIGNED NOT NULL,
 	PRIMARY KEY (cedula,codigo,id_aula,id_dia,id_hora_inicio,id_hora_fin),
-	FOREIGN KEY (cedula) REFERENCES disponibilidad_profesores (cedula),
+	FOREIGN KEY (cedula) REFERENCES profesores (cedula),
 	FOREIGN KEY (codigo) REFERENCES secciones (codigo),
 	FOREIGN KEY (id_dia) REFERENCES dias (id_dia),
 	FOREIGN KEY (id_hora_inicio) REFERENCES horas (id_hora),
@@ -308,7 +308,8 @@ INSERT INTO profesores (cedula, nombre, apellido, id_prioridad) VALUES
 (28, 'Fernando', 'Dávila', 1),
 (11201707, 'Mixaida', 'Delgado', 5),
 (12069935, 'Wilfredo', 'Márquez', 3),
-(13944531, 'Luis', 'Romero', 2);
+(13944531, 'Luis', 'Romero', 2),
+(21255727, 'Efrain', 'Bastidas', 2);
 
 -- Aca no se si mejor creo una tabla que diga departamentos, de tal forma que un prof. este asignado 
 -- a un departamento, el problema esque un prof. podria quedar asignado a cualquier materia de su departamento
@@ -373,7 +374,8 @@ INSERT INTO profesores_materias (cedula, codigo) VALUES
 (12069935, 41151);
 
 INSERT INTO admin (cedula,username,password,id_privilegio) VALUES 
-(4119381,"unexpolcm", "sistemas",2);
+(4119381,"unexpolcm", "sistemas",2),
+(21255727,"wolfteam20", "220770",1);
 
 -- Fijate como creo las FK a partir de una tabla que tiene una PK compuesta
 -- FOREIGN KEY (codigo,numero_seccion) REFERENCES secciones (codigo,numero_seccion),
