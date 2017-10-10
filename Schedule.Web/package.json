@@ -4,17 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepublish": ["npm install", "gulp clean", "gulp min"]
+    "prepublish": [
+      "npm install",
+      "gulp clean",
+      "gulp min"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "datatables.net-buttons-dt": "^1.4.2",
+    "datatables.net-dt": "^1.10.16",
+    "datatables.net-keytable-dt": "^2.3.2",
+    "datatables.net-responsive-dt": "^2.2.0",
+    "datatables.net-select-dt": "^1.2.3",
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "jquery-confirm": "^3.3.2",
     "jquery-validation": "^1.17.0",
-    "materialize-css": "^0.100.2"
+    "jszip": "^3.1.4",
+    "materialize-css": "^0.100.2",
+    "pdfmake": "^0.1.33"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
