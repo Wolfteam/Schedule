@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.BLL;
+using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
@@ -10,13 +12,15 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     public class ProfesorController : Controller
     {
+        private readonly ProfesorRepository _db = new ProfesorRepository();
+
         // POST api/Profesor/Create
         [HttpPost("Create")]
         //[AuthenticateAttribute].
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Create([FromBody] Profesor profesor)
+        public bool Create([FromBody] ProfesorDTO profesor)
         {
-            return new ProfesorBLL().Create(profesor);
+            return _db.Create(Mapper.Map<ProfesorDTO, Profesores>(profesor));
         }
 
         // DELETE api/Profesor/Delete/21255727
@@ -25,30 +29,30 @@ namespace Schedule.API.Controllers
         //[AuthorizationAttribute(Privilegios.Administrador)]
         public bool Delete(int cedula)
         {
-            return new ProfesorBLL().Delete(cedula);
+            return _db.Delete(cedula);
         }
 
         // GET api/Profesor/GetAll
         [HttpGet("GetAll")]
         //[AuthenticateAttribute]
-        public List<Profesor> GetAll()
+        public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
-            return new ProfesorBLL().GetAll();
+            return _db.Get();
         }
 
         // GET api/Profesor/Get/1
         [HttpGet("Get/{cedula}")]
         //[AuthenticateAttribute]
-        public Profesor Get(int cedula)
+        public ProfesorDetailsDTO Get(int cedula)
         {
-            return new ProfesorBLL().Get(cedula);
+            return _db.Get(cedula);
         }
 
         // PUT api/Profesor/Update/21255727
         [HttpPut("Update/{cedula}")]
-        public bool Update(int cedula, [FromBody] Profesor profesor)
+        public bool Update(int cedula, [FromBody] ProfesorDTO profesor)
         {
-            return new ProfesorBLL().Update(cedula, profesor);
+            return _db.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
         }
     }
 }

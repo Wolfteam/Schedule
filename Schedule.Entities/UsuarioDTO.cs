@@ -10,7 +10,7 @@ namespace Schedule.Entities
         Profesor = 1,
         Administrador = 2
     }
-    public class Usuario : PersonaBase
+    public class UsuarioDTO : PersonaBase
     {
         [Required]
         public string Username { get; set; }

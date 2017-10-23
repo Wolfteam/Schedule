@@ -2,15 +2,15 @@
 
 namespace Schedule.Entities
 {
-    public class PrioridadProfesor
+    public class PrioridadProfesorDTO
     {
         [Required]
-        public int ID { get; set; }
+        public byte ID { get; set; }
 
         [Required]
         public string CodigoPrioridad { get; set; }
 
         [Required]
-        public int HorasACumplir { get; set; }
+        public byte HorasACumplir { get; set; }
     }
 }

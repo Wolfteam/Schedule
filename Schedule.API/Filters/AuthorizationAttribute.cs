@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Schedule.BLL;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
@@ -8,7 +8,7 @@ namespace Schedule.API.Filters
 {
     public class AuthorizationAttribute : ActionFilterAttribute
     {
-        private TokenServices _tokenService;
+        private readonly TokenRepository _tokenService = new TokenRepository();
         private readonly Privilegios _privilegio;
 
         public AuthorizationAttribute(Privilegios privilegio)
@@ -18,12 +18,11 @@ namespace Schedule.API.Filters
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            _tokenService = new TokenServices();
-            Token token = context.ActionArguments["Token"] as Token;
+            string token = context.ActionArguments["Token"] as string;
 
-            List<Privilegios> listaPrivilegios = _tokenService.GetAllPrivilegiosByToken(token.AuthenticationToken);
+            Privilegios privilegio = _tokenService.GetAllPrivilegiosByToken(token);
 
-            if (listaPrivilegios == null || !listaPrivilegios.Contains(_privilegio))
+            if (privilegio != _privilegio)
             {
                 context.HttpContext.Response.StatusCode = 401;
                 context.Result = new ContentResult()

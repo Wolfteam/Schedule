@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.BLL;
+using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
-using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
@@ -10,12 +10,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     public class DisponibilidadController : Controller
     {
+        private readonly DisponibilidadProfesorRepository _db = new DisponibilidadProfesorRepository();
+
         // POST api/Disponibilidad/Create
         [HttpPost("Create")]
         //[AuthenticateAttribute].
-        public bool Create([FromBody] DisponibilidadProfesor disponibilidad)
+        public bool Create([FromBody] DisponibilidadProfesores disponibilidad)
         {
-            return new DisponibilidadProfesorBLL().Create(disponibilidad);
+            return _db.Create(disponibilidad);
         }
 
         // DELETE api/Disponibilidad/Delete/21255727
@@ -23,7 +25,7 @@ namespace Schedule.API.Controllers
         //[AuthenticateAttribute]
         public bool Delete(int cedula)
         {
-            return new DisponibilidadProfesorBLL().Delete(cedula);
+            return _db.Delete(cedula);
         }
 
         // DELETE api/Disponibilidad/Delete
@@ -31,15 +33,15 @@ namespace Schedule.API.Controllers
         //[AuthenticateAttribute]
         public bool Delete()
         {
-            return new DisponibilidadProfesorBLL().Delete();
+            return _db.Delete();
         }
 
         // GET api/Disponibilidad/Get/21255727
         [HttpGet("Get/{cedula}")]
         //[AuthenticateAttribute]
-        public DisponibilidadProfesor Get(int cedula)
+        public DisponibilidadProfesorDTO Get(int cedula)
         {
-            return new DisponibilidadProfesorBLL().Get(cedula);
+            return _db.Get(cedula);
         }
     }
 }

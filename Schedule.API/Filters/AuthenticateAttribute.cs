@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Schedule.BLL;
+using Schedule.API.Models.Repositories;
 
 namespace Schedule.API.Filters
 {
@@ -10,15 +10,13 @@ namespace Schedule.API.Filters
     /// </summary>
     public class AuthenticateAttribute : ActionFilterAttribute
     {
-        private TokenServices _tokenService;
-
+        private readonly TokenRepository _tokenService = new TokenRepository();
         public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            _tokenService = new TokenServices();
+        {           
             try
             {
-                string token = context.ActionArguments["token"] as string;
-                if (!_tokenService.ValidateToken(token))
+                string token = context.ActionArguments["Token"] as string;
+                if (!_tokenService.Validate(token))
                 {
                     context.HttpContext.Response.StatusCode = 401;
                     context.Result = new ContentResult()

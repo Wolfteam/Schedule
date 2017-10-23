@@ -2,10 +2,10 @@
 
 namespace Schedule.Entities
 {
-    public class Semestre
+    public class SemestreDTO
     {
         [Required]
-        public int ID { get; set; }
+        public byte IdSemestre { get; set; }
 
         [Required]
         public string NombreSemestre { get; set; }

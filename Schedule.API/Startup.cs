@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Schedule.BLL;
+using AutoMapper;
+using Schedule.Entities;
+using Schedule.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Schedule.API
 {
@@ -26,9 +23,12 @@ namespace Schedule.API
         {
             //Con esto puedes hacer el ajax
             services.AddCors();
-            services.AddMvc();
-            //Para que se registre nuestro servicio de tokens
-            services.AddSingleton<ITokenService, TokenServices>();
+            //Esto es necesario para que me deje incluir propiedades extras de un model de ef
+            services.AddMvc().AddJsonOptions(x =>
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddAutoMapper();
+            services.Configure<AppSettings>(Configuration.GetSection("ConnectionString"));
+            //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetSection("ConnectionString").Value));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,7 +39,7 @@ namespace Schedule.API
                 app.UseDeveloperExceptionPage();
             }
             //Con esto puedes hacer el ajax, abria q checar bien las opciones
-            app.UseCors(builder 
+            app.UseCors(builder
                 => builder.AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowAnyOrigin());

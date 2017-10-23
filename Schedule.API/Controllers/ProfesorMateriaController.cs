@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.BLL;
+using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
@@ -10,13 +12,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     public class ProfesorMateriaController : Controller
     {
+        private readonly ProfesorMateriaRepository _db = new ProfesorMateriaRepository();
         // POST api/ProfesorMateria/Create
         [HttpPost("Create")]
         //[AuthenticateAttribute].
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Create([FromBody] ProfesorMateria pm)
+        public bool Create([FromBody] ProfesorMateriaDTO pm)
         {
-            return new ProfesorMateriaBLL().Create(pm);
+            return _db.Create(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
         }
 
         // DELETE api/ProfesorMateria/Delete/10
@@ -25,16 +28,15 @@ namespace Schedule.API.Controllers
         //[AuthorizationAttribute(Privilegios.Administrador)]
         public bool Delete(int id)
         {
-            //TODO: Agregar un campo autoincrement a la tabla
-            return new ProfesorMateriaBLL().Delete(id);
+            return _db.Delete(id);
         }
 
         // GET api/ProfesorMateria/GetAll
         [HttpGet("GetAll")]
         //[AuthenticateAttribute]
-        public List<ProfesorMateria> GetAll()
+        public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
-            return new ProfesorMateriaBLL().GetAll();
+            return _db.Get();
         }
     }
 }

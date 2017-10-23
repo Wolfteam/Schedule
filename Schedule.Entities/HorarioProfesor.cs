@@ -2,15 +2,15 @@
 
 namespace Schedule.Entities
 {
-    public class HorarioProfesor : DisponibilidadProfesor
+    public class HorarioProfesor : DisponibilidadProfesorDTO
     {
         [Required]
         public int Codigo { get; set; }
 
         [Required]
-        public Aulas Aula { get; set; }
+        public AulasDetailsDTO Aula { get; set; }
         
         [Required]
-        public Secciones Seccion { get; set; }
+        public SeccionesDetailsDTO Seccion { get; set; }
     }
 }

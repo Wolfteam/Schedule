@@ -2,10 +2,10 @@
 
 namespace Schedule.Entities
 {
-    public class Carrera
+    public class CarreraDTO
     {
         [Key]
-        public int ID { get; set; }
+        public byte IdCarrera { get; set; }
 
         [Required]
         public string NombreCarrera { get; set; }

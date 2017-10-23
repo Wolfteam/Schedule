@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Schedule.Entities
 {
-    public class Token
+    public class TokenDTO
     {
         public string Username { get; set; }
         public string AuthenticationToken { get; set; }
