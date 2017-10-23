@@ -4,16 +4,17 @@
  * @param {String} type Color de la alerta (red)
  * @param {String} iconClass Icono que se muestra al lado del titulo ('fa fa-question-circle')
  * @param {String} content Contenido que se muestra dentro de la alerta, puede ser html
- * @param {Object} buttons Objeto que contiene los botones a crear
+ * @param {Object} buttons Objeto que contiene los botones a crear. Por defecto se muestra un boton de Ok rojo
+ * @param {Function} onContentReady Funcion a ejecutar cuando se cargue la modal. Por defecto una funcion vacia
+ * @param {string} columnClass Clase a aplicar para las diferentes pantallas. Por defecto :"col s12 m6 offset-m3"
  */
-function confirmAlert(title, type, iconClass, content, buttons, onContentReady = function () { }, columnClass = "col s12 m6 offset-m3") {
+function confirmAlert(title, type, iconClass, content, buttons = null, onContentReady = function () {}, columnClass = "col s12 m6 offset-m3") {
     if (buttons === null) {
         buttons = {
             ok: {
                 text: 'Ok',
                 btnClass: 'btn-red',
-                action: function () {
-                }
+                action: function () {}
             }
         };
     }
@@ -48,12 +49,13 @@ function toast(contenido, duration = 3000) {
 /**
  * Realiza un ajax a la urlBaseAPI + url con la data que le pases y devuelve la data a la funcion que le pases
  * @param {string} url Url a donde ira el ajax (webservice + /GetAllUsers)
- * @param {function(object)} callback Funcion de callback
- * @param {function(object)} callbackError Funcion de callback para el error
+ * @param {Function(object)} onSucess Funcion de callback
+ * @param {Function(object)} onError Funcion de callback para el error
  * @param {object} data Data a enviar
  * @param {string} type POST, GET (POST por default)
+ * @param {Function(object)} onComplete Una funcion que se ejecute al completar el ajax, indep. de si fue exitoso o no
  */
-function makeAjaxCall(url, callback, callbackError, data = null, type = "POST") {
+function makeAjaxCall(url, onSucess, onError, data = null, type = "POST", onComplete = function () {}) {
     var d;
     if (data !== null) {
         d = JSON.stringify(data);
@@ -65,11 +67,12 @@ function makeAjaxCall(url, callback, callbackError, data = null, type = "POST") 
         type: type,
         contentType: "application/json; charset=utf-8",
         success: function (msg) {
-            return callback(msg);
+            return onSucess(msg);
         },
         error: function (result) {
-            return callbackError(result);
-        }
+            return onError(result);
+        },
+        complete: onComplete
     });
 }
 
@@ -248,4 +251,20 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
         return;
     }
     selectedRowHandler(selector);
+}
+
+/**
+ * Permite que solo se introduzcan numericos en un campo
+ * @param {any} e Event que envia el selector automaticamente
+ * @returns {boolean} True en caso de que lo que introduzca sea un numero
+ */
+function onlyNum(e) {
+    var regex = new RegExp("^[0-9\b\t\v]+$");
+    var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+    if (regex.test(str)) {
+        return true;
+    }
+
+    e.preventDefault();
+    return false;
 }

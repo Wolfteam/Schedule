@@ -44,7 +44,7 @@ namespace Schedule.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Account/Login", new Usuario()
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Account/Login", new UsuarioDTO()
                 {
                     Username = model.Username,
                     Password = model.Password
@@ -52,7 +52,7 @@ namespace Schedule.Web.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Token token = await response.Content.ReadAsAsync<Token>();
+                    TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
                     if (token != null)
                     {
                         SaveToken(token);
@@ -84,7 +84,7 @@ namespace Schedule.Web.Controllers
             return RedirectToAction("Index", "Account");
         }
 
-        private void SaveToken(Token token)
+        private void SaveToken(TokenDTO token)
         {
             CookieOptions cookiesOptions = new CookieOptions
             {
