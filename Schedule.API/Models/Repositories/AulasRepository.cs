@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 using System.Collections.Generic;
 using Schedule.Entities;
+using Microsoft.AspNetCore.Http;
+using System.Reflection;
+using LinqKit;
+using System.Linq.Expressions;
 
 namespace Schedule.API.Models.Repositories
 {
@@ -42,11 +46,11 @@ namespace Schedule.API.Models.Repositories
             try
             {
                 Aulas aula = _db.Aulas.FirstOrDefault(x => x.IdAula == id);
-                if (aula != null)
-                {
-                    _db.Aulas.Remove(aula);
-                    _db.SaveChanges();
-                }
+                if (aula == null)
+                    return false;
+
+                _db.Aulas.Remove(aula);
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -77,8 +81,60 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IQueryable de aulas</returns>
         public IQueryable<AulasDetailsDTO> Get()
         {
-            return _db.Aulas.ProjectTo<AulasDetailsDTO>(); 
+            return _db.Aulas.ProjectTo<AulasDetailsDTO>();
         }
+
+        //Estos 2 metodos fueron usados para el procesamiento de lado servidor, el incoveniente yace en la parte del sort
+        //debido a que quizas pueda implementarlo mejor
+        public List<AulasDetailsDTO> GetTest(string searchBy, int take, int skip, string sortBy, bool sortDir, out int filteredResultsCount, out int totalResultsCount)
+        {
+            var whereClause = BuildDynamicWhereClause(searchBy);
+
+            var result = _db.Aulas
+                .AsExpandable()
+                .ProjectTo<AulasDetailsDTO>()
+                .Where(whereClause);
+
+            switch (sortBy.ToLower())
+            {
+                case "nombreaula":
+                    result = sortDir ? result.OrderBy(x => x.NombreAula) : result.OrderByDescending(x => x.NombreAula);
+                    break;
+                case "capacidad":
+                    result = sortDir ? result.OrderBy(x => x.Capacidad) : result.OrderByDescending(x => x.Capacidad);
+                    break;
+                case "tipoaula.nombretipo":
+                    result = sortDir ? result.OrderBy(x => x.TipoAula.NombreTipo) : result.OrderByDescending(x => x.TipoAula.NombreTipo);
+                    break;
+                default://IdAula
+                    result = sortDir ? result.OrderBy(x => x.IdAula) : result.OrderByDescending(x => x.IdAula);
+                    break;
+            }
+            result = result.Skip(skip).Take(take);
+
+            filteredResultsCount = _db.Aulas.AsExpandable().ProjectTo<AulasDetailsDTO>().Where(whereClause).Count();
+            totalResultsCount = _db.Aulas.Count();
+
+            return result.ToList();
+        }
+
+        private Expression<Func<AulasDetailsDTO, bool>> BuildDynamicWhereClause(string searchValue)
+        {
+            // simple method to dynamically plugin a where clause
+            var predicate = PredicateBuilder.New<AulasDetailsDTO>(true); // true -where(true) return all
+            if (!String.IsNullOrWhiteSpace(searchValue))
+            {
+                List<string> searchTerms = searchValue.Split(' ').ToList().ConvertAll(x => x.ToLower());
+                List<byte> search = new List<byte>();
+                byte.TryParse(searchValue, out byte y);
+                search.Add(y);
+                predicate = predicate.Or(s => searchTerms.Any(srch => s.NombreAula.ToLower().Contains(srch)))
+                                    .Or(s => search.Contains(s.Capacidad))
+                                    .Or(s => searchTerms.Any(srch => s.TipoAula.NombreTipo.ToLower().Contains(srch)));
+            }
+            return predicate;
+        }
+
 
         /// <summary>
         /// Obtiene un aula en particular
@@ -101,13 +157,13 @@ namespace Schedule.API.Models.Repositories
             try
             {
                 var aula = _db.Aulas.FirstOrDefault(x => x.IdAula == id);
-                if (aula != null)
-                {
-                    aula.Capacidad = aulaUpdated.Capacidad;
-                    aula.IdTipo = aulaUpdated.IdTipo;
-                    aula.NombreAula = aulaUpdated.NombreAula;
-                    _db.SaveChanges();
-                }
+                if (aula == null)
+                    return false;
+
+                aula.Capacidad = aulaUpdated.Capacidad;
+                aula.IdTipo = aulaUpdated.IdTipo;
+                aula.NombreAula = aulaUpdated.NombreAula;
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -127,7 +183,7 @@ namespace Schedule.API.Models.Repositories
             try
             {
                 _db.Entry(aula).State = EntityState.Modified;
-                _db.SaveChanges(); 
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
