@@ -49,9 +49,7 @@ namespace Schedule.API.Controllers
         {
             var aula = _db.Get(id);
             if (aula == null)
-            {
-                return NotFound();
-            }
+                return NotFound();        
             return new ObjectResult(aula);
         }
 

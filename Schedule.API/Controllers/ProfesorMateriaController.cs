@@ -13,26 +13,34 @@ namespace Schedule.API.Controllers
     public class ProfesorMateriaController : Controller
     {
         private readonly ProfesorMateriaRepository _db = new ProfesorMateriaRepository();
-        // POST api/ProfesorMateria/Create
-        [HttpPost("Create")]
+        
+        // POST api/ProfesorMateria
+        [HttpPost]
         //[AuthenticateAttribute].
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Create([FromBody] ProfesorMateriaDTO pm)
+        public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
         {
-            return _db.Create(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            bool result = _db.Create(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            if (!result)
+                return StatusCode(500);
+            //return CreatedAtRoute("GetProfesorMateria", new { id = pm.Id }, pm);
+            return StatusCode(200);
         }
 
-        // DELETE api/ProfesorMateria/Delete/10
-        [HttpDelete("Delete/{id}")]
+        // DELETE api/ProfesorMateria/10
+        [HttpDelete("{id}")]
         //[AuthenticateAttribute]
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Delete(int id)
+        public IActionResult Delete(int id)
         {
-            return _db.Delete(id);
+            bool result = _db.Delete(id);
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
 
-        // GET api/ProfesorMateria/GetAll
-        [HttpGet("GetAll")]
+        // GET api/ProfesorMateria
+        [HttpGet]
         //[AuthenticateAttribute]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {

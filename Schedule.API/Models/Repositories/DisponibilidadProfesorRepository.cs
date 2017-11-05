@@ -90,13 +90,14 @@ namespace Schedule.API.Models.Repositories
         public DisponibilidadProfesorDTO Get(int cedula)
         {
             var disponibilidades = _db.DisponibilidadProfesores.Include(p => p.Profesores.PrioridadProfesor).Where(d => d.Cedula == cedula);
+            if (disponibilidades.Count() == 0) return null;
             DisponibilidadProfesorDTO disponibilidad = new DisponibilidadProfesorDTO
             {
-                Cedula = 1,
+                Cedula = (uint)cedula,
                 IDDias = disponibilidades.Select(w => w.IdDia).ToList(),
                 IDHoraFin = disponibilidades.Select(x => x.IdHoraFin).ToList(),
                 IDHoraInicio = disponibilidades.Select(y => y.IdHoraInicio).ToList(),
-                HorasAsignadas = disponibilidades.Sum(x => x.IdHoraFin) - disponibilidades.Sum(y => y.IdHoraInicio),
+                HorasAsignadas = disponibilidades.Sum(z => z.IdHoraFin) - disponibilidades.Sum(a => a.IdHoraInicio),
                 HorasACumplir = disponibilidades.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir
             };
             return disponibilidad;

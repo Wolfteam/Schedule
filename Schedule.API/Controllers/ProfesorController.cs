@@ -14,45 +14,57 @@ namespace Schedule.API.Controllers
     {
         private readonly ProfesorRepository _db = new ProfesorRepository();
 
-        // POST api/Profesor/Create
-        [HttpPost("Create")]
+        // POST api/Profesor
+        [HttpPost]
         //[AuthenticateAttribute].
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Create([FromBody] ProfesorDTO profesor)
+        public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
-            return _db.Create(Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            bool result = _db.Create(Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            if (!result)
+                return StatusCode(500);
+            return CreatedAtRoute("GetProfesor", new { cedula = profesor.Cedula }, profesor);
         }
 
-        // DELETE api/Profesor/Delete/21255727
-        [HttpDelete("Delete/{cedula}")]
+        // DELETE api/Profesor/21255727
+        [HttpDelete("{cedula}")]
         //[AuthenticateAttribute]
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Delete(int cedula)
+        public IActionResult Delete(int cedula)
         {
-            return _db.Delete(cedula);
+            bool result = _db.Delete(cedula);
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
 
-        // GET api/Profesor/GetAll
-        [HttpGet("GetAll")]
+        // GET api/Profesor
+        [HttpGet]
         //[AuthenticateAttribute]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
             return _db.Get();
         }
 
-        // GET api/Profesor/Get/1
-        [HttpGet("Get/{cedula}")]
+        // GET api/Profesor/1
+        [HttpGet("{cedula}", Name = "GetProfesor")]
         //[AuthenticateAttribute]
-        public ProfesorDetailsDTO Get(int cedula)
+        public IActionResult Get(int cedula)
         {
-            return _db.Get(cedula);
+            var profesor = _db.Get(cedula);
+            if (profesor == null)
+                return NotFound();
+            return new ObjectResult(profesor);
         }
 
-        // PUT api/Profesor/Update/21255727
-        [HttpPut("Update/{cedula}")]
-        public bool Update(int cedula, [FromBody] ProfesorDTO profesor)
+        // PUT api/Profesor/21255727
+        [HttpPut("{cedula}")]
+        public IActionResult Update(int cedula, [FromBody] ProfesorDTO profesor)
         {
-            return _db.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            bool result = _db.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
-using Schedule.Entities;
 
 namespace Schedule.API.Controllers
 {
@@ -12,36 +11,48 @@ namespace Schedule.API.Controllers
     {
         private readonly DisponibilidadProfesorRepository _db = new DisponibilidadProfesorRepository();
 
-        // POST api/Disponibilidad/Create
-        [HttpPost("Create")]
+        // POST api/Disponibilidad
+        [HttpPost]
         //[AuthenticateAttribute].
-        public bool Create([FromBody] DisponibilidadProfesores disponibilidad)
+        public IActionResult Create([FromBody] DisponibilidadProfesores disponibilidad)
         {
-            return _db.Create(disponibilidad);
+            bool result = _db.Create(disponibilidad);
+            if (!result)
+                return StatusCode(500);
+            return CreatedAtRoute("GetDisponibilidad", new { cedula = disponibilidad.Cedula }, disponibilidad);
         }
 
-        // DELETE api/Disponibilidad/Delete/21255727
-        [HttpDelete("Delete/{cedula}")]
+        // DELETE api/Disponibilidad/21255727
+        [HttpDelete("{cedula}")]
         //[AuthenticateAttribute]
-        public bool Delete(int cedula)
+        public IActionResult Delete(int cedula)
         {
-            return _db.Delete(cedula);
+            bool result = _db.Delete(cedula);
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
 
-        // DELETE api/Disponibilidad/Delete
-        [HttpDelete("Delete")]
+        // DELETE api/Disponibilidad
+        [HttpDelete]
         //[AuthenticateAttribute]
-        public bool Delete()
+        public IActionResult Delete()
         {
-            return _db.Delete();
+            bool result = _db.Delete();
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
 
-        // GET api/Disponibilidad/Get/21255727
-        [HttpGet("Get/{cedula}")]
+        // GET api/Disponibilidad/21255727
+        [HttpGet("{cedula}", Name = "GetDisponibilidad")]
         //[AuthenticateAttribute]
-        public DisponibilidadProfesorDTO Get(int cedula)
+        public IActionResult Get(int cedula)
         {
-            return _db.Get(cedula);
+            var disponibilidad = _db.Get(cedula);
+            if (disponibilidad == null)         
+                return NotFound();      
+            return new ObjectResult(disponibilidad);
         }
     }
 }

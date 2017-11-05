@@ -14,46 +14,58 @@ namespace Schedule.API.Controllers
     {
         private readonly MateriasRepository _db = new MateriasRepository();
 
-        // POST api/Materias/Create
-        [HttpPost("Create")]
+        // POST api/Materias
+        [HttpPost]
         //[AuthenticateAttribute].
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Create([FromBody] MateriasDTO materia)
+        public IActionResult Create([FromBody] MateriasDTO materia)
         {
-            return _db.Create(Mapper.Map<MateriasDTO, Materias>(materia));
+            bool result = _db.Create(Mapper.Map<MateriasDTO, Materias>(materia));
+            if (!result)
+                return StatusCode(500);
+            return CreatedAtRoute("GetMateria", new { codigo = materia.Codigo }, materia);
         }
 
-        // DELETE api/Materias/Delete/34052
-        [HttpDelete("Delete/{codigo}")]
+        // DELETE api/Materias/34052
+        [HttpDelete("{codigo}")]
         //[AuthenticateAttribute]
         //[AuthorizationAttribute(Privilegios.Administrador)]
-        public bool Delete(int codigo)
+        public IActionResult Delete(int codigo)
         {
-            return _db.Delete(codigo);
+            bool result = _db.Delete(codigo);
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
 
-        // GET api/Materias/GetAll
-        [HttpGet("GetAll")]
+        // GET api/Materias
+        [HttpGet]
         //[AuthenticateAttribute]
         public IEnumerable<MateriasDetailsDTO> GetAll()
         {
             return _db.Get();
         }
 
-        // GET api/Materias/Get/1
-        [HttpGet("Get/{codigo}")]
+        // GET api/Materias/1
+        [HttpGet("{codigo}", Name = "GetMateria")]
         //[AuthenticateAttribute]
-        public MateriasDetailsDTO Get(int codigo)
+        public IActionResult Get(int codigo)
         {
-            return _db.Get(codigo);
+            var materia = _db.Get(codigo);
+            if (materia == null)
+                return NotFound();       
+            return new ObjectResult(materia);
         }
 
-        // PUT api/Materias/Update/1
-        [HttpPut("Update/{id}")]
+        // PUT api/Materias/1
+        [HttpPut("{id}")]
         //[AuthenticateAttribute]
-        public bool Update(int id, [FromBody] MateriasDTO materia)
+        public IActionResult Update(int id, [FromBody] MateriasDTO materia)
         {
-            return _db.Update(id, Mapper.Map<MateriasDTO, Materias>(materia));
+            bool result = _db.Update(id, Mapper.Map<MateriasDTO, Materias>(materia));
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
         }
     }
 }

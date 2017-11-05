@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 using System.Collections.Generic;
 using Schedule.Entities;
-using Microsoft.AspNetCore.Http;
-using System.Reflection;
 using LinqKit;
 using System.Linq.Expressions;
 
