@@ -1,18 +1,15 @@
-﻿using Schedule.API.Models.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Schedule.Entities;
 using AutoMapper.QueryableExtensions;
+using Schedule.Entities;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class CarrerasRepository : IRepository<Carreras,CarreraDTO>
+    public class SemestresRepository : IRepository<Semestres, SemestreDTO>
     {
         private readonly HorariosContext _db = new HorariosContext();
 
-        public bool Create(Carreras objeto)
+        public bool Create(Semestres objeto)
         {
             throw new NotImplementedException();
         }
@@ -26,27 +23,26 @@ namespace Schedule.API.Models.Repositories
         {
             throw new NotImplementedException();
         }
-
         /// <summary>
-        /// Obtiene todas las carreras
+        /// Obtiene todos los semestres
         /// </summary>
-        /// <returns>IQueryable de carreras</returns>
-        public IQueryable<CarreraDTO> Get()
+        /// <returns>IQueryable de semestres</returns>
+        public IQueryable<SemestreDTO> Get()
         {
-            return _db.Carreras.ProjectTo<CarreraDTO>();
+            return _db.Semestre.ProjectTo<SemestreDTO>();
         }
 
-        public CarreraDTO Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(int id, Carreras objeto)
+        public SemestreDTO Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public bool Update(Carreras objeto)
+        public bool Update(int id, Semestres objeto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Update(Semestres objeto)
         {
             throw new NotImplementedException();
         }
