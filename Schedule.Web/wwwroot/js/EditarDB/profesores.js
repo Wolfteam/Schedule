@@ -1,5 +1,5 @@
 function getAllProfesores() {
-    makeAjaxCall("/api/Profesor/GetAll",
+    makeAjaxCall("/api/Profesor",
         function (data) {
             var titulos = [
                 "Cedula", "Nombre", "Apellido",

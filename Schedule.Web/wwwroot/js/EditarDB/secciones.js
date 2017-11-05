@@ -1,5 +1,5 @@
 function getAllSecciones() {
-    makeAjaxCall("/api/Secciones/GetAll",
+    makeAjaxCall("/api/Secciones",
         function (data) {
             var titulos = [
                 "Codigo Materia", "Asignatura", "Semestre",

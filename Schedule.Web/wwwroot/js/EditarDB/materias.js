@@ -1,5 +1,5 @@
 function getAllMaterias() {
-    makeAjaxCall("/api/Materias/GetAll",
+    makeAjaxCall("/api/Materias",
         function (data) {
             var titulos = ["Codigo", "Asignatura", "IdSemestre", "Semestre",
                 "IdCarrera", "Carrera", "IdTipoAulaMateria", "Tipo Materia",
