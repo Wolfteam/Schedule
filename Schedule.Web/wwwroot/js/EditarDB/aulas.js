@@ -68,7 +68,7 @@ function confirmDeleteAula(data) {
             action: function () {}
         }
     };
-    confirmAlert("Editar Aula", "red", "fa fa-question-circle", "¿Está seguro que desea continuar?", buttons);
+    confirmAlert("Borrar Aula", "red", "fa fa-question-circle", "¿Está seguro que desea continuar?", buttons);
 }
 
 function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
@@ -119,9 +119,9 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
  */
 function createAula(aula) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Aulas/Create",
-        function (data) {
-            if (data) {
+    makeAjaxCall("/api/Aulas",
+        function (data, textStatus, xhr) {
+            if (xhr.status !== 500) {
                 var buttons = {
                     Ok: {
                         text: 'Ok',
@@ -144,9 +144,9 @@ function createAula(aula) {
  * @param {number} id Id del aula a eliminar
  */
 function deleteAula(id) {
-    makeAjaxCall("/api/Aulas/Delete/" + id,
-        function (data) {
-            if (!data) {
+    makeAjaxCall("/api/Aulas/" + id,
+        function (data, textStatus, xhr) {
+            if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el aula.");
                 return;
             }
@@ -167,51 +167,32 @@ function deleteAulas(idArray) {
     checkPendingRequest();
 }
 
-//TODO: Hacer esta funcion mas generica
-function checkPendingRequest() {
-    if ($.active > 0) {
-        window.setTimeout(checkPendingRequest, 1000);
-    }
-    else {
-        $("#btn_buscar").trigger("click");
-        var buttons = {
-            Ok: {
-                text: 'Ok',
-                btnClass: 'btn-green',
-                action: function () {}
-            }
-        };
-        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
-    }
-};
-
 /**
  * Obtiene todas las aulas
  */
 function getAllAulas() {
-    makeAjaxCall("/api/Aulas/GetAll",
-        function (data) {
-            var titulos = ["Id", "Nombre", "Capacidad", "Tipo Aula"];
-            var columnsData = [{
-                    "data": "idAula"
-                },
-                {
-                    "data": "nombreAula"
-                },
-                {
-                    "data": "capacidad"
-                },
-                {
-                    "data": "tipoAula.nombreTipo"
-                }
-            ];
-            //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
-            createTable("#tabla", titulos);
-            initDataTable("#datatable", data, columnsData, 0, false, "multi");
-        },
-        onError, null, "GET", onComplete
-    );
+    $("#barra-progeso").show();
+     makeAjaxCall("/api/Aulas",
+         function (data, textStatus, xhr) {
+             var titulos = ["Id", "Nombre", "Capacidad", "Tipo Aula"];
+             var columnsData = [{
+                     "data": "idAula"
+                 },
+                 {
+                     "data": "nombreAula"
+                 },
+                 {
+                     "data": "capacidad"
+                 },
+                 {
+                     "data": "tipoAula.nombreTipo"
+                 }
+             ];
+             createTable("#tabla", titulos);
+             initDataTable("#datatable", data, columnsData, 0, false, "multi");            
+         },
+         onError, null, "GET", onComplete
+     );
 }
 
 /**
@@ -221,9 +202,9 @@ function getAllAulas() {
  */
 function updateAula(id, aula) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Aulas/Update/" + id,
-        function (data) {
-            if (data) {
+    makeAjaxCall("/api/Aulas/" + id,
+        function (data, textStatus, xhr) {
+            if (xhr.status === 204) {
                 var buttons = {
                     ok: {
                         text: 'Ok',
@@ -268,4 +249,22 @@ function validarAula(selector) {
             return false;
         },
     });
+}
+
+//TODO: Hacer esta funcion mas generica
+function checkPendingRequest() {
+    if ($.active > 0) {
+        window.setTimeout(checkPendingRequest, 1000);
+    } else {
+        $("#btn_buscar").trigger("click");
+        var buttons = {
+            Ok: {
+                text: 'Ok',
+                btnClass: 'btn-green',
+                action: function () {}
+            }
+        };
+        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
+        $("#barra-progeso").hide();
+    }
 }

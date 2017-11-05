@@ -66,8 +66,8 @@ function makeAjaxCall(url, onSucess, onError, data = null, type = "POST", onComp
         dataType: "json",
         type: type,
         contentType: "application/json; charset=utf-8",
-        success: function (msg) {
-            return onSucess(msg);
+        success: function (data, textStatus, xhr) {
+            return onSucess(data, textStatus, xhr);
         },
         error: function (result) {
             return onError(result);
@@ -130,50 +130,50 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
 
     var table = $(selector).DataTable({
         //"autoWidth": false,
-        responsive: {
-            details: {
-                renderer: function (api, rowIdx, columns) {
-                    var width = $("#boxBody").width();
-                    var length = columns.length;
-                    if (length === 0) {
-                        return false;
-                    }
-                    var cell = "";
-                    var row = "";
-                    var table = '<table>';
-                    var contador = 0;
-                    //console.log("la longitud del padre (datatable) es: "+width);
-                    var customWidth = (width / 3);
-                    //console.log("el tamaño de la celda es de: "+customWidth);
-                    if (width < 490) { //Si el tamaño de la pantalla es menor a 490 px muestro varias filas con una celda
-                        for (var i in columns) {
-                            if (!columns[i].hidden) {
-                                continue;
-                            }
-                            row += '<tr data-dt-row="' + columns[i].rowIndex[0] + '" data-dt-column="' + columns[i].columnIndex + '" >' +
-                                '<td style="white-space:pre-wrap;width:' + width + 'px" class="text-center"><b>' + $.trim(columns[i].title) + ': ' + '</b>' + $.trim(columns[i].data) + '</td></tr>';
-                        }
-                        return (table + row + "</table>");
-                    } else { //Si el tamaño de la pantalla es mayor a 490 px muestro filas con 3 celdas
-                        for (var i = 0; i < length; i++) {
-                            //console.log(columns[i]);
-                            if (!columns[i].hidden) {
-                                continue;
-                            }
-                            //padding-right:'+padding+'px; class="text-left"
-                            cell += '<td style="white-space:pre-wrap;width:' + customWidth + 'px" class="text-center"><b>' + $.trim(columns[i].title) + ': ' + '</b>' + $.trim(columns[i].data) + '</td>';
-                            contador++;
-                            if (contador === 3 || i === (length - 1)) {
-                                contador = 0;
-                                row = row + '<tr data-dt-row="' + columns[i].rowIndex[0] + '" data-dt-column="' + columns[i].columnIndex + '">' + cell + "</tr>";
-                                cell = "";
-                            }
-                        }
-                    }
-                    return (table + row + "</table>");
-                }
-            }
-        },
+        // responsive: {
+        //     details: {
+        //         renderer: function (api, rowIdx, columns) {
+        //             var width = $("#boxBody").width();
+        //             var length = columns.length;
+        //             if (length === 0) {
+        //                 return false;
+        //             }
+        //             var cell = "";
+        //             var row = "";
+        //             var table = '<table>';
+        //             var contador = 0;
+        //             //console.log("la longitud del padre (datatable) es: "+width);
+        //             var customWidth = (width / 3);
+        //             //console.log("el tamaño de la celda es de: "+customWidth);
+        //             if (width < 490) { //Si el tamaño de la pantalla es menor a 490 px muestro varias filas con una celda
+        //                 for (var i in columns) {
+        //                     if (!columns[i].hidden) {
+        //                         continue;
+        //                     }
+        //                     row += '<tr data-dt-row="' + columns[i].rowIndex[0] + '" data-dt-column="' + columns[i].columnIndex + '" >' +
+        //                         '<td style="white-space:pre-wrap;width:' + width + 'px" class="text-center"><b>' + $.trim(columns[i].title) + ': ' + '</b>' + $.trim(columns[i].data) + '</td></tr>';
+        //                 }
+        //                 return (table + row + "</table>");
+        //             } else { //Si el tamaño de la pantalla es mayor a 490 px muestro filas con 3 celdas
+        //                 for (var i = 0; i < length; i++) {
+        //                     //console.log(columns[i]);
+        //                     if (!columns[i].hidden) {
+        //                         continue;
+        //                     }
+        //                     //padding-right:'+padding+'px; class="text-left"
+        //                     cell += '<td style="white-space:pre-wrap;width:' + customWidth + 'px" class="text-center"><b>' + $.trim(columns[i].title) + ': ' + '</b>' + $.trim(columns[i].data) + '</td>';
+        //                     contador++;
+        //                     if (contador === 3 || i === (length - 1)) {
+        //                         contador = 0;
+        //                         row = row + '<tr data-dt-row="' + columns[i].rowIndex[0] + '" data-dt-column="' + columns[i].columnIndex + '">' + cell + "</tr>";
+        //                         cell = "";
+        //                     }
+        //                 }
+        //             }
+        //             return (table + row + "</table>");
+        //         }
+        //     }
+        // },
         "aLengthMenu": [
             [5, 10, 20, 50, -1],
             [5, 10, 20, 50, "Todos"]
@@ -242,8 +242,8 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
             $(".dt-buttons a").removeClass("dt-button");
         },
         drawCallback: function (settings) {
-            var table = $(selector).DataTable();
-            table.columns.adjust();
+            // var table = $(selector).DataTable();
+            // table.columns.adjust();
         }
     });
 
