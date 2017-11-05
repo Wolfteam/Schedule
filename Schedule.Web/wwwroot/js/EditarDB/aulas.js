@@ -1,26 +1,3 @@
-var contenidoAula =
-    '<form id="form_aulas" class="col s12">' +
-    '<div class="row">' +
-    '<div class="input-field col s12">' +
-    '<i class="material-icons prefix">comment</i>' +
-    '<input id="id_aula" name="id_aula" type="hidden" >' +
-    '<input id="nombre_aula" name="nombre_aula" type="text" class="validate" minlength="4" maxlength="20" required>' +
-    '<label for="nombre_aula">Nombre del aula</label>' +
-    '</div>' +
-    '</div>' +
-    '<div class="row">' +
-    '<div class="input-field col s12">' +
-    '<i class="material-icons prefix">filter_9_plus</i>' +
-    '<input id="capacidad" name="capacidad" type="text" class="validate" minlength="2" maxlength="2" required>' +
-    '<label for="capacidad">Capacidad</label>' +
-    '</div>' +
-    '</div>' +
-    '<div class="row">' +
-    '<div class="switch"><label>Teoria<input id="tipo_aula" type="checkbox"><span class="lever"></span>Laboratorio</label></div>' +
-    '</div>' +
-    '</form>';
-
-
 function confirmCreateAulas() {
     var buttons = {
         Ok: {
@@ -51,7 +28,7 @@ function confirmCreateAulas() {
     var onContentReady = function () {
         this.$content.find("#capacidad").on("keypress", onlyNum);
     };
-    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", contenidoAula, buttons, onContentReady);
+    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:../modals/ContenidoAula.html", buttons, onContentReady);
 }
 
 function confirmDeleteAula(data) {
@@ -109,9 +86,8 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         this.$content.find("#capacidad").focus();
         validarAula("#form_aulas");
     };
-    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", contenidoAula, buttons, onContentReady);
+    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoAula.html", buttons, onContentReady);
 }
-
 
 /**
  * Crea una aula
@@ -249,22 +225,4 @@ function validarAula(selector) {
             return false;
         },
     });
-}
-
-//TODO: Hacer esta funcion mas generica
-function checkPendingRequest() {
-    if ($.active > 0) {
-        window.setTimeout(checkPendingRequest, 1000);
-    } else {
-        $("#btn_buscar").trigger("click");
-        var buttons = {
-            Ok: {
-                text: 'Ok',
-                btnClass: 'btn-green',
-                action: function () {}
-            }
-        };
-        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
-    }
 }

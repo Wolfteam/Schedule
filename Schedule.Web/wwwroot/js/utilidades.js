@@ -268,3 +268,25 @@ function onlyNum(e) {
     e.preventDefault();
     return false;
 }
+
+//TODO: Hacer esta funcion mas generica
+/**
+ * Revisa si existen peticiones ajax pendientes.
+ * Se utiliza cuando se borran multiples cosas a la vez.
+ */
+function checkPendingRequest() {
+    if ($.active > 0) {
+        window.setTimeout(checkPendingRequest, 1000);
+    } else {
+        $("#btn_buscar").trigger("click");
+        var buttons = {
+            Ok: {
+                text: 'Ok',
+                btnClass: 'btn-green',
+                action: function () {}
+            }
+        };
+        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
+        $("#barra-progeso").hide();
+    }
+}

@@ -1,0 +1,25 @@
+<form id="form_materias" class="col s12">
+    <div class="row">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">comment</i>
+            <input id="id_aula" name="id_aula" type="hidden">
+            <input id="nombre_aula" name="nombre_aula" type="text" class="validate" minlength="4" maxlength="20" required>
+            <label for="nombre_aula">Nombre del aula</label>'
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">filter_9_plus</i>
+            <input id="capacidad" name="capacidad" type="text" class="validate" minlength="2" maxlength="2" required>
+            <label for="capacidad">Capacidad</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="switch">
+            <label>Teoria
+                <input id="tipo_aula" type="checkbox">
+                <span class="lever"></span>Laboratorio
+            </label>
+        </div>
+    </div>
+</form>
