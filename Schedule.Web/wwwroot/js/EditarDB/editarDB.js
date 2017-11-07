@@ -92,11 +92,11 @@ function btnEditarOnClick() {
 
     switch (opcionSeleccionada) {
         case "1":
-            confirmEditAulas(data[0].idAula, data[0].nombreAula, data[0].capacidad, data[0].idTipo);
+            confirmEditAulas(data[0].idAula, data[0].nombreAula, data[0].capacidad, data[0].tipoAula.idTipo);
             break;
         case "3":
-            confirmEditMaterias(data[0].codigo, data[0].asignatura, data[0].idSemestre, data[0].idTipo,
-                data[0].idCarrera, data[0].horasAcademicasTotales, data[0].horasAcademicasSemanales);
+            confirmEditMaterias(data[0].codigo, data[0].asignatura, data[0].semestre.idSemestre,
+                data[0].tipoMateria.idTipo, data[0].carrera.idCarrera, data[0].horasAcademicasTotales, data[0].horasAcademicasSemanales);
             break;
         case "4":
 

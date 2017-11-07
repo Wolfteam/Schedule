@@ -4,9 +4,9 @@ function confirmCreateMaterias() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var materia = getMateriaData(this.$content);
+                var materia = prepareMateriaData(this.$content);
                 console.log(materia);
-                //createMateria(materia);
+                createMateria(materia);
             }
         },
         Cancelar: {
@@ -15,8 +15,32 @@ function confirmCreateMaterias() {
         }
     };
     var onContentReady = function () {
-        this.$content.find(".onlyNum").on("keypress", onlyNum);
-        $('select').material_select();
+        var content = this.$content;
+        content.find(".onlyNum").on("keypress", onlyNum);
+        
+        getAllSemestres(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idSemestre,
+                    text: obj.nombreSemestre
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_semestre").append(options);
+            $('select').material_select();
+        });
+
+        getAllCarreras(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idCarrera,
+                    text: obj.nombreCarrera
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_carrera").append(options);
+            $('select').material_select();
+        });
     };
     confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -44,8 +68,9 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                var materia = getMateriaData(this.$content);
-                //updateMateria(this.$content.find("#codigo").val(), aula);
+                var materia = prepareMateriaData(this.$content);
+                console.log(materia);
+                updateMateria(this.$content.find("#codigo").val(), materia);
             }
         },
         Cancelar: {
@@ -55,27 +80,50 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
     };
 
     var onContentReady = function () {
-        this.$content.find("#codigo").val(codigo);
-        this.$content.find("#asignatura").val(asignatura);
-        this.$content.find("#select_semestre").val(idSemestre);
-        this.$content.find("#select_carrera").val(idCarrera);
-        this.$content.find("#horas_academicas_t").val(horasAcademicasTotales);
-        this.$content.find("#horas_academicas_s").val(horasAcademicasSemanales);
-        this.$content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
-        this.$content.find(".onlyNum").on("keypress", onlyNum);
-        this.$content.find("#form_materias :input").each(function () {
+        var content = this.$content;
+        getAllSemestres(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idSemestre,
+                    text: obj.nombreSemestre
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_semestre").append(options).val(idSemestre);
+            $('select').material_select();
+        });
+
+        getAllCarreras(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idCarrera,
+                    text: obj.nombreCarrera
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_carrera").append(options).val(idCarrera);
+            $('select').material_select();
+        });
+
+        content.find("#codigo").val(codigo);
+        content.find("#asignatura").val(asignatura);
+        content.find("#horas_academicas_t").val(horasAcademicasTotales);
+        content.find("#horas_academicas_s").val(horasAcademicasSemanales);
+        content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
+        content.find(".onlyNum").on("keypress", onlyNum);
+        content.find("#form_materias :input").each(function () {
             $(this).focus();
         });
-        $('select').material_select();
     };
     confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**
- * Obtiene la data introducida/existente de los modales
+ * Prepara la data introducida/existente de los modales y devuelve un objeto
  * @param {Object} object Objeto de tipo $content de jquery-confirm
+ * @returns {Object} Objeto de tipo materia
  */
-function getMateriaData(object) {
+function prepareMateriaData(object) {
     var materia = {
         codigo: object.find("#codigo").val(),
         asignatura: object.find("#asignatura").val(),

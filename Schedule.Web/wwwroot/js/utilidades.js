@@ -106,7 +106,6 @@ function createTable(selector, columnsData) {
     $("div" + selector).append(tableUpper + thead + tableLower);
 }
 
-
 /**
  * Aplica DataTable a la tabla indicada
  * @param {String} selector Nombre de la tabla #datatable
@@ -267,6 +266,22 @@ function onlyNum(e) {
 
     e.preventDefault();
     return false;
+}
+
+/**
+ * Crea los options a un select en especifico
+ * @param {object[]} arrayData Array de objetos que contiene el value (id) y el texto a mostrar (text)
+ */
+function createSelectOptions(arrayData, selector) {
+    if (arrayData === null) {
+        //alerta("Error", "No fue posible crear los options de los selects", "red", "btn-red");
+        return;
+    }
+    var option = "";
+    for (var i = 0; i < arrayData.length; i++) {
+        option += "<option value='" + arrayData[i].id + "'>" + arrayData[i].text + "</option>";
+    }
+    return option;
 }
 
 //TODO: Hacer esta funcion mas generica
