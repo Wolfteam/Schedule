@@ -140,6 +140,18 @@ function deleteAulas(idArray) {
     for (var i = 0; i < idArray.length; i++) {
         deleteAula(idArray[i].idAula);
     }
+    globalFunction = function () {
+        $("#btn_buscar").trigger("click");
+        var buttons = {
+            Ok: {
+                text: 'Ok',
+                btnClass: 'btn-green',
+                action: function () { }
+            }
+        };
+        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
+        $("#barra-progeso").hide();
+    };
     checkPendingRequest();
 }
 

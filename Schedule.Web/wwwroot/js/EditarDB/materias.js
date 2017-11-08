@@ -17,7 +17,7 @@ function confirmCreateMaterias() {
     var onContentReady = function () {
         var content = this.$content;
         content.find(".onlyNum").on("keypress", onlyNum);
-        
+
         getAllSemestres(function (data) {
             var arrayData = data.map(function (obj) {
                 return {
@@ -27,7 +27,7 @@ function confirmCreateMaterias() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_semestre").append(options);
-            $('select').material_select();
+            
         });
 
         getAllCarreras(function (data) {
@@ -39,8 +39,14 @@ function confirmCreateMaterias() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_carrera").append(options);
-            $('select').material_select();
         });
+
+        globalFunction = function () {
+            $('select').material_select();
+            $(".progressBar").hide();
+            $("#form_materias").show();
+        };
+        checkPendingRequest();
     };
     confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -90,7 +96,6 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_semestre").append(options).val(idSemestre);
-            $('select').material_select();
         });
 
         getAllCarreras(function (data) {
@@ -102,8 +107,17 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_carrera").append(options).val(idCarrera);
-            $('select').material_select();
         });
+
+        globalFunction = function () {
+            $('select').material_select();
+            $(".progressBar").hide();
+            $("#form_materias").show();
+            content.find("#form_materias :input").each(function () {
+                $(this).focus();
+            });
+        };
+        checkPendingRequest();
 
         content.find("#codigo").val(codigo);
         content.find("#asignatura").val(asignatura);
@@ -111,9 +125,6 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find("#horas_academicas_s").val(horasAcademicasSemanales);
         content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         content.find(".onlyNum").on("keypress", onlyNum);
-        content.find("#form_materias :input").each(function () {
-            $(this).focus();
-        });
     };
     confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -187,6 +198,18 @@ function deleteMaterias(arrayCodigos) {
     for (var i = 0; i < arrayCodigos.length; i++) {
         deleteMateria(arrayCodigos[i].codigo);
     }
+    globalFunction = function () {
+        $("#btn_buscar").trigger("click");
+        var buttons = {
+            Ok: {
+                text: 'Ok',
+                btnClass: 'btn-green',
+                action: function () { }
+            }
+        };
+        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
+        $("#barra-progeso").hide();
+    };
     checkPendingRequest();
 }
 

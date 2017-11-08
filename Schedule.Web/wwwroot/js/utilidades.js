@@ -284,24 +284,22 @@ function createSelectOptions(arrayData, selector) {
     return option;
 }
 
-//TODO: Hacer esta funcion mas generica
 /**
- * Revisa si existen peticiones ajax pendientes.
- * Se utiliza cuando se borran multiples cosas a la vez.
+ * Variable que contiene una funcion a ejecutar luego de llamar a checkPendingRequest
+ */
+var globalFunction = function () {
+};
+
+/**
+ * Revisa si existen peticiones ajax pendientes,
+ * y ejecuta la funcion almacenada en globalFunction
+ * cuando no existen peticiones pendientes
  */
 function checkPendingRequest() {
     if ($.active > 0) {
-        window.setTimeout(checkPendingRequest, 1000);
+        window.setTimeout(checkPendingRequest, 1500);
     } else {
-        $("#btn_buscar").trigger("click");
-        var buttons = {
-            Ok: {
-                text: 'Ok',
-                btnClass: 'btn-green',
-                action: function () {}
-            }
-        };
-        confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        globalFunction();
     }
 }
+
