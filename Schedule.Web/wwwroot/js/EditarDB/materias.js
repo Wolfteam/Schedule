@@ -5,7 +5,6 @@ function confirmCreateMaterias() {
             btnClass: 'btn-blue',
             action: function () {
                 var materia = prepareMateriaData(this.$content);
-                console.log(materia);
                 createMateria(materia);
             }
         },
@@ -75,8 +74,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             btnClass: 'btn-orange',
             action: function () {
                 var materia = prepareMateriaData(this.$content);
-                console.log(materia);
-                updateMateria(this.$content.find("#codigo").val(), materia);
+                updateMateria(codigo, materia);
             }
         },
         Cancelar: {
