@@ -24,6 +24,7 @@
     "jquery-confirm": "^3.3.2",
     "jquery-validation": "^1.17.0",
     "jszip": "^3.1.4",
+    "material-design-icons-iconfont": "^3.0.3",
     "materialize-css": "^0.100.2",
     "pdfmake": "^0.1.33"
   },

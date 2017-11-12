@@ -11,6 +11,9 @@ paths.libs = paths.webroot + "lib/";
 gulp.task("default", ["copy-files"]);
 
 gulp.task("copy-files", function () {
+    gulp.src(paths.npmSrc + '/material-design-icons-iconfont/dist/*/*')
+        .pipe(gulp.dest(paths.libs + '/material-icons/'));
+
     gulp.src(paths.npmSrc + '/font-awesome/css/*.min.css')
         .pipe(gulp.dest(paths.libs + '/font-awesome/css/'));
 
