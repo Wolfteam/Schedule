@@ -63,7 +63,7 @@ function btnCrearOnClick() {
             confirmCreateMaterias();
             break;
         case "4":
-
+            confirmCreateProfesores();
             break;
         case "5":
 
@@ -99,7 +99,7 @@ function btnEditarOnClick() {
                 data[0].tipoMateria.idTipo, data[0].carrera.idCarrera, data[0].horasAcademicasTotales, data[0].horasAcademicasSemanales);
             break;
         case "4":
-
+            confirmEditProfesores(data[0].cedula, data[0].nombre, data[0].apellido, data[0].prioridad.id);
             break;
         case "5":
 
@@ -129,7 +129,7 @@ function btnBorrarOnClick() {
             confirmDeleteMaterias(data);
             break;
         case "4":
-
+            confirmDeleteProfesores(data);
             break;
         case "5":
 

@@ -24,6 +24,7 @@ function confirmAlert(title, type, iconClass, content, buttons = null, onContent
         closeIcon: true,
         columnClass: columnClass,
         closeIconClass: 'fa fa-close',
+        draggable: true,
         icon: iconClass,
         typeAnimated: true,
         escapeKey: "Cancelar",
