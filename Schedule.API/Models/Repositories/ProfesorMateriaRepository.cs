@@ -78,20 +78,16 @@ namespace Schedule.API.Models.Repositories
         /// <summary>
         ///  Actualiza una relacion entre profesor y materia
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="objeto"></param>
-        /// <returns></returns>
+        /// <param name="id">Id de la tabla</param>
+        /// <param name="pm">Objeto de tipo ProfesoresMaterias</param>
+        /// <returns>True en caso de exito</returns>
         public bool Update(int id, ProfesoresMaterias pm)
         {
             try
             {
-                var pmOld = _db.ProfesoresMaterias.FirstOrDefault(x => x.Id == id);
-                if (pmOld != null)
-                {
-                    pmOld.Cedula = pm.Cedula;
-                    pmOld.Codigo = pm.Codigo;
-                    _db.SaveChanges();
-                }
+                Delete(id);
+                _db.Add(pm);
+                _db.SaveChanges();
             }
             catch (Exception e)
             {

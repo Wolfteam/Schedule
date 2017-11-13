@@ -46,5 +46,15 @@ namespace Schedule.API.Controllers
         {
             return _db.Get();
         }
+
+        // PUT api/ProfesorMateria/4
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] ProfesorMateriaDTO pm)
+        {
+            bool result = _db.Update(id, Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            if (!result)
+                return StatusCode(404);
+            return new NoContentResult();
+        }
     }
 }
