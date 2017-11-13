@@ -28,7 +28,7 @@ function confirmCreateAulas() {
     var onContentReady = function () {
         this.$content.find("#capacidad").on("keypress", onlyNum);
     };
-    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:../modals/ContenidoAula.html", buttons, onContentReady);
+    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:../modals/Aulas.html", buttons, onContentReady);
 }
 
 function confirmDeleteAula(data) {
@@ -86,7 +86,7 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         this.$content.find("#capacidad").focus();
         validarAula("#form_aulas");
     };
-    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoAula.html", buttons, onContentReady);
+    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:../modals/Aulas.html", buttons, onContentReady);
 }
 
 /**
@@ -157,27 +157,13 @@ function deleteAulas(idArray) {
 
 /**
  * Obtiene todas las aulas
+ * @param {Function} callback Funcion de callback
  */
-function getAllAulas() {
+function getAllAulas(callback) {
     $("#barra-progeso").show();
      makeAjaxCall("/api/Aulas",
          function (data, textStatus, xhr) {
-             var titulos = ["Id", "Nombre", "Capacidad", "Tipo Aula"];
-             var columnsData = [{
-                     "data": "idAula"
-                 },
-                 {
-                     "data": "nombreAula"
-                 },
-                 {
-                     "data": "capacidad"
-                 },
-                 {
-                     "data": "tipoAula.nombreTipo"
-                 }
-             ];
-             createTable("#tabla", titulos);
-             initDataTable("#datatable", data, columnsData, 0, false, "multi");            
+             return callback(data, textStatus, xhr);          
          },
          onError, null, "GET", onComplete
      );

@@ -47,7 +47,7 @@ function confirmCreateMaterias() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:../modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteMaterias(data) {
@@ -124,7 +124,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         content.find(".onlyNum").on("keypress", onlyNum);
     };
-    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoMaterias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:../modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**
@@ -213,48 +213,13 @@ function deleteMaterias(arrayCodigos) {
 
 /**
  * Obtiene todas las materias
+ * @param {Function} callback Funcion de callback
  */
-function getAllMaterias() {
+function getAllMaterias(callback) {
+    $("#barra-progeso").show();
     makeAjaxCall("/api/Materias",
-        function (data) {
-            var titulos = ["Codigo", "Asignatura", "IdSemestre", "Semestre",
-                "IdCarrera", "Carrera", "IdTipoAulaMateria", "Tipo Materia",
-                "Horas Academicas Semanales", "Horas Academicas Totales"
-            ];
-            var columnsData = [{
-                    "data": "codigo"
-                },
-                {
-                    "data": "asignatura"
-                },
-                {
-                    "data": "semestre.idSemestre"
-                },
-                {
-                    "data": "semestre.nombreSemestre"
-                },
-                {
-                    "data": "carrera.idCarrera"
-                },
-                {
-                    "data": "carrera.nombreCarrera"
-                },
-                {
-                    "data": "tipoMateria.idTipo"
-                },
-                {
-                    "data": "tipoMateria.nombreTipo"
-                },
-                {
-                    "data": "horasAcademicasSemanales"
-                },
-                {
-                    "data": "horasAcademicasTotales"
-                }
-            ];
-            //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
-            createTable("#tabla", titulos);
-            initDataTable("#datatable", data, columnsData, [2, 4, 6], false, "multi");
+        function (data, textStatus, xhr) {
+            return callback(data, textStatus, xhr);
         },
         onError, null, "GET", onComplete
     );

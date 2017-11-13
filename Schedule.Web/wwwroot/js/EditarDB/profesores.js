@@ -21,7 +21,7 @@ function confirmCreateProfesores() {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
-                    text: obj.codigoPrioridad
+                    text: obj.codigoPrioridad + ". Horas a cumplir: " +obj.horasACumplir
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -35,7 +35,7 @@ function confirmCreateProfesores() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Profesores", "blue", "fa fa-plus", "url:../modals/ContenidoProfesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Profesores", "blue", "fa fa-plus", "url:../modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteProfesores(data) {
@@ -77,7 +77,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
-                    text: obj.codigoPrioridad
+                    text: obj.codigoPrioridad + ". Horas a cumplir: " +obj.horasACumplir
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -99,7 +99,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
         content.find("#apellido").val(apellido);
         content.find(".onlyNum").on("keypress", onlyNum);
     };
-    confirmAlert("Editar Profesores", "orange", "fa fa-pencil-square-o", "url:../modals/ContenidoProfesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Profesores", "orange", "fa fa-pencil-square-o", "url:../modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**
@@ -170,36 +170,12 @@ function deleteProfesores(arrayCedulas) {
 
 /**
  * Obtiene todos los profesores
+ * @param {Function} callback Funcion de callback
  */
-function getAllProfesores() {
+function getAllProfesores(callback) {
     makeAjaxCall("/api/Profesor",
-        function (data) {
-            var titulos = [
-                "Cedula", "Nombre", "Apellido",
-                "IdPrioridad", "Prioridad", "Horas a Cumplir"
-            ];
-            var columnsData = [{
-                    "data": "cedula"
-                },
-                {
-                    "data": "nombre"
-                },
-                {
-                    "data": "apellido"
-                },
-                {
-                    "data": "prioridad.id"
-                },
-                {
-                    "data": "prioridad.codigoPrioridad"
-                },
-                {
-                    "data": "prioridad.horasACumplir"
-                }
-            ];
-            //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
-            createTable("#tabla", titulos);
-            initDataTable("#datatable", data, columnsData, 3, false, "multi");
+        function (data, textStatus, xhr) {
+            return callback(data, textStatus, xhr);
         },
         onError, null, "GET", onComplete
     );

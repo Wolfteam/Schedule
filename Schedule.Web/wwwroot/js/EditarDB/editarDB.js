@@ -30,19 +30,161 @@ function btnBuscarOnClick() {
 
     switch (opcionSeleccionada) {
         case "1": //Aulas
-            getAllAulas();
+            getAllAulas(function (data, textStatus, xhr) {
+                titulos = ["Id", "Nombre", "Capacidad", "Tipo Aula"];
+                columnsData = [{
+                        "data": "idAula"
+                    },
+                    {
+                        "data": "nombreAula"
+                    },
+                    {
+                        "data": "capacidad"
+                    },
+                    {
+                        "data": "tipoAula.nombreTipo"
+                    }
+                ];
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, 0, false, "multi");
+            });
             break;
         case "3": //Materias
-            getAllMaterias();
+            getAllMaterias(function (data, textStatus, xhr) {
+                var titulos = ["Codigo", "Asignatura", "IdSemestre", "Semestre",
+                    "IdCarrera", "Carrera", "IdTipoAulaMateria", "Tipo Materia",
+                    "Horas Academicas Semanales", "Horas Academicas Totales"
+                ];
+                var columnsData = [{
+                        "data": "codigo"
+                    },
+                    {
+                        "data": "asignatura"
+                    },
+                    {
+                        "data": "semestre.idSemestre"
+                    },
+                    {
+                        "data": "semestre.nombreSemestre"
+                    },
+                    {
+                        "data": "carrera.idCarrera"
+                    },
+                    {
+                        "data": "carrera.nombreCarrera"
+                    },
+                    {
+                        "data": "tipoMateria.idTipo"
+                    },
+                    {
+                        "data": "tipoMateria.nombreTipo"
+                    },
+                    {
+                        "data": "horasAcademicasSemanales"
+                    },
+                    {
+                        "data": "horasAcademicasTotales"
+                    }
+                ];
+                //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, [2, 4, 6], false, "multi");
+            });
             break;
         case "4": //Profesores
-            getAllProfesores();
+            getAllProfesores(function (data, textStatus, xhr) {
+                var titulos = [
+                    "Cedula", "Nombre", "Apellido",
+                    "IdPrioridad", "Prioridad", "Horas a Cumplir"
+                ];
+                var columnsData = [{
+                        "data": "cedula"
+                    },
+                    {
+                        "data": "nombre"
+                    },
+                    {
+                        "data": "apellido"
+                    },
+                    {
+                        "data": "prioridad.id"
+                    },
+                    {
+                        "data": "prioridad.codigoPrioridad"
+                    },
+                    {
+                        "data": "prioridad.horasACumplir"
+                    }
+                ];
+                //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, 3, false, "multi");
+            });
             break;
         case "5": //ProfesorxMateria
-            getAllProfesoresxMateria();
+            getAllProfesoresMateria(function (data, textStatus, xhr) {
+                var titulos = [
+                    "Id", "Cedula", "Nombre", "Apellido",
+                    "Codigo", "Asignatura", "Semestre", "Carrera"
+                ];
+                var columnsData = [{
+                        "data": "id"
+                    },
+                    {
+                        "data": "profesor.cedula"
+                    },
+                    {
+                        "data": "profesor.nombre"
+                    },
+                    {
+                        "data": "profesor.apellido"
+                    },
+                    {
+                        "data": "materia.codigo"
+                    },
+                    {
+                        "data": "materia.asignatura"
+                    },
+                    {
+                        "data": "materia.semestre.nombreSemestre"
+                    },
+                    {
+                        "data": "materia.carrera.nombreCarrera"
+                    },
+                ];
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, 0, false, "single");
+            });
             break;
         case "6": //Secciones
-            getAllSecciones();
+            getAllSecciones(function (data, textStatus, xhr) {
+                var titulos = [
+                    "Codigo Materia", "Asignatura", "Semestre",
+                    "Secciones", "Cantidad Alumnos", "Carrera"
+                ];
+                var columnsData = [{
+                        "data": "materia.codigo"
+                    },
+                    {
+                        "data": "materia.asignatura"
+                    },
+                    {
+                        "data": "materia.semestre.nombreSemestre"
+                    },
+                    {
+                        "data": "numeroSecciones"
+                    },
+                    {
+                        "data": "cantidadAlumnos"
+                    },
+                    {
+                        "data": "materia.carrera.nombreCarrera"
+                    }
+                ];
+                //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, -1, false, "single");
+            });
             break;
         default:
             toast("Debe seleccionar una opcion");
@@ -50,7 +192,6 @@ function btnBuscarOnClick() {
             $("#btn-flotante").hide();
             break;
     }
-    dismissToast();
 }
 
 function btnCrearOnClick() {
@@ -66,7 +207,7 @@ function btnCrearOnClick() {
             confirmCreateProfesores();
             break;
         case "5":
-
+            confirmCreateProfesorMateria();
             break;
         case "6":
 
@@ -102,7 +243,7 @@ function btnEditarOnClick() {
             confirmEditProfesores(data[0].cedula, data[0].nombre, data[0].apellido, data[0].prioridad.id);
             break;
         case "5":
-
+            confirmEditProfesorMateria(data[0].id,data[0].profesor.cedula, data[0].materia.codigo);
             break;
         case "6":
 
@@ -132,7 +273,7 @@ function btnBorrarOnClick() {
             confirmDeleteProfesores(data);
             break;
         case "5":
-
+            confirmDeleteProfesorMateria(data);
             break;
         case "6":
 
