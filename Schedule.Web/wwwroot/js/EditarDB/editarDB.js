@@ -210,7 +210,7 @@ function btnCrearOnClick() {
             confirmCreateProfesorMateria();
             break;
         case "6":
-
+            confirmCreateSecciones();
             break;
         default:
             toast("Debe seleccionar una opcion");
@@ -243,10 +243,10 @@ function btnEditarOnClick() {
             confirmEditProfesores(data[0].cedula, data[0].nombre, data[0].apellido, data[0].prioridad.id);
             break;
         case "5":
-            confirmEditProfesorMateria(data[0].id,data[0].profesor.cedula, data[0].materia.codigo);
+            confirmEditProfesorMateria(data[0].id, data[0].profesor.cedula, data[0].materia.codigo);
             break;
         case "6":
-
+            confirmEditSecciones(data[0].materia.codigo, data[0].cantidadAlumnos, data[0].numeroSecciones);
             break;
         default:
             toast("Debe seleccionar una opcion.");
@@ -276,7 +276,7 @@ function btnBorrarOnClick() {
             confirmDeleteProfesorMateria(data);
             break;
         case "6":
-
+            confirmDeleteSecciones(data);
             break;
         default:
             toast("Debe seleccionar una opcion.");
