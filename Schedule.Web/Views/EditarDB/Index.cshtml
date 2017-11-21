@@ -46,13 +46,19 @@
 </div>
 
 @section Scripts{
-    <script src="~/js/EditarDB/editarDB.js"></script>
-    <script src="~/js/EditarDB/aulas.js"></script>
-    <script src="~/js/EditarDB/materias.js"></script>
-    <script src="~/js/EditarDB/prioridades.js"></script>
-    <script src="~/js/EditarDB/profesores.js"></script>
-    <script src="~/js/EditarDB/profesoresXMaterias.js"></script>
-    <script src="~/js/EditarDB/secciones.js"></script>
-    <script src="~/js/EditarDB/semestres.js"></script>
-    <script src="~/js/EditarDB/carreras.js"></script>
+    <environment names="Development">
+        <script src="~/js/EditarDB/editarDB.js"></script>
+        <script src="~/js/EditarDB/aulas.js"></script>
+        <script src="~/js/EditarDB/materias.js"></script>
+        <script src="~/js/EditarDB/prioridades.js"></script>
+        <script src="~/js/EditarDB/profesores.js"></script>
+        <script src="~/js/EditarDB/profesoresXMaterias.js"></script>
+        <script src="~/js/EditarDB/secciones.js"></script>
+        <script src="~/js/EditarDB/semestres.js"></script>
+        <script src="~/js/EditarDB/carreras.js"></script>
+    </environment>
+  
+    <environment names="Staging,Production">
+        <script src="~/js/EditarDB/editarDB.min.js"></script>
+    </environment>
 }

@@ -24,6 +24,6 @@
   </ItemGroup>
 
   <Target Name="MyPreCompileTarget" BeforeTargets="Build">
-    <Exec Command="gulp copy-files" />
+    <Exec Command="gulp default" />
   </Target>
 </Project>

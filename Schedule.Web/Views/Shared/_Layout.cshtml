@@ -4,6 +4,7 @@
 @inject IOptions<AppSettings> appSettings
 @{
     string urlBaseApi = appSettings.Value.URLBaseAPI;
+    string urlBase =  appSettings.Value.URLBase;
 }
 <!DOCTYPE html>
 <html>
@@ -66,37 +67,46 @@
     </footer>
 
     @* Scripts *@
-    <!--Jquery -->
-    <script src="~/lib/jquery/jquery.min.js"></script>
+    <environment names="Development">
+        <!--Jquery -->
+        <script src="~/lib/jquery/jquery.min.js"></script>
 
-    <!--Materialize-css  -->
-    <script src="~/lib/materialize-css/js/materialize.min.js"></script>
+        <!--Materialize-css  -->
+        <script src="~/lib/materialize-css/js/materialize.min.js"></script>
 
-    <!--Datatable  -->
-    <script type="text/javascript" src="~/lib/jszip/jszip.min.js"></script>
-    <script type="text/javascript" src="~/lib/pdfmake/pdfmake.min.js"></script>
-    <script type="text/javascript" src="~/lib/pdfmake/vfs_fonts.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-buttons/dataTables.buttons.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.colVis.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.flash.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.html5.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.print.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-keytable/dataTables.keyTable.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-responsive/dataTables.responsive.min.js"></script>
-    <script type="text/javascript" src="~/lib/datatables.net-select/dataTables.select.min.js"></script>
+        <!--Datatable  -->
+        <script type="text/javascript" src="~/lib/jszip/jszip.min.js"></script>
+        <script type="text/javascript" src="~/lib/pdfmake/pdfmake.min.js"></script>
+        <script type="text/javascript" src="~/lib/pdfmake/vfs_fonts.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-buttons/buttons.print.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-keytable/dataTables.keyTable.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-responsive/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" src="~/lib/datatables.net-select/dataTables.select.min.js"></script>
 
-    <!--Jquery-Confirm  -->
-    <script src="~/lib/jquery-confirm/jquery-confirm.min.js"></script>
+        <!--Jquery-Confirm  -->
+        <script src="~/lib/jquery-confirm/jquery-confirm.min.js"></script>
 
-    <!--Jquery-Validate  -->
-    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+        <!--Jquery-Validate  -->
+        <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
 
-    <script src="~/js/common.js"></script>
-    <script src="~/js/utilidades.js"></script>
+        <script src="~/js/common.js"></script>
+        <script src="~/js/utilidades.js"></script>
+    </environment>
+
+    <environment names="Staging,Production">
+        <script src="~/js/site.min.js"></script>
+    </environment>
+
     <script type="text/javascript">
-        var urlBaseAPI = "@urlBaseApi";
-        console.log("Url API: "+urlBaseAPI);
+        var urlBaseAPI = "@urlBaseApi"
+            urlBase = "@urlBase";
+        console.log("Url BaseAPI: "+ urlBaseAPI);
+        console.log("Url Base: "+ urlBase);
     </script>
     @RenderSection("Scripts", required: false)
 </body>

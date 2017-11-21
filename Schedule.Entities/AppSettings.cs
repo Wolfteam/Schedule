@@ -7,6 +7,7 @@ namespace Schedule.Entities
     public class AppSettings
     {
         public string URLBaseAPI { get; set; }
+        public string URLBase { get; set; }
         public string ConnectionString { get; set; }
     }
 }
