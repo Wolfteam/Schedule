@@ -28,7 +28,7 @@ function confirmCreateAulas() {
     var onContentReady = function () {
         this.$content.find("#capacidad").on("keypress", onlyNum);
     };
-    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:../modals/Aulas.html", buttons, onContentReady);
+    confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
 }
 
 function confirmDeleteAula(data) {
@@ -86,7 +86,7 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         this.$content.find("#capacidad").focus();
         validarAula("#form_aulas");
     };
-    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:../modals/Aulas.html", buttons, onContentReady);
+    confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
 }
 
 /**
@@ -146,7 +146,7 @@ function deleteAulas(idArray) {
             Ok: {
                 text: 'Ok',
                 btnClass: 'btn-green',
-                action: function () { }
+                action: function () {}
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
@@ -161,12 +161,12 @@ function deleteAulas(idArray) {
  */
 function getAllAulas(callback) {
     $("#barra-progeso").show();
-     makeAjaxCall("/api/Aulas",
-         function (data, textStatus, xhr) {
-             return callback(data, textStatus, xhr);          
-         },
-         onError, null, "GET", onComplete
-     );
+    makeAjaxCall("/api/Aulas",
+        function (data, textStatus, xhr) {
+            return callback(data, textStatus, xhr);
+        },
+        onError, null, "GET", onComplete
+    );
 }
 
 /**

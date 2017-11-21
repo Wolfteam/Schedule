@@ -47,7 +47,7 @@ function confirmCreateMaterias() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:../modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteMaterias(data) {
@@ -124,7 +124,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         content.find(".onlyNum").on("keypress", onlyNum);
     };
-    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:../modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**

@@ -44,7 +44,7 @@ function confirmCreateProfesorMateria() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Relacion", "blue", "fa fa-plus", "url:../modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Relacion", "blue", "fa fa-plus", "url:" + urlBase + "modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteProfesorMateria(data) {
@@ -113,7 +113,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
         };
         checkPendingRequest();
     };
-    confirmAlert("Editar Relacion", "orange", "fa fa-pencil-square-o", "url:../modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Relacion", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**

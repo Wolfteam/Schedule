@@ -35,7 +35,7 @@ function confirmCreateProfesores() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Profesores", "blue", "fa fa-plus", "url:../modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Profesores", "blue", "fa fa-plus", "url:" + urlBase + "modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteProfesores(data) {
@@ -99,7 +99,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
         content.find("#apellido").val(apellido);
         content.find(".onlyNum").on("keypress", onlyNum);
     };
-    confirmAlert("Editar Profesores", "orange", "fa fa-pencil-square-o", "url:../modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Profesores", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**

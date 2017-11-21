@@ -36,7 +36,7 @@ function confirmCreateSecciones() {
         };
         checkPendingRequest();
     };
-    confirmAlert("Agregar Secciones", "blue", "fa fa-plus", "url:../modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Secciones", "blue", "fa fa-plus", "url:" + urlBase + "modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 function confirmDeleteSecciones(data) {
@@ -99,7 +99,7 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
         content.find("#cantidad_alumnos").val(cantidadAlumnos);
         content.find(".onlyNum").on("keypress", onlyNum);
     };
-    confirmAlert("Editar Secciones", "orange", "fa fa-pencil-square-o", "url:../modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Secciones", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
 
 /**
