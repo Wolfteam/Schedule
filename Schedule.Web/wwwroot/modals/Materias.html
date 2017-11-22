@@ -3,7 +3,7 @@
         <div class="input-field col s6">
             <i class="material-icons prefix">code</i>
             <input id="codigo" name="codigo" type="text" class="validate onlyNum" minlength="4" maxlength="5" required>
-            <label for="codigo">Codigo</label>'
+            <label for="codigo">Codigo</label>
         </div>
         <div class="input-field col s6">
             <i class="material-icons prefix">comment</i>
@@ -13,16 +13,16 @@
     </div>
     <div class="row">
         <div class="input-field col s6">
-            <select id="select_semestre">
-                <option value="-1" disabled selected>Seleccione...</option>
+            <i class="material-icons prefix">check</i>
+            <select id="select_semestre" class="select2">
+                <option value="-1" disabled selected>Seleccione el semestre...</option>
             </select>
-            <label>Seleccione el semestre...</label>
         </div>
         <div class="input-field col s6">
-            <select id="select_carrera">
-                <option value="-1" disabled selected>Seleccione...</option>
+            <i class="material-icons prefix">check</i>
+            <select id="select_carrera" class="select2">
+                <option value="-1" disabled selected>Seleccione la carrera...</option>
             </select>
-            <label>Seleccione el tipo de carrera...</label>
         </div>
     </div>
     <div class="row">
@@ -46,6 +46,9 @@
                 <span class="lever"></span>Laboratorio
             </label>
         </div>
+    </div>
+    <div class="row" style="position:fixed">
+        <div class="col s12 selectResults"></div>
     </div>
 </form>
 

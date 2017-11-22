@@ -1,3 +1,6 @@
+//Para que select2 sea en spanish por default
+$.fn.select2.defaults.set('language', 'es');
+
 //Esto se encarga de que cuando se presione ctrl + space se muestre el sidenav
 var map = { 17: false, 32: false };
 $(document).keydown(function (e) {

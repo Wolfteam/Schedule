@@ -26,7 +26,8 @@
     "jszip": "^3.1.4",
     "material-design-icons-iconfont": "^3.0.3",
     "materialize-css": "^0.100.2",
-    "pdfmake": "^0.1.33"
+    "pdfmake": "^0.1.33",
+    "select2": "^4.0.6-rc.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

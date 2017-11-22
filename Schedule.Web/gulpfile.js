@@ -77,6 +77,13 @@ gulp.task("copy-files", function () {
 
     gulp.src(paths.npmSrc + '/pdfmake/build/*')
         .pipe(gulp.dest(paths.libs + '/pdfmake/'));
+
+    gulp.src(
+            [
+                paths.npmSrc + "/select2/dist/css/*.min.css",
+                paths.npmSrc + "/select2/dist/js/**/*.js"
+            ])
+        .pipe(gulp.dest(paths.libs + '/select2/'));
 });
 
 //Esto no ta completo todavia, quizas quitar document ready de los js para poder
@@ -115,6 +122,8 @@ gulp.task("concat-minify", function () {
                 paths.webroot + "lib/datatables.net-select/dataTables.select.min.js",
                 paths.webroot + "lib/jquery-confirm/jquery-confirm.min.js",
                 paths.webroot + "lib/jquery-validation/jquery.validate.min.js",
+                paths.webroot + "lib/select2/select2.min.js",
+                paths.webroot + "lib/select2/i18n/es.js",
                 paths.webroot + "js/common.js",
                 paths.webroot + "js/utilidades.js"
             ]

@@ -30,7 +30,7 @@ function confirmCreateProfesorMateria() {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.codigo,
-                    text: obj.asignatura
+                    text: obj.codigo + " " + obj.asignatura
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -38,7 +38,11 @@ function confirmCreateProfesorMateria() {
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_profesores_materias").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_profesores_materias").show();
         };
@@ -98,7 +102,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.codigo,
-                    text: obj.asignatura
+                    text: obj.codigo + " " + obj.asignatura
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -107,7 +111,11 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
         });
         
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_profesores_materias").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_profesores_materias").show();
         };

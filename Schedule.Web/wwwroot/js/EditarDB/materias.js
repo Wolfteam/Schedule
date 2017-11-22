@@ -41,7 +41,11 @@ function confirmCreateMaterias() {
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_materias").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_materias").show();
         };
@@ -108,7 +112,11 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_materias").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_materias").show();
             content.find("#form_materias :input").each(function () {

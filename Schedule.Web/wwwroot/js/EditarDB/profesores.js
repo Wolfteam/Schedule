@@ -29,7 +29,11 @@ function confirmCreateProfesores() {
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_profesores").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_profesores").show();
         };
@@ -85,7 +89,11 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#form_profesores").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_profesores").show();
             content.find("#form_profesores :input").each(function () {

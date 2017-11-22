@@ -3,13 +3,13 @@
         <div class="input-field col s6">
             <i class="material-icons prefix">filter_9_plus</i>
             <input id="cedula" name="cedula" type="text" class="validate onlyNum" minlength="8" maxlength="8" required>
-            <label for="cedula">Cedula</label>'
+            <label for="cedula">Cedula</label>
         </div>
         <div class="input-field col s6">
-            <select id="select_prioridad">
-                <option value="-1" disabled selected>Seleccione...</option>
+            <i class="material-icons prefix">check</i>
+            <select id="select_prioridad" class="select2">
+                <option value="-1" disabled selected>Seleccione la prioridad...</option>
             </select>
-            <label>Seleccione el tipo de prioridad...</label>
         </div>
     </div>
     <div class="row">
@@ -23,6 +23,9 @@
             <input id="apellido" name="apellido" type="text" class="validate" maxlength="20" required>
             <label for="apellido">Apellido</label>
         </div>
+    </div>
+    <div class="row" style="position:fixed">
+        <div class="col s12 selectResults"></div>
     </div>
 </form>
 <div class="col s12 progressBar">

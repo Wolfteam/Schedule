@@ -30,7 +30,11 @@ function confirmCreateSecciones() {
 
         globalFunction = function () {
             $("#select_materia").removeAttr("disabled");
-            $('select').material_select();
+            $("#form_secciones").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_secciones").show();
         };
@@ -86,7 +90,12 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
         });
 
         globalFunction = function () {
-            $('select').material_select();
+            $("#select_materia").removeAttr("disabled");
+            $("#form_secciones").find(".select2").select2({
+                placeholder: "Seleccione una opcion",
+                dropdownParent: $(".selectResults"),
+                width: '100%'
+            });
             $(".progressBar").hide();
             $("#form_secciones").show();
             content.find("#form_secciones :input").each(function () {

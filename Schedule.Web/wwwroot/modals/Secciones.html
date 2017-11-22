@@ -1,23 +1,26 @@
 <form id="form_secciones" class="col s12" style="display:none">
     <div class="row">
         <div class="input-field col s6">
-            <select id="select_materia" disabled>
-                <option value="-1" disabled selected>Seleccione...</option>
-            </select>
-            <label>Seleccione la materia...</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="input-field col s6">
             <i class="material-icons prefix">filter_9_plus</i>
             <input id="numero_secciones" name="numero_secciones" type="text" class="validate onlyNum" minlength="1" maxlength="1" required>
-            <label for="numero_secciones">Numero de Secciones</label>'
+            <label for="numero_secciones">Numero de Secciones</label>
         </div>
         <div class="input-field col s6">
             <i class="material-icons prefix">filter_9_plus</i>
             <input id="cantidad_alumnos" name="cantidad_alumnos" type="text" class="validate" minlength="2" maxlength="2" required>
             <label for="cantidad_alumnos">Cantidad de Alumnos</label>
         </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">check</i>
+            <select id="select_materia" class="select2" disabled>
+                <option value="-1" disabled selected>Seleccione la materia...</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="position:fixed">
+        <div class="col s12 selectResults"></div>
     </div>
 </form>
 <div class="col s12 progressBar">
