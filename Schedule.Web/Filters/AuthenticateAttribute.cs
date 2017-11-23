@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using System;
 
 namespace Schedule.Web.Filters
@@ -11,29 +12,17 @@ namespace Schedule.Web.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            try
+            string token = context.HttpContext.Request.Cookies["Token"];
+            if (String.IsNullOrEmpty(token))
             {
-                string token = context.HttpContext.Request.Cookies["Token"];
-                if (String.IsNullOrEmpty(token))
-                {
-                    //context.Result = new RedirectToRouteResult(
-                    //    new RouteValueDictionary(new { controller = "Account", action = "Index" })
-                    //);
-                    context.HttpContext.Response.StatusCode = 400;
-                    context.Result = new ContentResult()
+                context.HttpContext.Response.Cookies.Delete("Token");
+                context.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary(new
                     {
-                        Content = "El cuerpo no es de tipo Token"
-                    };
-                    return;
-                }
-            }
-            catch (Exception)
-            {
-                context.HttpContext.Response.StatusCode = 400;
-                context.Result = new ContentResult()
-                {
-                    Content = "El cuerpo no es de tipo Token"
-                };
+                        controller = "Account",
+                        action = "Index"
+                    })
+                );
                 return;
             }
             base.OnActionExecuting(context);

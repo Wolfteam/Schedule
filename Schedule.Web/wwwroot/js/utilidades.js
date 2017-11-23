@@ -232,6 +232,7 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
         ], //con esto elimino que se muestre el icono de ordenamiento de la columna 0
         data: data,
         columns: columnsData,
+        //pagingType:"extStyle",
         initComplete: function () {
             $("#datatable_length").html('<label>Mostrar resultados.</label><select id="select-length" name="datatable_length" aria-controls="datatable" class=""><option value="5">5</option><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="-1">Todos</option></select>');
             $('#select-length').change(function () {
@@ -240,6 +241,8 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
             $('select').material_select();
             //Remueve todas las clases y agrega las que deseo
             $(".dt-buttons a").removeClass("dt-button");
+            //$(".dataTables_paginate a").removeClass();
+            //$(".dataTables_paginate").addClass("pagination");
         },
         drawCallback: function (settings) {
             // var table = $(selector).DataTable();
