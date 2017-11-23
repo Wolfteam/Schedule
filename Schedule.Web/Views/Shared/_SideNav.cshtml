@@ -42,7 +42,6 @@
             <li><a asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
             @if (listaPrivilegios != null && listaPrivilegios.Contains(Privilegios.Administrador))
             {
-                <li><a asp-controller="Secciones" asp-action="Index" class="waves-effect waves-red">Secciones<i class="fa fa-code-fork fa-2x" aria-hidden="true"></i></a></li>
                 <li><a asp-controller="EditarDB" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></a></li>
             }
             <li><div class="divider"></div></li>
