@@ -39,7 +39,7 @@ namespace Schedule.Web.Models.Repository
             {
                 profesores = await response.Content.ReadAsAsync<List<ProfesorDetailsDTO>>();
             }
-            return profesores.OrderBy(x => x.Nombre);
+            return profesores;
         }
 
         /// <summary>
