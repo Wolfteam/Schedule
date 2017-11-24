@@ -4,6 +4,13 @@
 }
 
 <div class="container">
+    <div class="row" id="barra-progeso" style="display:none">
+        <div class="col s12">
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col s12">
             <div class="section">
@@ -12,7 +19,6 @@
             </div>
         </div>
     </div>
-    
     <div class="row">
         <div class="input-field col s5">
             <i class="material-icons prefix">check</i>   
@@ -32,9 +38,136 @@
     
         <div class="input-field col s3 right">
             <i class="material-icons prefix">hourglass_empty</i>
-            <label for="horas_a_cumplir">Horas restantes</label>
+            <label for="horas_restantes">Horas restantes</label>
             <input type="text" id="horas_restantes" maxlength="2" value="0" disabled>
         </div>      
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <table class="bordered centered responsive-table" id="tabla_horario">
+			    <thead>
+				    <tr>
+				    	<th>Hora</th>
+				        <th>Lunes</th>
+				        <th>Martes</th>
+				        <th>Miercoles</th> 
+				        <th>Jueves</th>
+				        <th>Viernes</th>
+				        <th>Sabado</th>
+				    </tr>    	
+			    </thead>
+			    <tbody>
+			    	<tr>
+			    		<td class="hora">7:00am a 7:50am</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">7:50am a 8:40am</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">8:40am a 9:30am</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">9:30am a 10:20am</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">10:20am a 11:10am</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">11:10am a 12:00pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">1:00pm a 1:50pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">1:50pm a 2:40pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">2:40pm a 3:30pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">3:30pm a 4:20pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">4:20pm a 5:10pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    	<tr>
+			    		<td class="hora">5:10pm a 6:00pm</td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    		<td></td>
+			    	</tr>
+			    </tbody>      
+			</table>
+        </div>
     </div>
 </div>
 
