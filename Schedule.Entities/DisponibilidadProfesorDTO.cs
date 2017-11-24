@@ -3,21 +3,38 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Schedule.Entities
 {
-    public class DisponibilidadProfesorDTO
+    public class DisponibilidadProfesorDTO : PersonaBase
     {
         [Required]
-        public uint Cedula { get; set; }
-
+        public byte IdDia { get; set; }
         [Required]
-        public List<byte> IDDias = new List<byte>();
-
+        public byte IdHoraInicio { get; set; }
         [Required]
-        public List<byte> IDHoraInicio = new List<byte>();
+        public byte IdHoraFin { get; set; }
+    }
 
-        [Required]
-        public List<byte> IDHoraFin = new List<byte>();
-
+    public class DisponibilidadProfesorDetailsDTO : PersonaBase
+    {
+        public IEnumerable<DisponibilidadProfesorDTO> Disponibilidad  { get; set; }
         public byte HorasACumplir { get; set; }
         public int HorasAsignadas { get; set; }
     }
+
+    // public class DisponibilidadProfesorDTO
+    // {
+    //     [Required]
+    //     public uint Cedula { get; set; }
+
+    //     [Required]
+    //     public List<byte> IDDias = new List<byte>();
+
+    //     [Required]
+    //     public List<byte> IDHoraInicio = new List<byte>();
+
+    //     [Required]
+    //     public List<byte> IDHoraFin = new List<byte>();
+
+    //     public byte HorasACumplir { get; set; }
+    //     public int HorasAsignadas { get; set; }
+    // }
 }
