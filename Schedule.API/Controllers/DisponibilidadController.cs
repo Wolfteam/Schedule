@@ -1,7 +1,11 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
+using Schedule.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -14,12 +18,12 @@ namespace Schedule.API.Controllers
         // POST api/Disponibilidad
         [HttpPost]
         //[AuthenticateAttribute].
-        public IActionResult Create([FromBody] DisponibilidadProfesores disponibilidad)
+        public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
         {
-            bool result = _db.Create(disponibilidad);
+            bool result = _db.Create(Mapper.Map<IEnumerable<DisponibilidadProfesorDTO>, IEnumerable<DisponibilidadProfesores>>(disponibilidad));
             if (!result)
                 return StatusCode(500);
-            return CreatedAtRoute("GetDisponibilidad", new { cedula = disponibilidad.Cedula }, disponibilidad);
+            return CreatedAtRoute("GetDisponibilidad", new { cedula = disponibilidad.FirstOrDefault().Cedula }, disponibilidad);
         }
 
         // DELETE api/Disponibilidad/21255727
@@ -29,7 +33,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Delete(cedula);
             if (!result)
-                return StatusCode(404);
+                return NotFound();
             return new NoContentResult();
         }
 
@@ -40,7 +44,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Delete();
             if (!result)
-                return StatusCode(404);
+                return StatusCode(500);
             return new NoContentResult();
         }
 
@@ -49,9 +53,16 @@ namespace Schedule.API.Controllers
         //[AuthenticateAttribute]
         public IActionResult Get(int cedula)
         {
+            //TODO: Aca deberia ir a pedir las horas a cumplir del profesor en el repo del mismo
+            //seria weno aplicar el repo pattern de una vez pa no tener q crear una variable
+            //para cada repo
             var disponibilidad = _db.Get(cedula);
-            if (disponibilidad == null)         
-                return NotFound();      
+            if (disponibilidad.Disponibilidad != null)
+                return new ObjectResult(disponibilidad);
+            ProfesorRepository pr = new ProfesorRepository();
+            disponibilidad.Cedula = (uint)cedula;
+            //asumo que la cedula existe
+            disponibilidad.HorasACumplir = pr.GetHorasACumplir(cedula);
             return new ObjectResult(disponibilidad);
         }
     }
