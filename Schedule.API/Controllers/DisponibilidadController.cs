@@ -29,7 +29,7 @@ namespace Schedule.API.Controllers
         // DELETE api/Disponibilidad/21255727
         [HttpDelete("{cedula}")]
         //[AuthenticateAttribute]
-        public IActionResult Delete(int cedula)
+        public IActionResult Delete(uint cedula)
         {
             bool result = _db.Delete(cedula);
             if (!result)

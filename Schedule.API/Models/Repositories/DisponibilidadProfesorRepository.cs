@@ -21,6 +21,7 @@ namespace Schedule.API.Models.Repositories
         {
             try
             {
+                Delete(disponibilidad.FirstOrDefault().Cedula);
                 _db.DisponibilidadProfesores.AddRange(disponibilidad);
                 _db.SaveChanges();
             }
@@ -58,7 +59,7 @@ namespace Schedule.API.Models.Repositories
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
         /// <returns>True en caso de exito</returns>
-        public bool Delete(int cedula)
+        public bool Delete(uint cedula)
         {
             try
             {
