@@ -74,8 +74,8 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                 var relacion = prepareProfesorMateriaData(this.$content);
-                 updateProfesorMateria(id, relacion);
+                var relacion = prepareProfesorMateriaData(this.$content);
+                updateProfesorMateria(id, relacion);
             }
         },
         Cancelar: {
@@ -109,7 +109,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             content.find("#select_materia").append(options);
             content.find("#select_materia").append(options).val(codigo);
         });
-        
+
         globalFunction = function () {
             $("#form_profesores_materias").find(".select2").select2({
                 placeholder: "Seleccione una opcion",
@@ -130,7 +130,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
  */
 function createProfesorMateria(relacion) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/ProfesorMateria",
+    makeAjaxCall(apiProfesorMateria,
         function (data, textStatus, xhr) {
             if (xhr.status !== 200) {
                 var buttons = {
@@ -155,7 +155,7 @@ function createProfesorMateria(relacion) {
  * @param {number} id Id de la relacion a eliminar
  */
 function deleteProfesorMateria(id) {
-    makeAjaxCall("/api/ProfesorMateria/" + id,
+    makeAjaxCall(apiProfesorMateria + "/" + id,
         function (data, textStatus, xhr) {
             if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la relacion.");
@@ -195,7 +195,7 @@ function deleteProfesoresMateria(arrayID) {
  * @param {Function} callback Funcion de callback
  */
 function getAllProfesoresMateria(callback) {
-    makeAjaxCall("/api/ProfesorMateria",
+    makeAjaxCall(apiProfesorMateria,
         function (data, textStatus, xhr) {
             return callback(data, textStatus, xhr);
         },
@@ -223,7 +223,7 @@ function prepareProfesorMateriaData(object) {
  */
 function updateProfesorMateria(id, relacion) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/ProfesorMateria/" + id,
+    makeAjaxCall(apiProfesorMateria + "/" + id,
         function (data, textStatus, xhr) {
             if (xhr.status === 204) {
                 var buttons = {

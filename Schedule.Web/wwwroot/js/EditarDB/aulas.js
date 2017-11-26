@@ -95,7 +95,7 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
  */
 function createAula(aula) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Aulas",
+    makeAjaxCall(apiAula,
         function (data, textStatus, xhr) {
             if (xhr.status !== 500) {
                 var buttons = {
@@ -120,7 +120,7 @@ function createAula(aula) {
  * @param {number} id Id del aula a eliminar
  */
 function deleteAula(id) {
-    makeAjaxCall("/api/Aulas/" + id,
+    makeAjaxCall(apiAula + "/" + id,
         function (data, textStatus, xhr) {
             if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el aula.");
@@ -161,7 +161,7 @@ function deleteAulas(idArray) {
  */
 function getAllAulas(callback) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Aulas",
+    makeAjaxCall(apiAula,
         function (data, textStatus, xhr) {
             return callback(data, textStatus, xhr);
         },
@@ -176,7 +176,7 @@ function getAllAulas(callback) {
  */
 function updateAula(id, aula) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Aulas/" + id,
+    makeAjaxCall(apiAula + "/" + id,
         function (data, textStatus, xhr) {
             if (xhr.status === 204) {
                 var buttons = {

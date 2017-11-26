@@ -3,7 +3,7 @@
  * @param {Function} callback Funcion de callback
  */
 function getAllCarreras(callback) {
-    makeAjaxCall("/api/Carreras",
+    makeAjaxCall(apiCarreras,
         function (data, textStatus, xhr) {
             return callback(data);
         },

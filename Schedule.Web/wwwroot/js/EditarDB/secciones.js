@@ -4,8 +4,8 @@ function confirmCreateSecciones() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                 var seccion = prepareSeccionData(this.$content);
-                 createSecciones(seccion);
+                var seccion = prepareSeccionData(this.$content);
+                createSecciones(seccion);
             }
         },
         Cancelar: {
@@ -117,7 +117,7 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
  */
 function createSecciones(seccion) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Secciones",
+    makeAjaxCall(apiSecciones,
         function (data, textStatus, xhr) {
             if (xhr.status !== 500) {
                 var buttons = {
@@ -142,7 +142,7 @@ function createSecciones(seccion) {
  * @param {number} codigo Cedula del profesor a eliminar
  */
 function deleteSeccion(codigo) {
-    makeAjaxCall("/api/Secciones/" + codigo,
+    makeAjaxCall(apiSecciones + "/" + codigo,
         function (data, textStatus, xhr) {
             if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la(s) seccion(es).");
@@ -196,7 +196,7 @@ function prepareSeccionData(object) {
  * @param {Function} callback Funcion de callback
  */
 function getAllSecciones(callback) {
-    makeAjaxCall("/api/Secciones",
+    makeAjaxCall(apiSecciones,
         function (data, textStatus, xhr) {
             return callback(data, textStatus, xhr)
         },
@@ -211,7 +211,7 @@ function getAllSecciones(callback) {
  */
 function updateSeccion(codigo, seccion) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Secciones/" + codigo,
+    makeAjaxCall(apiSecciones + "/" + codigo,
         function (data, textStatus, xhr) {
             if (xhr.status === 204) {
                 var buttons = {

@@ -21,7 +21,7 @@ function confirmCreateProfesores() {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
-                    text: obj.codigoPrioridad + ". Horas a cumplir: " +obj.horasACumplir
+                    text: obj.codigoPrioridad + ". Horas a cumplir: " + obj.horasACumplir
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -81,7 +81,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
-                    text: obj.codigoPrioridad + ". Horas a cumplir: " +obj.horasACumplir
+                    text: obj.codigoPrioridad + ". Horas a cumplir: " + obj.horasACumplir
                 };
             });
             var options = createSelectOptions(arrayData);
@@ -116,7 +116,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
  */
 function createProfesor(profesor) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Profesor",
+    makeAjaxCall(apiProfesores,
         function (data, textStatus, xhr) {
             if (xhr.status !== 500) {
                 var buttons = {
@@ -141,7 +141,7 @@ function createProfesor(profesor) {
  * @param {number} cedula Cedula del profesor a eliminar
  */
 function deleteProfesor(cedula) {
-    makeAjaxCall("/api/Profesor/" + cedula,
+    makeAjaxCall(apiProfesores + "/" + cedula,
         function (data, textStatus, xhr) {
             if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el profesor.");
@@ -181,7 +181,7 @@ function deleteProfesores(arrayCedulas) {
  * @param {Function} callback Funcion de callback
  */
 function getAllProfesores(callback) {
-    makeAjaxCall("/api/Profesor",
+    makeAjaxCall(apiProfesores,
         function (data, textStatus, xhr) {
             return callback(data, textStatus, xhr);
         },
@@ -211,7 +211,7 @@ function prepareProfesorData(object) {
  */
 function updateProfesor(cedula, profesor) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Profesor/" + cedula,
+    makeAjaxCall(apiProfesores + "/" + cedula,
         function (data, textStatus, xhr) {
             if (xhr.status === 204) {
                 var buttons = {

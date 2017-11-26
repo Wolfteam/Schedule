@@ -3,7 +3,7 @@
  * @param {Function} callback Funcion de callback
  */
 function getAllPrioridades(callback) {
-    makeAjaxCall("/api/Prioridades",
+    makeAjaxCall(apiPrioridadesProfesor,
         function (data, textStatus, xhr) {
             return callback(data);
         },

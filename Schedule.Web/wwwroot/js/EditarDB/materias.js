@@ -26,7 +26,7 @@ function confirmCreateMaterias() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_semestre").append(options);
-            
+
         });
 
         getAllCarreras(function (data) {
@@ -159,7 +159,7 @@ function prepareMateriaData(object) {
  */
 function createMateria(materia) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Materias",
+    makeAjaxCall(apiMaterias,
         function (data, textStatus, xhr) {
             if (xhr.status !== 500) {
                 var buttons = {
@@ -184,7 +184,7 @@ function createMateria(materia) {
  * @param {number} codigo Codigo de la materia a eliminar
  */
 function deleteMateria(codigo) {
-    makeAjaxCall("/api/Materias/" + codigo,
+    makeAjaxCall(apiMaterias + "/" + codigo,
         function (data, textStatus, xhr) {
             if (xhr.status !== 204) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la materia.");
@@ -210,7 +210,7 @@ function deleteMaterias(arrayCodigos) {
             Ok: {
                 text: 'Ok',
                 btnClass: 'btn-green',
-                action: function () { }
+                action: function () {}
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
@@ -225,7 +225,7 @@ function deleteMaterias(arrayCodigos) {
  */
 function getAllMaterias(callback) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Materias",
+    makeAjaxCall(apiMaterias,
         function (data, textStatus, xhr) {
             return callback(data, textStatus, xhr);
         },
@@ -240,7 +240,7 @@ function getAllMaterias(callback) {
  */
 function updateMateria(codigo, materia) {
     $("#barra-progeso").show();
-    makeAjaxCall("/api/Materias/" + codigo,
+    makeAjaxCall(apiMaterias + "/" + codigo,
         function (data, textStatus, xhr) {
             if (xhr.status === 204) {
                 var buttons = {
