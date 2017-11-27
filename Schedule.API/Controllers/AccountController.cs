@@ -12,6 +12,7 @@ namespace Schedule.API.Controllers
     public class AccountController : Controller
     {
         private readonly UsuarioRepository _db = new UsuarioRepository();
+        private readonly PeriodoRepository _pr = new PeriodoRepository();
         private readonly TokenRepository _tokenService = new TokenRepository();
 
         #region Variables
@@ -30,7 +31,8 @@ namespace Schedule.API.Controllers
         [HttpPost("Login")]
         public ActionResult Login([FromBody] UsuarioDTO usuario)
         {
-            if (_db.Get(usuario.Username, usuario.Password))
+            var periodo = _pr.GetCurrentPeriodo();
+            if (_db.Get(usuario.Username, usuario.Password) && periodo != null)
             {
                 var token = _tokenService.GenerateToken(usuario.Username);
                 if (_tokenService.Create(token))

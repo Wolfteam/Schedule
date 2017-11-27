@@ -1,4 +1,5 @@
-﻿using Schedule.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Schedule.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +43,23 @@ namespace Schedule.API.Models.Repositories
         /// <param name="password">Password</param>
         /// <returns>True en caso de existir</returns>
         public bool Get(string username, string password)
-        {
+        {            
             if (_db.Admin.FirstOrDefault(x => x.Username == username && x.Password == password) != null)
             {
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Verifica si un usuario en particular es administrador o no
+        /// </summary>
+        /// <param name="username">Usuario a verificar</param>
+        /// <returns>True en caso de ser administrador</returns>
+        public bool IsUserAdmin(string username)
+        {
+            var privilegio = (Entities.Privilegios)_db.Admin.FirstOrDefault(u => u.Username == username).IdPrivilegio;
+            return privilegio.Equals(Entities.Privilegios.Administrador);
         }
 
         public bool Update(int id, Admin objeto)
