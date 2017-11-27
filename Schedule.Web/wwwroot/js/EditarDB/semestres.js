@@ -3,7 +3,7 @@
  * @param {Function} callback Funcion de callback
  */
 function getAllSemestres(callback) {
-    makeAjaxCall("/api/Semestres",
+    makeAjaxCall(apiSemestres,
         function (data, textStatus, xhr) {
             return callback(data);
         },

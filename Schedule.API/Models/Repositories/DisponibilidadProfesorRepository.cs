@@ -1,9 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Diagnostics;
-using Schedule.Entities;
-using AutoMapper.QueryableExtensions;
+﻿using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Schedule.Entities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Schedule.API.Models.Repositories
 {
@@ -14,17 +15,19 @@ namespace Schedule.API.Models.Repositories
         /// <summary>
         /// Crea una nueva disponibilidad a un profesor en particular
         /// </summary>
-        /// <param name="disponibilidad">Objeto de tipo disponibilidad</param>
+        /// <param name="disponibilidad">Objeto de tipo DisponibilidadProfesores</param>
         /// <returns>True en caso de exito</returns>
-        public bool Create(DisponibilidadProfesores objeto)
+        public bool Create(IEnumerable<DisponibilidadProfesores> disponibilidad)
         {
             try
             {
-                _db.DisponibilidadProfesores.Add(objeto);
+                Delete(disponibilidad.FirstOrDefault().Cedula);
+                _db.DisponibilidadProfesores.AddRange(disponibilidad);
                 _db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine("error" + e.Message);
                 return false;
             }
             return true;
@@ -56,7 +59,7 @@ namespace Schedule.API.Models.Repositories
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
         /// <returns>True en caso de exito</returns>
-        public bool Delete(int cedula)
+        public bool Delete(uint cedula)
         {
             try
             {
@@ -87,20 +90,21 @@ namespace Schedule.API.Models.Repositories
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
         /// <returns>Lista de disponibilidades</returns>
-        public DisponibilidadProfesorDTO Get(int cedula)
+        public DisponibilidadProfesorDetailsDTO Get(int cedula)
         {
-            var disponibilidades = _db.DisponibilidadProfesores.Include(p => p.Profesores.PrioridadProfesor).Where(d => d.Cedula == cedula);
-            if (disponibilidades.Count() == 0) return null;
-            DisponibilidadProfesorDTO disponibilidad = new DisponibilidadProfesorDTO
+
+            var disponibilidad = _db.DisponibilidadProfesores.Include(p => p.Profesores.PrioridadProfesor).Where(c => c.Cedula == cedula);
+            if (disponibilidad.Count() == 0)
+                return new DisponibilidadProfesorDetailsDTO();
+
+            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO
             {
                 Cedula = (uint)cedula,
-                IDDias = disponibilidades.Select(w => w.IdDia).ToList(),
-                IDHoraFin = disponibilidades.Select(x => x.IdHoraFin).ToList(),
-                IDHoraInicio = disponibilidades.Select(y => y.IdHoraInicio).ToList(),
-                HorasAsignadas = disponibilidades.Sum(z => z.IdHoraFin) - disponibilidades.Sum(a => a.IdHoraInicio),
-                HorasACumplir = disponibilidades.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir
+                Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(),
+                HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir,
+                HorasAsignadas = disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio)
             };
-            return disponibilidad;
+            return result;
         }
 
         public bool Update(int cedula, DisponibilidadProfesores objeto)

@@ -1,12 +1,15 @@
 //Para que select2 sea en spanish por default
 $.fn.select2.defaults.set('language', 'es');
 
-//Esto se encarga de que cuando se presione ctrl + space se muestre el sidenav
-var map = { 17: false, 32: false };
+//Esto se encarga de que cuando se presione ctrl + shift se muestre el sidenav
+var map = {
+    17: false,
+    16: false
+};
 $(document).keydown(function (e) {
     if (e.keyCode in map) {
         map[e.keyCode] = true;
-        if (map[17] && map[32]) {
+        if (map[17] && map[16]) {
             $('.button-collapse').sideNav('show');
         }
     }
@@ -30,3 +33,13 @@ $('.button-collapse').sideNav({
 
 //inicializa los select
 $('select').material_select();
+
+var apiAula = "api/Aulas",
+    apiCarreras = "api/Carreras",
+    apiDisponibilidad = "api/Disponibilidad",
+    apiMaterias = "api/Materias",
+    apiPrioridadesProfesor = "api/Prioridades",
+    apiProfesores = "api/Profesor",
+    apiProfesorMateria = "api/ProfesorMateria",
+    apiSecciones = "api/Secciones",
+    apiSemestres = "api/Semestres";

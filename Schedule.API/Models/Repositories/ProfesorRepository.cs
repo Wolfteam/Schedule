@@ -1,4 +1,5 @@
 ﻿using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,16 @@ namespace Schedule.API.Models.Repositories
         public ProfesorDetailsDTO Get(int cedula)
         {
             return _db.Profesores.ProjectTo<ProfesorDetailsDTO>().FirstOrDefault(x => x.Cedula == cedula);
+        }
+
+        /// <summary>
+        /// Obtiene las horas a cumplir de un profesor en particular
+        /// </summary>
+        /// <param name="cedula">Cedula</param>
+        /// <returns>Numero de horas que un profesor debe cumplir</returns>
+        public byte GetHorasACumplir(int cedula)
+        {
+            return _db.Profesores.Include(x => x.PrioridadProfesor).FirstOrDefault(x => x.Cedula == cedula).PrioridadProfesor.HorasACumplir;
         }
 
         /// <summary>

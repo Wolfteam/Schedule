@@ -36,7 +36,7 @@ namespace Schedule.API.Controllers
                 if (_tokenService.Create(token))
                 {
                     return Ok(AutoMapper.Mapper.Map<Tokens, TokenDTO>(token));
-                }             
+                }
             }
             return Unauthorized();
         }
@@ -52,7 +52,7 @@ namespace Schedule.API.Controllers
         //     return Forbid();
         // }
 
-        // DELETE api/Account/123456789
+        // DELETE api/Account/Logout/123456789
         [HttpDelete("Logout/{token}")]
         [AuthenticateAttribute]
         public ActionResult Logout(string token)
@@ -64,7 +64,7 @@ namespace Schedule.API.Controllers
             return NotFound();
         }
 
-        //GET api/Account/123456798
+        //GET api/Account/Privilegios/123456798
         [HttpGet("Privilegios/{token}")]
         [AuthenticateAttribute]
         public List<Entities.Privilegios> GetAllPrivilegiosByToken(string token)
@@ -74,6 +74,17 @@ namespace Schedule.API.Controllers
                 _tokenService.GetAllPrivilegiosByToken(token)
             };
             return listaPrivilegios;
+        }
+
+        //GET api/Account/ProfesorInfo/123456798
+        [HttpGet("ProfesorInfo/{token}")]
+        //[AuthenticateAttribute]
+        public IActionResult GetProfesorInfoByToken(string token)
+        {
+            var profesor = _tokenService.GetProfesorInfoByToken(token);
+            if (profesor == null)
+                return NotFound();
+            return new ObjectResult(profesor);
         }
     }
 }

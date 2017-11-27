@@ -65,27 +65,25 @@ namespace Schedule.API.Models.Repositories
         }
 
         /// <summary>
-        /// Elimina los tokens de un usuario en particular
+        /// Elimina el token de un usuario
         /// </summary>
-        /// <param name="username">Usuario</param>
+        /// <param name="token">Token</param>
         /// <returns>True en caso de exito</returns>
-        public bool Delete(string username)
+        public bool Delete(string token)
         {
+            bool result = false;
             try
             {
-                var t = _db.Tokens.Where(x => x.Token == username);
-                if (t != null)
-                {
-                    _db.Tokens.RemoveRange(t);
-                    _db.SaveChanges();
-                }
+                int cedula = (int)_db.Tokens.Include(a => a.Admin).FirstOrDefault(t => t.Token == token).Admin.Cedula;
+                if (cedula != 0)
+                    result = Delete(cedula);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                return false;
+                result = false;
             }
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -135,6 +133,31 @@ namespace Schedule.API.Models.Repositories
         public Entities.Privilegios GetAllPrivilegiosByToken(string token)
         {
             return (Entities.Privilegios)_db.Tokens.Include(p => p.Admin).FirstOrDefault(x => x.Token == token).Admin.IdPrivilegio;
+        }
+
+        /// <summary>
+        /// Obtiene la informacion del profesor asociada a un token en particular
+        /// </summary>
+        /// <param name="token">Token</param>
+        /// <returns>Objeto de tipo ProfesorDetailsDTO</returns>
+        public ProfesorDetailsDTO GetProfesorInfoByToken(string token)
+        {
+            return _db.Tokens//source
+                    .Where(x => x.Token == token)
+                    .Join
+                    (
+                        _db.Admin,//target
+                        fk => fk.Username,//fk
+                        pk => pk.Username,//pk
+                        (fk, pk) => new { Token = fk, Admin = pk }//select result
+                    )
+                    .Join
+                    (
+                        _db.Profesores,
+                        fk => fk.Admin.Cedula,
+                        pk => pk.Cedula,
+                        (fk, pk) => new { Profesor = pk }
+                    ).Select(x => x.Profesor).ProjectTo<ProfesorDetailsDTO>().FirstOrDefault();
         }
 
         public bool Update(int id, Tokens objeto)
