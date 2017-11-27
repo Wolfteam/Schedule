@@ -28,7 +28,7 @@ namespace Schedule.API
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddAutoMapper();
             services.Configure<AppSettings>(Configuration.GetSection("ConnectionString"));
-            //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetSection("ConnectionString").Value));
+            //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,6 +16,7 @@ namespace Schedule.API.Models
         public virtual DbSet<HorarioProfesores> HorarioProfesores { get; set; }
         public virtual DbSet<Horas> Horas { get; set; }
         public virtual DbSet<Materias> Materias { get; set; }
+        public virtual DbSet<PeriodoCarrera> PeriodoCarrera { get; set; }
         public virtual DbSet<PrioridadProfesor> PrioridadProfesor { get; set; }
         public virtual DbSet<Privilegios> Privilegios { get; set; }
         public virtual DbSet<Profesores> Profesores { get; set; }
@@ -30,8 +31,8 @@ namespace Schedule.API.Models
             if (!optionsBuilder.IsConfigured)
             {
                 //optionsBuilder.UseMySql(_appSetting.Value.ConnectionString);
-#warning  Debo quitar la connection string de aca
-                optionsBuilder.UseMySql("server=localhost;userid=wolfteam20;pwd=220770;port=3306;database=horarios;sslmode=none;");
+                #warning  Debo quitar la connection string de aca
+                optionsBuilder.UseMySql("server=localhost;userid=wolfteam20;pwd=sistemas;port=3306;database=horarios;sslmode=none;");
             }
         }
 
@@ -319,6 +320,31 @@ namespace Schedule.API.Models
                     .HasForeignKey(d => d.IdTipo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("materias_ibfk_2");
+            });
+
+            modelBuilder.Entity<PeriodoCarrera>(entity =>
+            {
+                entity.HasKey(e => e.IdPeriodo);
+
+                entity.ToTable("periodo_carrera");
+
+                entity.Property(e => e.IdPeriodo)
+                    .HasColumnName("id_periodo")
+                    .HasColumnType("int(11)")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.FechaCreacion)
+                    .HasColumnName("fecha_creacion")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.NombrePeriodo)
+                    .IsRequired()
+                    .HasColumnName("nombre_periodo")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasColumnType("bit(1)");
             });
 
             modelBuilder.Entity<PrioridadProfesor>(entity =>
