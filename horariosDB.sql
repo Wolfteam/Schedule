@@ -101,8 +101,10 @@ CREATE TABLE secciones(
 	codigo SMALLINT UNSIGNED,
 	numero_secciones TINYINT UNSIGNED NOT NULL,
 	cantidad_alumnos TINYINT UNSIGNED NOT NULL,
+	id_periodo INT NOT NULL,
 	PRIMARY KEY (codigo),
-	FOREIGN KEY (codigo) REFERENCES materias (codigo)	
+	FOREIGN KEY (codigo) REFERENCES materias (codigo),
+	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)		
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE disponibilidad_profesores(
@@ -110,11 +112,13 @@ CREATE TABLE disponibilidad_profesores(
 	id_dia TINYINT UNSIGNED NOT NULL,
 	id_hora_inicio TINYINT UNSIGNED NOT NULL,
 	id_hora_fin TINYINT UNSIGNED NOT NULL,
+	id_periodo INT NOT NULL,
 	PRIMARY KEY (cedula,id_dia,id_hora_inicio,id_hora_fin),
 	FOREIGN KEY (cedula) REFERENCES profesores (cedula),
 	FOREIGN KEY (id_dia) REFERENCES dias (id_dia),
 	FOREIGN KEY (id_hora_inicio) REFERENCES horas (id_hora),
-	FOREIGN KEY (id_hora_fin) REFERENCES horas (id_hora)
+	FOREIGN KEY (id_hora_fin) REFERENCES horas (id_hora),
+	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE horario_profesores(
@@ -160,10 +164,10 @@ CREATE TABLE tokens(
 INSERT INTO periodo_carrera (nombre_periodo, status, fecha_creacion) VALUES
 ('2016-II', 0, '20160809'),
 ('2017-I', 0, '20170409'),
-('2017-II', 1, '20170809')
+('2017-II', 1, '20170809');
 
 INSERT INTO periodo_carrera (nombre_periodo, status, fecha_creacion) VALUES
-('2016-II', 0, '20171109')
+('2016-II', 0, '20171109');
 
 INSERT INTO tipo_aula_materia (nombre_tipo) VALUES 
 ("Teoria"),
