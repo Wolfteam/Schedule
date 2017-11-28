@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class PeriodoRepository //: IRepository<Materias, MateriasDetailsDTO>
+    public class PeriodoCarreraRepository //: IRepository<Materias, MateriasDetailsDTO>
     {
         private readonly HorariosContext _db = new HorariosContext();
 
