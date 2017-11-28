@@ -11,6 +11,7 @@ namespace Schedule.API.Controllers
     public class SeccionesController : Controller
     {
         private readonly SeccionesRepository _db = new SeccionesRepository();
+        private readonly PeriodoCarreraRepository pcr = new PeriodoCarreraRepository();
 
         // POST api/Secciones
         [HttpPost]
@@ -18,6 +19,7 @@ namespace Schedule.API.Controllers
         //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Create([FromBody] SeccionesDTO seccion)
         {
+            seccion.IdPeriodo = pcr.GetCurrentPeriodo().IdPeriodo;
             bool result = _db.Create(Mapper.Map<SeccionesDTO, Secciones>(seccion));
             if (!result)
                 return StatusCode(500);
@@ -59,6 +61,7 @@ namespace Schedule.API.Controllers
         [HttpPut("{codigo}")]
         public IActionResult Update(int codigo, [FromBody] SeccionesDTO seccion)
         {
+            seccion.IdPeriodo = pcr.GetCurrentPeriodo().IdPeriodo;
             bool result = _db.Update(codigo, Mapper.Map<SeccionesDTO, Secciones>(seccion));
             if (!result)
                 return StatusCode(404);

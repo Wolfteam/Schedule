@@ -12,7 +12,7 @@ namespace Schedule.API.Controllers
     public class AccountController : Controller
     {
         private readonly UsuarioRepository _db = new UsuarioRepository();
-        private readonly PeriodoRepository _pr = new PeriodoRepository();
+        private readonly PeriodoCarreraRepository _pr = new PeriodoCarreraRepository();
         private readonly TokenRepository _tokenService = new TokenRepository();
 
         #region Variables
