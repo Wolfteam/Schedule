@@ -11,11 +11,13 @@ namespace Schedule.Entities
         public byte IdHoraInicio { get; set; }
         [Required]
         public byte IdHoraFin { get; set; }
+        
+        public int IdPeriodo { get; set; }
     }
 
     public class DisponibilidadProfesorDetailsDTO : PersonaBase
     {
-        public IEnumerable<DisponibilidadProfesorDTO> Disponibilidad  { get; set; }
+        public IEnumerable<DisponibilidadProfesorDTO> Disponibilidad { get; set; }
         public byte HorasACumplir { get; set; }
         public int HorasAsignadas { get; set; }
     }

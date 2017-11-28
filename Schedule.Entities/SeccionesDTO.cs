@@ -14,12 +14,15 @@ namespace Schedule.Entities
     public class SeccionesDetailsDTO : SeccionesBaseDTO
     {
         public MateriasDetailsDTO Materia { get; set; }
+        public PeriodoCarreraDTO PeriodoCarrera { get; set; }
     }
 
     public class SeccionesDTO : SeccionesBaseDTO
     {
         [Required]
         public ushort Codigo { get; set; }
+        
+        public int IdPeriodo { get; set; }
     }
 
 }
