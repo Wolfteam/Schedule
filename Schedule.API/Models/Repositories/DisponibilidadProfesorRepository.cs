@@ -67,7 +67,8 @@ namespace Schedule.API.Models.Repositories
                 .RemoveRange
                 (
                     _db.DisponibilidadProfesores
-                    .Where(x => x.Cedula == cedula)
+                    .Include(pc => pc.PeriodoCarrera)
+                    .Where(x => x.Cedula == cedula && x.PeriodoCarrera.Status == true)
                     .ToList()
                 );
                 _db.SaveChanges();
@@ -92,8 +93,11 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Lista de disponibilidades</returns>
         public DisponibilidadProfesorDetailsDTO Get(int cedula)
         {
+            var disponibilidad = _db.DisponibilidadProfesores
+                .Include(pc => pc.PeriodoCarrera)
+                .Include(p => p.Profesores.PrioridadProfesor)
+                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
 
-            var disponibilidad = _db.DisponibilidadProfesores.Include(p => p.Profesores.PrioridadProfesor).Where(c => c.Cedula == cedula);
             if (disponibilidad.Count() == 0)
                 return new DisponibilidadProfesorDetailsDTO();
 

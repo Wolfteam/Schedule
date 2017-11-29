@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Schedule.API.Filters;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
@@ -14,12 +15,16 @@ namespace Schedule.API.Controllers
     public class DisponibilidadController : Controller
     {
         private readonly DisponibilidadProfesorRepository _db = new DisponibilidadProfesorRepository();
+        private readonly PeriodoCarreraRepository _pcr = new PeriodoCarreraRepository();
 
         // POST api/Disponibilidad
         [HttpPost]
         //[AuthenticateAttribute].
         public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
         {
+            int idPeriodoActul = _pcr.GetCurrentPeriodo().IdPeriodo;
+            disponibilidad.ToList().ForEach(d => d.IdPeriodo = idPeriodoActul);
+
             bool result = _db.Create(Mapper.Map<IEnumerable<DisponibilidadProfesorDTO>, IEnumerable<DisponibilidadProfesores>>(disponibilidad));
             if (!result)
                 return StatusCode(500);

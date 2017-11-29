@@ -2,6 +2,14 @@
 CREATE DATABASE horarios;
 USE horarios;
 
+CREATE TABLE periodo_carrera(
+	id_periodo INT AUTO_INCREMENT,
+	nombre_periodo VARCHAR(20) NOT NULL,
+	status BIT NOT NULL,
+	fecha_creacion DATETIME,
+	PRIMARY KEY (id_periodo)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE tipo_aula_materia(
 	id_tipo TINYINT UNSIGNED AUTO_INCREMENT,
 	nombre_tipo VARCHAR(20) NOT NULL,
@@ -93,8 +101,10 @@ CREATE TABLE secciones(
 	codigo SMALLINT UNSIGNED,
 	numero_secciones TINYINT UNSIGNED NOT NULL,
 	cantidad_alumnos TINYINT UNSIGNED NOT NULL,
+	id_periodo INT NOT NULL,
 	PRIMARY KEY (codigo),
-	FOREIGN KEY (codigo) REFERENCES materias (codigo)	
+	FOREIGN KEY (codigo) REFERENCES materias (codigo),
+	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)		
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE disponibilidad_profesores(
@@ -102,11 +112,13 @@ CREATE TABLE disponibilidad_profesores(
 	id_dia TINYINT UNSIGNED NOT NULL,
 	id_hora_inicio TINYINT UNSIGNED NOT NULL,
 	id_hora_fin TINYINT UNSIGNED NOT NULL,
+	id_periodo INT NOT NULL,
 	PRIMARY KEY (cedula,id_dia,id_hora_inicio,id_hora_fin),
 	FOREIGN KEY (cedula) REFERENCES profesores (cedula),
 	FOREIGN KEY (id_dia) REFERENCES dias (id_dia),
 	FOREIGN KEY (id_hora_inicio) REFERENCES horas (id_hora),
-	FOREIGN KEY (id_hora_fin) REFERENCES horas (id_hora)
+	FOREIGN KEY (id_hora_fin) REFERENCES horas (id_hora),
+	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE horario_profesores(
@@ -147,6 +159,15 @@ CREATE TABLE tokens(
 	UNIQUE (token),
 	FOREIGN KEY (username) REFERENCES admin (username)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO periodo_carrera (nombre_periodo, status, fecha_creacion) VALUES
+('2016-II', 0, '20160809'),
+('2017-I', 0, '20170409'),
+('2017-II', 1, '20170809');
+
+INSERT INTO periodo_carrera (nombre_periodo, status, fecha_creacion) VALUES
+('2016-II', 0, '20171109');
 
 INSERT INTO tipo_aula_materia (nombre_tipo) VALUES 
 ("Teoria"),
@@ -375,7 +396,7 @@ INSERT INTO profesores_materias (cedula, codigo) VALUES
 
 INSERT INTO admin (cedula,username,password,id_privilegio) VALUES 
 (4119381,"unexpolcm", "sistemas",2),
-(21255727,"wolfteam20", "220770",1);
+(21255727,"wolfteam20", "sistemas",1);
 
 -- Fijate como creo las FK a partir de una tabla que tiene una PK compuesta
 -- FOREIGN KEY (codigo,numero_seccion) REFERENCES secciones (codigo,numero_seccion),

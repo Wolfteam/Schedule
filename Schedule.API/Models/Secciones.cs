@@ -12,8 +12,10 @@ namespace Schedule.API.Models
         public ushort Codigo { get; set; }
         public byte NumeroSecciones { get; set; }
         public byte CantidadAlumnos { get; set; }
+        public int IdPeriodo { get; set; }
 
         public Materias Materias { get; set; }
+        public PeriodoCarrera PeriodoCarrera { get; set; }
         public ICollection<HorarioProfesores> HorarioProfesores { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,9 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Lista de secciones</returns>
         public IQueryable<SeccionesDetailsDTO> Get()
         {
-            return _db.Secciones.ProjectTo<SeccionesDetailsDTO>();
+            return _db.Secciones.Include(x => x.PeriodoCarrera)
+                .Where(x => x.PeriodoCarrera.Status == true)
+                .ProjectTo<SeccionesDetailsDTO>();
         }
 
         /// <summary>
@@ -81,7 +84,10 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Objeto Secciones</returns>
         public SeccionesDetailsDTO Get(int codigo)
         {
-            return _db.Secciones.ProjectTo<SeccionesDetailsDTO>().FirstOrDefault(x => x.Materia.Codigo == codigo);
+            return _db.Secciones.Include(x => x.PeriodoCarrera)
+                .Where(x => x.PeriodoCarrera.Status == true)
+                .ProjectTo<SeccionesDetailsDTO>()
+                .FirstOrDefault(x => x.Materia.Codigo == codigo);
         }
 
         /// <summary>

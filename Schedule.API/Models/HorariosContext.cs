@@ -16,6 +16,7 @@ namespace Schedule.API.Models
         public virtual DbSet<HorarioProfesores> HorarioProfesores { get; set; }
         public virtual DbSet<Horas> Horas { get; set; }
         public virtual DbSet<Materias> Materias { get; set; }
+        public virtual DbSet<PeriodoCarrera> PeriodoCarrera { get; set; }
         public virtual DbSet<PrioridadProfesor> PrioridadProfesor { get; set; }
         public virtual DbSet<Privilegios> Privilegios { get; set; }
         public virtual DbSet<Profesores> Profesores { get; set; }
@@ -30,8 +31,8 @@ namespace Schedule.API.Models
             if (!optionsBuilder.IsConfigured)
             {
                 //optionsBuilder.UseMySql(_appSetting.Value.ConnectionString);
-#warning  Debo quitar la connection string de aca
-                optionsBuilder.UseMySql("server=localhost;userid=wolfteam20;pwd=220770;port=3306;database=horarios;sslmode=none;");
+                #warning  Debo quitar la connection string de aca
+                optionsBuilder.UseMySql("server=localhost;userid=wolfteam20;pwd=sistemas;port=3306;database=horarios;sslmode=none;");
             }
         }
 
@@ -149,6 +150,9 @@ namespace Schedule.API.Models
                 entity.HasIndex(e => e.IdHoraInicio)
                     .HasName("id_hora_inicio");
 
+                entity.HasIndex(e => e.IdPeriodo)
+                                    .HasName("id_periodo");
+
                 entity.Property(e => e.Cedula).HasColumnName("cedula");
 
                 entity.Property(e => e.IdDia).HasColumnName("id_dia");
@@ -156,6 +160,10 @@ namespace Schedule.API.Models
                 entity.Property(e => e.IdHoraInicio).HasColumnName("id_hora_inicio");
 
                 entity.Property(e => e.IdHoraFin).HasColumnName("id_hora_fin");
+
+                entity.Property(e => e.IdPeriodo)
+                                    .HasColumnName("id_periodo")
+                                    .HasColumnType("int(11)");
 
                 entity.HasOne(d => d.Profesores)
                     .WithMany(p => p.DisponibilidadProfesores)
@@ -180,6 +188,12 @@ namespace Schedule.API.Models
                     .HasForeignKey(d => d.IdHoraInicio)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("disponibilidad_profesores_ibfk_3");
+
+                entity.HasOne(d => d.PeriodoCarrera)
+                    .WithMany(p => p.DisponibilidadProfesores)
+                    .HasForeignKey(d => d.IdPeriodo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("disponibilidad_profesores_ibfk_5");
             });
 
             modelBuilder.Entity<HorarioProfesores>(entity =>
@@ -321,6 +335,31 @@ namespace Schedule.API.Models
                     .HasConstraintName("materias_ibfk_2");
             });
 
+            modelBuilder.Entity<PeriodoCarrera>(entity =>
+            {
+                entity.HasKey(e => e.IdPeriodo);
+
+                entity.ToTable("periodo_carrera");
+
+                entity.Property(e => e.IdPeriodo)
+                    .HasColumnName("id_periodo")
+                    .HasColumnType("int(11)")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.FechaCreacion)
+                    .HasColumnName("fecha_creacion")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.NombrePeriodo)
+                    .IsRequired()
+                    .HasColumnName("nombre_periodo")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasColumnType("bit(1)");
+            });
+
             modelBuilder.Entity<PrioridadProfesor>(entity =>
             {
                 entity.HasKey(e => e.IdPrioridad);
@@ -428,11 +467,18 @@ namespace Schedule.API.Models
 
                 entity.ToTable("secciones");
 
+                entity.HasIndex(e => e.IdPeriodo)
+                                    .HasName("id_periodo");
+
                 entity.Property(e => e.Codigo)
                     .HasColumnName("codigo")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.CantidadAlumnos).HasColumnName("cantidad_alumnos");
+
+                entity.Property(e => e.IdPeriodo)
+                                    .HasColumnName("id_periodo")
+                                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.NumeroSecciones).HasColumnName("numero_secciones");
 
@@ -441,6 +487,12 @@ namespace Schedule.API.Models
                     .HasForeignKey<Secciones>(d => d.Codigo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("secciones_ibfk_1");
+
+                entity.HasOne(d => d.PeriodoCarrera)
+                    .WithMany(p => p.Secciones)
+                    .HasForeignKey(d => d.IdPeriodo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("secciones_ibfk_2");
             });
 
             modelBuilder.Entity<Semestres>(entity =>

@@ -12,7 +12,9 @@ namespace Schedule.API.Helpers
         public MappingProfile()
         {
             #region Mapeos comunes
-            // Nota como le digo como mapear las propiedades extra que deseo            
+            // Nota como le digo como mapear las propiedades extra que deseo    
+            CreateMap<PeriodoCarrera, PeriodoCarreraDTO>();
+
             CreateMap<PrioridadProfesor, PrioridadProfesorDTO>()
                 .ForMember(d => d.CodigoPrioridad, opt => opt.MapFrom(s => s.CodigoPrioridad))
                 .ForMember(d => d.HorasACumplir, opt => opt.MapFrom(s => s.HorasACumplir))
@@ -49,7 +51,8 @@ namespace Schedule.API.Helpers
                 .ForMember(dto => dto.Profesor, conf => conf.MapFrom(s => s.Profesores));
 
             CreateMap<Secciones, SeccionesDetailsDTO>()
-                .ForMember(dto => dto.Materia, conf => conf.MapFrom(s => s.Materias));
+                .ForMember(dto => dto.Materia, conf => conf.MapFrom(s => s.Materias))
+                .ForMember(dto => dto.PeriodoCarrera, conf => conf.MapFrom(s => s.PeriodoCarrera));
 
             CreateMap<Tokens, TokenDTO>()
                 .ForMember(dto => dto.AuthenticationToken, conf => conf.MapFrom(s => s.Token))
@@ -70,6 +73,8 @@ namespace Schedule.API.Helpers
                .ForMember(d => d.IdSemestre, opt => opt.MapFrom(s => s.IdSemestre))
                .ForMember(d => d.IdTipo, opt => opt.MapFrom(s => s.IdTipo));
 
+            CreateMap<PeriodoCarreraDTO, PeriodoCarrera>();
+
             CreateMap<ProfesorDTO, Profesores>()
                 .ForMember(d => d.IdPrioridad, opt => opt.MapFrom(s => s.IdPrioridad));
 
@@ -78,10 +83,7 @@ namespace Schedule.API.Helpers
                 .ForMember(dto => dto.Cedula, conf => conf.MapFrom(s => s.Cedula))
                 .ForMember(dto => dto.Codigo, conf => conf.MapFrom(s => s.Codigo));
 
-            CreateMap<SeccionesDTO, Secciones>()
-                .ForMember(dto => dto.CantidadAlumnos, conf => conf.MapFrom(s => s.CantidadAlumnos))
-                .ForMember(dto => dto.Codigo, conf => conf.MapFrom(s => s.Codigo))
-                .ForMember(dto => dto.NumeroSecciones, conf => conf.MapFrom(s => s.NumeroSecciones));
+            CreateMap<SeccionesDTO, Secciones>();
             #endregion
 
         }
