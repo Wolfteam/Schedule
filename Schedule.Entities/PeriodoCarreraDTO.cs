@@ -14,7 +14,6 @@ namespace Schedule.Entities
         [Required]
         public bool Status { get; set; }
         
-        [Required]
         public DateTime? FechaCreacion { get; set; }
     }
 }
