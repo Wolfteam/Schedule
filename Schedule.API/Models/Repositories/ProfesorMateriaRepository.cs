@@ -70,9 +70,31 @@ namespace Schedule.API.Models.Repositories
             return _db.ProfesoresMaterias.ProjectTo<ProfesorMateriaDetailsDTO>();
         }
 
+        /// <summary>
+        /// Obtiene la informacion pertinente a una relacion Profesor x Materia 
+        /// particular acorde al id suministrado
+        /// </summary>
+        /// <param name="id">Id de la relacion</param>
+        /// <returns>Objeto ProfesorMateriaDetailsDTO</returns>
         public ProfesorMateriaDetailsDTO Get(int id)
         {
-            throw new NotImplementedException();
+            return _db.ProfesoresMaterias.ProjectTo<ProfesorMateriaDetailsDTO>()
+                .FirstOrDefault(pm => pm.Id == id);
+        }
+
+        /// <summary>
+        /// Obtiene la informacion pertinente a una relacion Profesor x Materia 
+        /// particular acorde a la cedula y codigo suministrado
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        /// <param name="codigo">Codigo de la materia</param>
+        /// <returns>Objeto ProfesorMateriaDetailsDTO</returns>
+        public ProfesorMateriaDetailsDTO Get(uint cedula, int codigo)
+        {
+            return _db.ProfesoresMaterias
+                .Where(pm => pm.Cedula == cedula && pm.Codigo == codigo)
+                .ProjectTo<ProfesorMateriaDetailsDTO>()
+                .FirstOrDefault();
         }
 
         /// <summary>
