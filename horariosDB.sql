@@ -61,7 +61,7 @@ CREATE TABLE aulas (
 	PRIMARY KEY (id_aula),
 	FOREIGN KEY (id_tipo) REFERENCES tipo_aula_materia (id_tipo)
 		ON DELETE CASCADE
-		ON UPDATE CASCADE,
+		ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE materias(
@@ -146,7 +146,7 @@ CREATE TABLE disponibilidad_profesores(
 		ON UPDATE CASCADE,
 	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)
 		ON DELETE CASCADE
-		ON UPDATE CASCADE,
+		ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE horario_profesores(
@@ -157,13 +157,12 @@ CREATE TABLE horario_profesores(
 	id_hora_fin TINYINT UNSIGNED NOT NULL,
 	id_aula TINYINT UNSIGNED NOT NULL,
 	numero_seccion TINYINT UNSIGNED NOT NULL,
-	PRIMARY KEY (cedula,codigo,id_aula,id_dia,id_hora_inicio,id_hora_fin)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE,
+	id_periodo INT NOT NULL,
+	PRIMARY KEY (cedula,codigo,id_aula,id_dia,id_hora_inicio,id_hora_fin,id_periodo),
 	FOREIGN KEY (cedula) REFERENCES profesores (cedula)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
-	FOREIGN KEY (codigo) REFERENCES secciones (codigo),
+	FOREIGN KEY (codigo) REFERENCES secciones (codigo)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	FOREIGN KEY (id_dia) REFERENCES dias (id_dia)
@@ -176,6 +175,9 @@ CREATE TABLE horario_profesores(
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	FOREIGN KEY (id_aula) REFERENCES aulas (id_aula)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
