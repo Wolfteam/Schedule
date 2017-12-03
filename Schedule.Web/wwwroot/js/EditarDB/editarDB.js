@@ -153,7 +153,7 @@ function btnBuscarOnClick() {
                     },
                 ];
                 createTable("#tabla", titulos);
-                initDataTable("#datatable", data, columnsData, 0, false, "single");
+                initDataTable("#datatable", data, columnsData, 0, false, "multi");
             });
             break;
         case "6": //Secciones
@@ -183,7 +183,7 @@ function btnBuscarOnClick() {
                 ];
                 //$.fn.dataTable.ext.classes.sPageButton = 'button primary_button';
                 createTable("#tabla", titulos);
-                initDataTable("#datatable", data, columnsData, -1, false, "single");
+                initDataTable("#datatable", data, columnsData, -1, false, "multi");
             });
             break;
         default:
