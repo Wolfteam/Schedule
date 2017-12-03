@@ -55,7 +55,9 @@ namespace Schedule.Web.Controllers
                     TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
                     if (token != null)
                     {
-                        SaveToken(token);
+                        double expiricyTime = (token.ExpiricyDate - token.CreateDate).TotalMinutes;
+                        CreateCookie("Token", token.AuthenticationToken, expiricyTime);
+                        CreateCookie("User", model.Username, expiricyTime);
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -84,14 +86,17 @@ namespace Schedule.Web.Controllers
             return RedirectToAction("Index", "Account");
         }
 
-        private void SaveToken(TokenDTO token)
+        /// <summary>  
+        /// Crea una cookie  
+        /// </summary>  
+        /// <param name="key">Identificador unico</param>  
+        /// <param name="value">Valor a guardar</param>  
+        /// <param name="expireTime">Tiempo de expiracion en minutos</param>  
+        private void CreateCookie(string key, string value, double expireTime = 20)
         {
-            CookieOptions cookiesOptions = new CookieOptions
-            {
-                Expires = token.ExpiricyDate
-            };
-            Response.Cookies.Delete("Token");
-            Response.Cookies.Append("Token", token.AuthenticationToken, cookiesOptions);
+            CookieOptions option = new CookieOptions();
+            option.Expires = DateTime.Now.AddMinutes(expireTime);
+            Response.Cookies.Append(key, value, option);
         }
     }
 }
