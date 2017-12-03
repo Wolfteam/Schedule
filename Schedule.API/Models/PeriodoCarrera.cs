@@ -8,6 +8,7 @@ namespace Schedule.API.Models
         public PeriodoCarrera()
         {
             DisponibilidadProfesores = new HashSet<DisponibilidadProfesores>();
+            HorarioProfesores = new HashSet<HorarioProfesores>();
             Secciones = new HashSet<Secciones>();
         }
 
@@ -17,6 +18,7 @@ namespace Schedule.API.Models
         public DateTime? FechaCreacion { get; set; }
 
         public ICollection<DisponibilidadProfesores> DisponibilidadProfesores { get; set; }
+        public ICollection<HorarioProfesores> HorarioProfesores { get; set; }
         public ICollection<Secciones> Secciones { get; set; }
     }
 }
