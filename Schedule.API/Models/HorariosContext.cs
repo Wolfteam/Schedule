@@ -216,7 +216,8 @@ namespace Schedule.API.Models
 
                 entity.HasIndex(e => e.IdHoraInicio)
                     .HasName("id_hora_inicio");
-
+                entity.HasIndex(e => e.IdPeriodo)
+                    .HasName("id_periodo");
                 entity.Property(e => e.Cedula).HasColumnName("cedula");
 
                 entity.Property(e => e.Codigo).HasColumnName("codigo");
@@ -228,6 +229,10 @@ namespace Schedule.API.Models
                 entity.Property(e => e.IdHoraInicio).HasColumnName("id_hora_inicio");
 
                 entity.Property(e => e.IdHoraFin).HasColumnName("id_hora_fin");
+                
+                entity.Property(e => e.IdPeriodo)
+                    .HasColumnName("id_periodo")
+                    .HasColumnType("int(11)");
 
                 entity.Property(e => e.NumeroSeccion).HasColumnName("numero_seccion");
 
@@ -266,6 +271,10 @@ namespace Schedule.API.Models
                     .HasForeignKey(d => d.IdHoraInicio)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("horario_profesores_ibfk_4");
+                entity.HasOne(d => d.PeriodoCarrera)
+                    .WithMany(p => p.HorarioProfesores)
+                    .HasForeignKey(d => d.IdPeriodo)
+                    .HasConstraintName("horario_profesores_ibfk_7");
             });
 
             modelBuilder.Entity<Horas>(entity =>
