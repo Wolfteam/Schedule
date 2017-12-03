@@ -19,7 +19,7 @@ namespace Schedule.Entities
     {
         public IEnumerable<DisponibilidadProfesorDTO> Disponibilidad { get; set; }
         public byte HorasACumplir { get; set; }
-        public int HorasAsignadas { get; set; }
+        public byte HorasAsignadas { get; set; }
     }
 
     // public class DisponibilidadProfesorDTO

@@ -44,7 +44,11 @@ namespace Schedule.API.Helpers
             CreateMap<Aulas, AulasDetailsDTO>()
                 .ForMember(dto => dto.TipoAula, conf => conf.MapFrom(s => s.TipoAulaMateria));
 
+            CreateMap<Aulas, AulasDTO>();
+
             CreateMap<DisponibilidadProfesores, DisponibilidadProfesorDTO>();
+
+            CreateMap<HorarioProfesores, HorarioProfesorDTO>();
 
             CreateMap<ProfesoresMaterias, ProfesorMateriaDetailsDTO>()
                 .ForMember(dto => dto.Materia, conf => conf.MapFrom(s => s.Materias))
@@ -67,6 +71,8 @@ namespace Schedule.API.Helpers
                 .ForMember(dto => dto.IdTipo, conf => conf.MapFrom(s => s.IdTipo));
 
             CreateMap<DisponibilidadProfesorDTO, DisponibilidadProfesores>();
+
+            CreateMap<HorarioProfesorDTO, HorarioProfesores>();
 
             CreateMap<MateriasDTO, Materias>()
                .ForMember(d => d.IdCarrera, opt => opt.MapFrom(s => s.IdCarrera))
