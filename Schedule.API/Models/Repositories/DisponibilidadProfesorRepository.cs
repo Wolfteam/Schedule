@@ -81,10 +81,32 @@ namespace Schedule.API.Models.Repositories
             return true;
         }
 
-        //public IQueryable<DisponibilidadProfesorDTO> Get()
-        //{
-        //    return _db.DisponibilidadProfesores.ProjectTo<DisponibilidadProfesorDTO>().OrderBy(x => x.Cedula);
-        //}
+        /// <summary>
+        /// Obtiene una lista de todas las disponibilidades de los profesores
+        /// </summary>
+        /// <returns>IEnumerable de DisponibilidadProfesorDTO</returns>
+        public IEnumerable<DisponibilidadProfesorDetailsDTO> Get()
+        {
+            var disponibilidades = _db.DisponibilidadProfesores
+                 .Include(pc => pc.PeriodoCarrera)
+                 .Include(p => p.Profesores.PrioridadProfesor)
+                 .Where(c => c.PeriodoCarrera.Status == true);
+
+            List<DisponibilidadProfesorDetailsDTO> result = new List<DisponibilidadProfesorDetailsDTO>();
+            foreach (uint cedula in disponibilidades.Select(d => d.Cedula).Distinct())
+            {
+                var disp = disponibilidades.Where(d => d.Cedula == cedula);
+                DisponibilidadProfesorDetailsDTO dto = new DisponibilidadProfesorDetailsDTO
+                {
+                    Cedula = cedula,
+                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(),
+                    HorasACumplir = disp.FirstOrDefault(d => d.Cedula == cedula).Profesores.PrioridadProfesor.HorasACumplir,
+                    HorasAsignadas = (byte)(disp.Sum(hf => hf.IdHoraFin) - disp.Sum(hi => hi.IdHoraInicio))
+                };
+                result.Add(dto);
+            }
+            return result;
+        }
 
         /// <summary>
         /// Obtiene una lista con todas las disponibilidad del profesor indicado
@@ -106,7 +128,7 @@ namespace Schedule.API.Models.Repositories
                 Cedula = (uint)cedula,
                 Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(),
                 HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir,
-                HorasAsignadas = disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio)
+                HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio))
             };
             return result;
         }
