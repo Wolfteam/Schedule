@@ -22,8 +22,8 @@ namespace Schedule.API.Controllers
         //[AuthenticateAttribute].
         public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
         {
-            int idPeriodoActul = _pcr.GetCurrentPeriodo().IdPeriodo;
-            disponibilidad.ToList().ForEach(d => d.IdPeriodo = idPeriodoActul);
+            int idPeriodoActual = _pcr.GetCurrentPeriodo().IdPeriodo;
+            disponibilidad.ToList().ForEach(d => d.IdPeriodo = idPeriodoActual);
 
             bool result = _db.Create(Mapper.Map<IEnumerable<DisponibilidadProfesorDTO>, IEnumerable<DisponibilidadProfesores>>(disponibilidad));
             if (!result)
