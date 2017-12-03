@@ -4,6 +4,7 @@ using Schedule.Entities;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Schedule.API.Models.Repositories
 {
@@ -66,7 +67,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene una lista de todos los periodos academicos
         /// </summary>
         /// <returns>IQueryable de PeriodoCarreraDTO</returns>
-        public IQueryable<PeriodoCarreraDTO> Get()
+        public IEnumerable<PeriodoCarreraDTO> Get()
         {
             return _db.PeriodoCarrera.ProjectTo<PeriodoCarreraDTO>();
         }

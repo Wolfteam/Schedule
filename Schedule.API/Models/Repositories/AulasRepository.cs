@@ -77,7 +77,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene todas las aulas
         /// </summary>
         /// <returns>IQueryable de aulas</returns>
-        public IQueryable<AulasDetailsDTO> Get()
+        public IEnumerable<AulasDetailsDTO> Get()
         {
             return _db.Aulas.ProjectTo<AulasDetailsDTO>();
         }
@@ -142,6 +142,18 @@ namespace Schedule.API.Models.Repositories
         public AulasDetailsDTO Get(int id)
         {
             return _db.Aulas.ProjectTo<AulasDetailsDTO>().FirstOrDefault(aula => aula.IdAula == id);
+        }
+
+        /// <summary>
+        /// Obtiene todas las aulas que pertenecen a un tipo en particular y tienen una
+        /// capacidad mayor o igual a la suministrada
+        /// </summary>
+        /// <param name="idTipo">Tipo de aula</param>
+        /// <param name="capacidad">Capacidad del aula</param>
+        /// <returns>IEnumerable de AulasDTO</returns>
+        public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
+        {
+            return _db.Aulas.ProjectTo<AulasDTO>().Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad);
         }
 
         /// <summary>

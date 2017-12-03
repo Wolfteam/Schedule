@@ -66,7 +66,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene una lista de profesores
         /// </summary>
         /// <returns>Lista de profesores</returns>
-        public IQueryable<ProfesorDetailsDTO> Get()
+        public IEnumerable<ProfesorDetailsDTO> Get()
         {
             return _db.Profesores.ProjectTo<ProfesorDetailsDTO>();
         }

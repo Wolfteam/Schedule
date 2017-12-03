@@ -4,6 +4,7 @@ using Schedule.Entities;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Schedule.API.Models.Repositories
 {
@@ -64,7 +65,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene todas las materias
         /// </summary>
         /// <returns>Lista de materias</returns>
-        public IQueryable<MateriasDetailsDTO> Get()
+        public IEnumerable<MateriasDetailsDTO> Get()
         {
             return _db.Materias.ProjectTo<MateriasDetailsDTO>();
         }

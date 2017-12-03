@@ -31,7 +31,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene todas las carreras
         /// </summary>
         /// <returns>IQueryable de carreras</returns>
-        public IQueryable<CarreraDTO> Get()
+        public IEnumerable<CarreraDTO> Get()
         {
             return _db.Carreras.ProjectTo<CarreraDTO>();
         }

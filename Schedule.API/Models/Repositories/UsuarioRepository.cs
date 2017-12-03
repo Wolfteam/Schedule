@@ -26,7 +26,7 @@ namespace Schedule.API.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public IQueryable<UsuarioDTO> Get()
+        public IEnumerable<UsuarioDTO> Get()
         {
             throw new NotImplementedException();
         }
