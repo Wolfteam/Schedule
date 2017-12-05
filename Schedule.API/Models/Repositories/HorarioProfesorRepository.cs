@@ -33,6 +33,19 @@ namespace Schedule.API.Models.Repositories
         }
 
         /// <summary>
+        /// Verifica si existen registros existentes para el periodo academico
+        /// acatual
+        /// </summary>
+        /// <returns>True en caso de existir</returns>
+        public bool RecordsExists()
+        {
+            return _db.HorarioProfesores
+                .Include(p => p.PeriodoCarrera)
+                .Where(pc => pc.PeriodoCarrera.Status == true)
+                .Count() > 0 ? true : false;
+        }
+
+        /// <summary>
         /// Obtiene una lista de los horarios de un profesor en un dia en particular
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
@@ -79,13 +92,26 @@ namespace Schedule.API.Models.Repositories
                 )
                 .Where
                 (
-                    x => x.Materias.IdSemestre == idSemestre 
-                    && x.HorarioProfesor.PeriodoCarrera.Status == true 
-                    && x.HorarioProfesor.IdDia ==  idDia
+                    x => x.Materias.IdSemestre == idSemestre
+                    && x.HorarioProfesor.PeriodoCarrera.Status == true
+                    && x.HorarioProfesor.IdDia == idDia
                 )
                 .Select(hp => hp.HorarioProfesor)
                 .ProjectTo<HorarioProfesorDTO>();
         }
-
+        
+        /// <summary>
+        /// Calcula las horas asignadas para un profesor en particular.
+        /// No confundir estas horas asignadas con las de disponibilidad.
+        /// </summary>
+        /// <param name="cedula"></param>
+        /// <returns>Numero de horas en las que da clase</returns>
+        public int CalculateHorasAsignadas(uint cedula)
+        {
+            return _db.HorarioProfesores
+                .Where(hp => hp.Cedula == cedula)
+                .Select(d => d.IdHoraFin - d.IdHoraInicio)
+                .Sum();
+        }
     }
 }

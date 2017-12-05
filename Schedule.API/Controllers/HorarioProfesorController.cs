@@ -18,8 +18,20 @@ namespace Schedule.API.Controllers
     {
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
 
+        [HttpGet("Generate")]
+        public IActionResult Get(bool fromStart)
+        {
+            bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
+            if (!recordsExists)
+            {
+                Generate();
+            }
+            return Ok();
+        }
+
         private void Generate()
         {
+            int idPeriodo = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().IdPeriodo;
             var secciones = _unitOfWork.Secciones.Get();
             var disponibilidades = _unitOfWork.DisponibilidadProfesor.Get();
             IEnumerable<uint> cedulas = disponibilidades.Select(d => d.Cedula).Distinct();
@@ -27,24 +39,26 @@ namespace Schedule.API.Controllers
             if (secciones.Count() == 0 || disponibilidades.Count() == 0)
                 return;
 
-            for (int idPrioridad = 0; idPrioridad <= 6; idPrioridad++)
+            for (int idPrioridad = 1; idPrioridad <= 6; idPrioridad++)
             {
-                for (byte idSemestre = 0; idSemestre <= 14; idSemestre++)
+                for (byte idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
                     var seccionesBySemestre = secciones.Where(sec => sec.Materia.Semestre.IdSemestre == idSemestre);
                     foreach (var seccion in seccionesBySemestre)
                     {
-                        for (byte numeroSeccion = seccion.NumeroSecciones; numeroSeccion > 0; numeroSeccion--)
+                        for (int numeroSeccion = seccion.NumeroSecciones; numeroSeccion > 0; numeroSeccion--)
                         {
                             foreach (uint cedula in cedulas)
                             {
-                                if (seccion.NumeroSecciones == 0)
+                                if (seccion.NumeroSecciones == 0 || numeroSeccion == 0)
                                 {
-                                    numeroSeccion = 0;
                                     break;
                                 }
+
                                 var disp = disponibilidades.Where(d => d.Cedula == cedula);
-                                byte horasRestantes = (byte)(disp.FirstOrDefault().HorasACumplir - disp.FirstOrDefault().HorasAsignadas);
+                                int horasAsignadas = _unitOfWork.HorarioProfesor.CalculateHorasAsignadas(cedula);
+                                byte horasRestantes = (byte)(disp.FirstOrDefault().HorasACumplir - horasAsignadas);
+
                                 if (horasRestantes < seccion.Materia.HorasAcademicasSemanales)
                                     break;
 
@@ -55,7 +69,7 @@ namespace Schedule.API.Controllers
                                 bool result = false;
                                 result = GenerateHorario(cedula, seccion.Materia.Codigo, idSemestre,
                                     seccion.Materia.TipoMateria.IdTipo, seccion.Materia.HorasAcademicasSemanales,
-                                    numeroSeccion, disp.FirstOrDefault().Disponibilidad, aulas);
+                                    (byte)numeroSeccion, disp.FirstOrDefault().Disponibilidad, aulas, idPeriodo);
 
                                 if (!result)
                                 {
@@ -65,10 +79,10 @@ namespace Schedule.API.Controllers
                                     //debo guardar los datos del prof q no pude asignar
                                     result = GenerateRandomHorario(cedula, seccion.Materia.Codigo, idSemestre,
                                         seccion.Materia.TipoMateria.IdTipo, seccion.Materia.HorasAcademicasSemanales,
-                                        numeroSeccion, aulas);
+                                        (byte)numeroSeccion, aulas, idPeriodo);
                                     if (!result)
-                                        //debo guardar los datos del prof q no pude asignar
-                                        break;
+                                    //debo guardar los datos del prof q no pude asignar
+                                    break;
                                 }
                                 //suponiendo que el resto de las variables no son necesarias..
                                 numeroSeccion--;
@@ -108,10 +122,11 @@ namespace Schedule.API.Controllers
         /// <param name="seccion">Numero de la seccion de la materia</param>
         /// <param name="disponibilidad">Disponibilidad del profesor</param>
         /// <param name="aulas">Aulas acorde a la materia</param>
+        /// <param name="idPeriodo">Id del periodo academico actual</param>
         /// <returns>True en caso de haberse generado y guardado los horarios generados</returns>
         private bool GenerateHorario(uint cedula, ushort codigo, byte idSemestre, byte idTipoMateria,
             byte horasPorSemana, byte seccion, IEnumerable<DisponibilidadProfesorDTO> disponibilidad,
-            IEnumerable<AulasDTO> aulas)
+            IEnumerable<AulasDTO> aulas, int idPeriodo)
         {
             byte idHoraInicio = 0;
             byte idHoraFin = 0;
@@ -120,7 +135,7 @@ namespace Schedule.API.Controllers
             int horasPorSeccion = CalculateHorasDiarias(horasPorSemana, diasDisponibles, idTipoMateria);
             int numeroRegistros = disponibilidad.Count();
             bool horaAsignadaPorDia = false;
-            List<bool> results = new List<bool>();
+            List<bool> results;
             List<HorarioProfesorDTO> horariosGenerados = new List<HorarioProfesorDTO>();
             IEnumerable<byte> dias = disponibilidad.Select(d => d.IdDia).Distinct();
 
@@ -136,6 +151,7 @@ namespace Schedule.API.Controllers
                     {
                         foreach (var aula in aulas)
                         {
+                            results = new List<bool>();
                             results.Add(ValidateChoqueAula(idHoraInicio, idHoraFin, dia, aula.IdAula));
                             if (results.Contains(false))
                                 continue;
@@ -153,6 +169,7 @@ namespace Schedule.API.Controllers
                                     IdDia = dia,
                                     IdHoraFin = idHoraFin,
                                     IdHoraInicio = idHoraInicio,
+                                    IdPeriodo = idPeriodo,
                                     NumeroSeccion = seccion
                                 });
 
@@ -193,16 +210,17 @@ namespace Schedule.API.Controllers
         /// <param name="horasPorSemana">Numero de horas por semana que debe tener la materia</param>
         /// <param name="seccion">Numero de la seccion de la materia</param>
         /// <param name="aulas">Aulas acorde a la materia</param>
+        /// <param name="idPeriodo">Id del periodo academico actual</param>       
         /// <returns>True en caso de haberse generado y guardado los horarios generados</returns>
         private bool GenerateRandomHorario(uint cedula, ushort codigo, byte idSemestre, byte idTipoMateria,
-            byte horasPorSemana, byte seccion, IEnumerable<AulasDTO> aulas)
+            byte horasPorSemana, byte seccion, IEnumerable<AulasDTO> aulas, int idPeriodo)
         {
             byte idHoraInicio = 0;
             byte idHoraFin = 0;
             byte aux = horasPorSemana;
             int horasPorSeccion = CalculateHorasDiarias(horasPorSemana, 2, idTipoMateria);
             bool horaAsignadaPorDia = false;
-            List<bool> results = new List<bool>();
+            List<bool> results;
             List<HorarioProfesorDTO> horariosGenerados = new List<HorarioProfesorDTO>();
 
             for (byte idDia = 1; idDia < 7; idDia++)
@@ -213,13 +231,16 @@ namespace Schedule.API.Controllers
                 {
                     foreach (var aula in aulas)
                     {
+                        results = new List<bool>();
                         results.Add(ValidateChoqueAula(idHoraInicio, idHoraFin, idDia, aula.IdAula));
                         if (results.Contains(false))
                             continue;
+
                         results.Add(ValidateChoqueSemestre(codigo, idSemestre, idHoraInicio, idHoraFin, idDia));
                         results.Add(ValidateChoqueHorario(cedula, idHoraInicio, idHoraFin, idDia));
                         if (results.Contains(false))
                             break;
+
                         horariosGenerados.Add(
                             new HorarioProfesorDTO
                             {
@@ -229,6 +250,7 @@ namespace Schedule.API.Controllers
                                 IdDia = idDia,
                                 IdHoraFin = idHoraFin,
                                 IdHoraInicio = idHoraInicio,
+                                IdPeriodo = idPeriodo,
                                 NumeroSeccion = seccion
                             });
 
@@ -288,9 +310,9 @@ namespace Schedule.API.Controllers
         private bool ValidateChoqueHorario(uint cedula, byte idHoraInicio, byte idHoraFin, byte idDia)
         {
             var horarios = _unitOfWork.HorarioProfesor.GetByCedulaDia(cedula, idDia);
-            bool result = false;
+            bool result = true;
             if (horarios.FirstOrDefault(h => h.IdHoraInicio == idHoraInicio && h.IdHoraFin == idHoraFin) != null)
-                return result;
+                return !result;
             foreach (var horario in horarios)
             {
                 result = ValidateHoras(horario.IdHoraInicio, horario.IdHoraFin, idHoraInicio, idHoraFin);
