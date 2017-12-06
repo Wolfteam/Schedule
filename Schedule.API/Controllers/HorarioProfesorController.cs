@@ -28,29 +28,30 @@ namespace Schedule.API.Controllers
             }
             return Ok();
         }
-
+        //TODO: Arreglar el bug que asigna un lab. que no corresponde.Debes crear nuevos tipos de aula (1 para lab. electronica, 1 para lab digitales..)
+        //las dependencias estan en la tabla Materias y Aulas
         private void Generate()
         {
             int idPeriodo = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().IdPeriodo;
             var secciones = _unitOfWork.Secciones.Get();
-            var disponibilidades = _unitOfWork.DisponibilidadProfesor.Get();
-            IEnumerable<uint> cedulas = disponibilidades.Select(d => d.Cedula).Distinct();
 
-            if (secciones.Count() == 0 || disponibilidades.Count() == 0)
+            if (secciones.Count() == 0)
                 return;
 
-            for (int idPrioridad = 1; idPrioridad <= 6; idPrioridad++)
+            for (byte idPrioridad = 1; idPrioridad <= 6; idPrioridad++)
             {
                 for (byte idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
                     var seccionesBySemestre = secciones.Where(sec => sec.Materia.Semestre.IdSemestre == idSemestre);
                     foreach (var seccion in seccionesBySemestre)
                     {
-                        for (int numeroSeccion = seccion.NumeroSecciones; numeroSeccion > 0; numeroSeccion--)
+                        var disponibilidades = _unitOfWork.DisponibilidadProfesor.GetByPrioridadMateria(idPrioridad, seccion.Materia.Codigo);
+                        var cedulas = disponibilidades.Select(ci => ci.Cedula).Distinct();
+                        for (int numeroSeccion = 1; numeroSeccion <= seccion.NumeroSecciones; numeroSeccion++)
                         {
                             foreach (uint cedula in cedulas)
                             {
-                                if (seccion.NumeroSecciones == 0 || numeroSeccion == 0)
+                                if (seccion.NumeroSecciones == 0 || numeroSeccion > seccion.NumeroSecciones)
                                 {
                                     break;
                                 }
@@ -75,17 +76,21 @@ namespace Schedule.API.Controllers
                                 {
                                     //Creo que solo los DE y los 5 se les puede asignar un horario random
                                     if (idPrioridad < 5)
+                                    {
+                                        numeroSeccion--;
                                         break;
+                                    }                                        
                                     //debo guardar los datos del prof q no pude asignar
                                     result = GenerateRandomHorario(cedula, seccion.Materia.Codigo, idSemestre,
                                         seccion.Materia.TipoMateria.IdTipo, seccion.Materia.HorasAcademicasSemanales,
                                         (byte)numeroSeccion, aulas, idPeriodo);
                                     if (!result)
-                                    //debo guardar los datos del prof q no pude asignar
-                                    break;
+                                    {
+                                        numeroSeccion--;
+                                        break;
+                                    }
                                 }
                                 //suponiendo que el resto de las variables no son necesarias..
-                                numeroSeccion--;
                             }
                         }
                     }

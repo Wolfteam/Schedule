@@ -33,10 +33,6 @@ namespace Schedule.API.Models.Repositories
             return true;
         }
 
-        private IEnumerable<DisponibilidadProfesorDetailsDTO> RemapToDetails()
-        {
-
-        } 
         /// <summary>
         /// Borra todas las disponibilidades
         /// </summary>

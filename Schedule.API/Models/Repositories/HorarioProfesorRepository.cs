@@ -11,6 +11,20 @@ namespace Schedule.API.Models.Repositories
     public class HorarioProfesorRepository //: IRepository<Aulas, AulasDetailsDTO>
     {
         private readonly HorariosContext _db = new HorariosContext();
+       
+        /// <summary>
+        /// Calcula las horas asignadas para un profesor en particular.
+        /// No confundir estas horas asignadas con las de disponibilidad.
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        /// <returns>Numero de horas en las que da clase</returns>
+        public int CalculateHorasAsignadas(uint cedula)
+        {
+            return _db.HorarioProfesores
+                .Where(hp => hp.Cedula == cedula)
+                .Select(d => d.IdHoraFin - d.IdHoraInicio)
+                .Sum();
+        }
 
         /// <summary>
         /// Guarda una lista de horarios de un profesor
@@ -36,7 +50,7 @@ namespace Schedule.API.Models.Repositories
         /// Verifica si existen registros existentes para el periodo academico
         /// acatual
         /// </summary>
-        /// <returns>True en caso de existir</returns>
+        /// <returns>True en caso de existir registros</returns>
         public bool RecordsExists()
         {
             return _db.HorarioProfesores
@@ -98,20 +112,6 @@ namespace Schedule.API.Models.Repositories
                 )
                 .Select(hp => hp.HorarioProfesor)
                 .ProjectTo<HorarioProfesorDTO>();
-        }
-        
-        /// <summary>
-        /// Calcula las horas asignadas para un profesor en particular.
-        /// No confundir estas horas asignadas con las de disponibilidad.
-        /// </summary>
-        /// <param name="cedula"></param>
-        /// <returns>Numero de horas en las que da clase</returns>
-        public int CalculateHorasAsignadas(uint cedula)
-        {
-            return _db.HorarioProfesores
-                .Where(hp => hp.Cedula == cedula)
-                .Select(d => d.IdHoraFin - d.IdHoraInicio)
-                .Sum();
         }
     }
 }
