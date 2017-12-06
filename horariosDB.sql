@@ -450,8 +450,18 @@ INSERT INTO admin (cedula,username,password,id_privilegio) VALUES
 
 INSERT INTO disponibilidad_profesores 
 (cedula, id_dia, id_hora_inicio, id_hora_fin, id_periodo) VALUES 
-(21255727, 3, 1, 4, 3), 
-(21255727, 6, 5, 7, 3);
+(6334158, 2, 1, 7, 3),
+(6334158, 4, 9, 14, 3),
+(6334158, 6, 2, 7, 3),
+(23144433, 2, 1, 4, 3),
+(23144433, 2, 10, 14, 3),
+(23144433, 4, 8, 14, 3),
+(23144433, 5, 1, 4, 3);
+
+INSERT INTO secciones (codigo, numero_secciones, cantidad_alumnos, id_periodo) VALUES 
+(42561, 3, 10, 3),
+(44023, 1, 20, 3),
+(42553, 1, 30, 3);
 
 -- Fijate como creo las FK a partir de una tabla que tiene una PK compuesta
 -- FOREIGN KEY (codigo,numero_seccion) REFERENCES secciones (codigo,numero_seccion),
