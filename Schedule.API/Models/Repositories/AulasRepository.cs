@@ -154,7 +154,8 @@ namespace Schedule.API.Models.Repositories
         public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
         {
             return _db.Aulas.ProjectTo<AulasDTO>()
-                .Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad && au.Capacidad < capacidad + 1);
+                .Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad)
+                .OrderBy(au => au.Capacidad);
         }
 
         /// <summary>
