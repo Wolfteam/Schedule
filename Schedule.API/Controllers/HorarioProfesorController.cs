@@ -19,7 +19,7 @@ namespace Schedule.API.Controllers
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
 
         [HttpGet("Generate")]
-        public IActionResult Get(bool fromStart)
+        public IActionResult Generate(bool fromStart)
         {
             bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
             if (!recordsExists)
@@ -28,8 +28,14 @@ namespace Schedule.API.Controllers
             }
             return Ok();
         }
-        //TODO: Arreglar el bug que asigna un lab. que no corresponde.Debes crear nuevos tipos de aula (1 para lab. electronica, 1 para lab digitales..)
-        //las dependencias estan en la tabla Materias y Aulas
+
+        //TODO: Aveces no funciona bien lo de que la materia no se encuentre en el rango del medidoia
+
+        /// <summary>
+        /// Genera los horarios de los profesores acorde a su prioridad, semestre
+        /// y materia. Por los momentos si no se puede generar un horario para un profesor
+        /// y el mismo tiene prioridad < 5 no se le genera nada.
+        /// </summary>
         private void Generate()
         {
             int idPeriodo = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().IdPeriodo;
@@ -47,14 +53,13 @@ namespace Schedule.API.Controllers
                     {
                         var disponibilidades = _unitOfWork.DisponibilidadProfesor.GetByPrioridadMateria(idPrioridad, seccion.Materia.Codigo);
                         var cedulas = disponibilidades.Select(ci => ci.Cedula).Distinct();
-                        for (int numeroSeccion = 1; numeroSeccion <= seccion.NumeroSecciones; numeroSeccion++)
+                        int numeroSeccion = 1;
+                        for (int i = 1; i <= seccion.NumeroSecciones; i++)
                         {
                             foreach (uint cedula in cedulas)
                             {
-                                if (seccion.NumeroSecciones == 0 || numeroSeccion > seccion.NumeroSecciones)
-                                {
+                                if (numeroSeccion > seccion.NumeroSecciones)
                                     break;
-                                }
 
                                 var disp = disponibilidades.Where(d => d.Cedula == cedula);
                                 int horasAsignadas = _unitOfWork.HorarioProfesor.CalculateHorasAsignadas(cedula);
@@ -77,20 +82,19 @@ namespace Schedule.API.Controllers
                                     //Creo que solo los DE y los 5 se les puede asignar un horario random
                                     if (idPrioridad < 5)
                                     {
-                                        numeroSeccion--;
                                         break;
-                                    }                                        
+                                    }
                                     //debo guardar los datos del prof q no pude asignar
                                     result = GenerateRandomHorario(cedula, seccion.Materia.Codigo, idSemestre,
                                         seccion.Materia.TipoMateria.IdTipo, seccion.Materia.HorasAcademicasSemanales,
                                         (byte)numeroSeccion, aulas, idPeriodo);
                                     if (!result)
                                     {
-                                        numeroSeccion--;
                                         break;
                                     }
                                 }
-                                //suponiendo que el resto de las variables no son necesarias..
+                                if (result)
+                                    numeroSeccion++;
                             }
                         }
                     }
@@ -361,6 +365,7 @@ namespace Schedule.API.Controllers
         /// Si alguna da cero, es valida.
         /// Si ambas dan negativa es valida.
         /// Agregue otra validacion para casos cuando una materia comienza seguida de otra. Debe ser testeado
+        /// Tambien verifica que las horas de inicio y fin no se encuentren en el rango del mediodia
         /// </summary>
         /// <param name="idHoraInicioDB">Id de la hora de inicio almacenada en la DB</param>
         /// <param name="idHoraFinDB">Id de la hora de fin almacenada en la DB</param>
@@ -371,7 +376,8 @@ namespace Schedule.API.Controllers
         {
             if (idHoraFinDB == idHoraInicio)
                 return true;
-
+            if (idHoraInicio <= 7 && idHoraFin > 7)
+                return false;
             int dato1 = idHoraFinDB - idHoraInicio;
             int dato2 = idHoraInicioDB - idHoraFin;
             if ((dato1 >= 0 && dato2 < 0) || (dato1 < 0 && dato2 >= 0))
