@@ -10,6 +10,7 @@
         public byte IdAula { get; set; }
         public byte NumeroSeccion { get; set; }
         public int IdPeriodo { get; set; }
+        public int IdTipoAsignacion { get; set; }
 
         public Profesores Profesores { get; set; }
         public Secciones Secciones { get; set; }
@@ -18,5 +19,6 @@
         public Horas HoraFin { get; set; }
         public Horas HoraInicio { get; set; }
         public PeriodoCarrera PeriodoCarrera { get; set; }
+        public TipoAsignacion TipoAsignacion { get; set; }
     }
 }

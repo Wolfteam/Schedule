@@ -23,6 +23,7 @@ namespace Schedule.API.Models
         public virtual DbSet<ProfesoresMaterias> ProfesoresMaterias { get; set; }
         public virtual DbSet<Secciones> Secciones { get; set; }
         public virtual DbSet<Semestres> Semestre { get; set; }
+        public virtual DbSet<TipoAsignacion> TipoAsignacion { get; set; }
         public virtual DbSet<TipoAulaMaterias> TipoAulaMateria { get; set; }
         public virtual DbSet<Tokens> Tokens { get; set; }
 
@@ -234,7 +235,16 @@ namespace Schedule.API.Models
                     .HasColumnName("id_periodo")
                     .HasColumnType("int(11)");
 
+                entity.Property(e => e.IdTipoAsignacion)
+                    .HasColumnName("id_asignacion")
+                    .HasColumnType("int(11)");
+
                 entity.Property(e => e.NumeroSeccion).HasColumnName("numero_seccion");
+
+                entity.HasOne(d => d.TipoAsignacion)
+                    .WithMany(p => p.HorarioProfesores)
+                    .HasForeignKey(d => d.IdTipoAsignacion)
+                    .HasConstraintName("horario_profesores_ibfk_8");
 
                 entity.HasOne(d => d.Profesores)
                     .WithMany(p => p.HorarioProfesores)
@@ -516,6 +526,23 @@ namespace Schedule.API.Models
                     .IsRequired()
                     .HasColumnName("nombre_semestre")
                     .HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<TipoAsignacion>(entity =>
+            {
+                entity.HasKey(e => e.IdAsignacion);
+
+                entity.ToTable("tipo_asignacion");
+
+                entity.Property(e => e.IdAsignacion)
+                    .HasColumnName("id_asignacion")
+                    .HasColumnType("int(11)")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.NombreAsignacion)
+                    .IsRequired()
+                    .HasColumnName("nombre_asignacion")
+                    .HasMaxLength(255);
             });
 
             modelBuilder.Entity<TipoAulaMaterias>(entity =>

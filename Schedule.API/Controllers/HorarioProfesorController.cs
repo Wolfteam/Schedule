@@ -179,6 +179,7 @@ namespace Schedule.API.Controllers
                                     IdHoraFin = idHoraFin,
                                     IdHoraInicio = idHoraInicio,
                                     IdPeriodo = idPeriodo,
+                                    IdTipoAsignacion = (int)Asignacion.Automatica,
                                     NumeroSeccion = seccion
                                 });
 
@@ -260,6 +261,7 @@ namespace Schedule.API.Controllers
                                 IdHoraFin = idHoraFin,
                                 IdHoraInicio = idHoraInicio,
                                 IdPeriodo = idPeriodo,
+                                IdTipoAsignacion = (int)Asignacion.Random,
                                 NumeroSeccion = seccion
                             });
 
@@ -374,10 +376,10 @@ namespace Schedule.API.Controllers
         /// <returns>True si las horas dadas son validas.</returns>
         private bool ValidateHoras(byte idHoraInicioDB, byte idHoraFinDB, byte idHoraInicio, byte idHoraFin)
         {
-            if (idHoraFinDB == idHoraInicio)
-                return true;
             if (idHoraInicio <= 7 && idHoraFin > 7)
                 return false;
+            if (idHoraFinDB == idHoraInicio)
+                return true;
             int dato1 = idHoraFinDB - idHoraInicio;
             int dato2 = idHoraInicioDB - idHoraFin;
             if ((dato1 >= 0 && dato2 < 0) || (dato1 < 0 && dato2 >= 0))
