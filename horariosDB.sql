@@ -16,6 +16,12 @@ CREATE TABLE tipo_aula_materia(
 	PRIMARY KEY (id_tipo)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE tipo_asignacion(
+	id_asignacion INT AUTO_INCREMENT,
+	nombre_asignacion VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id_asignacion)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE carreras (
 	id_carrera TINYINT UNSIGNED AUTO_INCREMENT,
 	nombre_carrera VARCHAR(20) NOT NULL,
@@ -158,6 +164,7 @@ CREATE TABLE horario_profesores(
 	id_aula TINYINT UNSIGNED NOT NULL,
 	numero_seccion TINYINT UNSIGNED NOT NULL,
 	id_periodo INT NOT NULL,
+	id_asignacion INT NOT NULL,
 	PRIMARY KEY (cedula,codigo,id_aula,id_dia,id_hora_inicio,id_hora_fin,id_periodo),
 	FOREIGN KEY (cedula) REFERENCES profesores (cedula)
 		ON DELETE CASCADE
@@ -178,6 +185,9 @@ CREATE TABLE horario_profesores(
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	FOREIGN KEY (id_periodo) REFERENCES periodo_carrera (id_periodo)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_asignacion) REFERENCES tipo_asignacion (id_asignacion)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -232,6 +242,10 @@ INSERT INTO tipo_aula_materia (nombre_tipo) VALUES
 ('Laboratorio de Sistemas Digitales III'),
 ('Laboratorio de Sistemas de Control II'),
 ('Laboratorio de Sistemas de Control III');
+
+INSERT INTO tipo_asignacion VALUES
+(1,'Automatica'),
+(2, 'Random');
 
 INSERT INTO carreras (nombre_carrera) VALUES 
 ("Sistemas"),
@@ -310,7 +324,7 @@ INSERT INTO aulas (id_aula, nombre_aula, capacidad, id_tipo) VALUES
 (19, 'Lab. Sistemas de Control III', 15, 12),
 (20, 'Lab. Sistemas Digitales I', 15, 7);
 
-INSERT INTO materias (codigo, asignatura, id_semestre, horas_academicas_totales, horas_academicas_semanales, id_tipo, id_carrera) VALUES
+INSERT INTO materias (codigo, asignatura, id_semestre, id_tipo, id_carrera, horas_academicas_totales, horas_academicas_semanales) VALUES
 (41144, 'Electrotecnia', 14, 1, 3, 72, 4),
 (41151, 'Lab. Electrotecnia', 14, 3, 3, 54, 3),
 (41514, 'Sistemas Eléctricos I', 3, 1, 1, 90, 5),
@@ -620,7 +634,8 @@ SELECT
     d.nombre_dia AS Dia,
     hp.numero_seccion AS Seccion,
     m.id_semestre AS Semestre,
-    p.id_prioridad Prioridad
+    p.id_prioridad AS Prioridad,
+	ta.nombre_asignacion AS TipoAsignacion
 FROM 
 	horario_profesores hp
 INNER JOIN profesores p on hp.cedula = p.cedula
@@ -629,3 +644,4 @@ INNER JOIN horas h1 on hp.id_hora_inicio = h1.id_hora
 INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
 INNER JOIN aulas a on hp.id_aula = a.id_aula
 INNER JOIN dias d on hp.id_dia = d.id_dia
+INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
