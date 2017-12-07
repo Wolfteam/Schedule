@@ -43,6 +43,14 @@ namespace Schedule.API.Controllers
             return _db.Get();
         }
 
+        // GET api/Aulas/Tipo/2/Capacidad/20
+        [HttpGet("Tipo/{idTipo}/Capacidad/{capacidad}")]
+        public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
+        {
+            return _db.GetByTipoCapacidad(idTipo, capacidad);
+        }
+
+
         // GET api/Aulas/1
         [HttpGet("{id}", Name = "GetAula")]
         public IActionResult Get(int id)

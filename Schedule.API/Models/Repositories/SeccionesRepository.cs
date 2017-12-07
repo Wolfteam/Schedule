@@ -70,7 +70,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene una lista de todas las secciones
         /// </summary>
         /// <returns>Lista de secciones</returns>
-        public IQueryable<SeccionesDetailsDTO> Get()
+        public IEnumerable<SeccionesDetailsDTO> Get()
         {
             return _db.Secciones.Include(x => x.PeriodoCarrera)
                 .Where(x => x.PeriodoCarrera.Status == true)

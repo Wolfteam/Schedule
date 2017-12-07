@@ -105,7 +105,7 @@ namespace Schedule.API.Models.Repositories
             return tokenModel;
         }
 
-        public IQueryable<TokenDTO> Get()
+        public IEnumerable<TokenDTO> Get()
         {
             throw new NotImplementedException();
         }

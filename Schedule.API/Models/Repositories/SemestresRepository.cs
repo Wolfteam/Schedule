@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper.QueryableExtensions;
 using Schedule.Entities;
@@ -27,7 +28,7 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene todos los semestres
         /// </summary>
         /// <returns>IQueryable de semestres</returns>
-        public IQueryable<SemestreDTO> Get()
+        public IEnumerable<SemestreDTO> Get()
         {
             return _db.Semestre.ProjectTo<SemestreDTO>();
         }

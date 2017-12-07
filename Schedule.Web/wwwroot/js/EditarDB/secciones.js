@@ -160,7 +160,7 @@ function deleteSeccion(codigo) {
 function deleteSecciones(arrayCodigos) {
     $("#barra-progeso").show();
     for (var i = 0; i < arrayCodigos.length; i++) {
-        deleteSeccion(arrayCodigos[i].codigo);
+        deleteSeccion(arrayCodigos[i].materia.codigo);
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");

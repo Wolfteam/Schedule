@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Models.Repositories
 {
     public interface IRepository<T,Y>
     {
-        IQueryable<Y> Get();
+        IEnumerable<Y> Get();
         Y Get(int id);
         bool Create(T objeto);
         bool Delete();
