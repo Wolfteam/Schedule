@@ -44,13 +44,7 @@ function confirmCreateMaterias() {
         });
 
         globalFunction = function () {
-            $("#form_materias").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_materias").show();
+            onRequestsFinished("#form_materias");
         };
         checkPendingRequest();
         validateMateriaHandler();
@@ -119,14 +113,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         });
 
         globalFunction = function () {
-            $("#form_materias").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_materias").show();
-            Materialize.updateTextFields();
+            onRequestsFinished("#form_materias");
         };
         checkPendingRequest();
 
@@ -266,6 +253,10 @@ function updateMateria(codigo, materia) {
     );
 }
 
+/**
+ * Valdia que una materia tenga todas sus propiedades
+ * @param {string} selector Selector del formulario materia (#form_materias por defecto)
+ */
 function validateMateriaHandler(selector = "#form_materias") {
     var valdiate = $(selector).validate({
         rules: {

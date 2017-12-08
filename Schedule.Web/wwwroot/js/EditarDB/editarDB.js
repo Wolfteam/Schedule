@@ -288,3 +288,21 @@ function btnBorrarOnClick() {
 function removeTable(selector = "#tabla div") {
     $(selector).remove();
 }
+
+/**
+ * Esta funcion es particular de este submenu, se ejecuta despues 
+ * de que todas las peticiones hayan sido concluidas
+ * @param {string} formSelector Nombre del selector del formulario (e.g: #form_materias)
+ */
+function onRequestsFinished(formSelector) {
+    $(formSelector).find(".select2").select2({
+        placeholder: "Seleccione una opcion",
+        dropdownParent: $(".selectResults"),
+        width: '100%'
+    }).on('change', function () {
+        $(this).valid();
+    });
+    $(".progressBar").hide();
+    $(formSelector).show();
+    Materialize.updateTextFields();
+}

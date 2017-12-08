@@ -4,6 +4,9 @@ function confirmCreateSecciones() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
+                var isValid = $("#form_secciones").valid();        
+                if (!isValid)
+                    return false;
                 var seccion = prepareSeccionData(this.$content);
                 createSecciones(seccion);
             }
@@ -29,16 +32,10 @@ function confirmCreateSecciones() {
         });
 
         globalFunction = function () {
-            $("#select_materia").removeAttr("disabled");
-            $("#form_secciones").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_secciones").show();
+            onRequestsFinished("#form_secciones");
         };
         checkPendingRequest();
+        validateSeccionHandler();
     };
     confirmAlert("Agregar Secciones", "blue", "fa fa-plus", "url:" + urlBase + "modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -66,6 +63,9 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
+                var isValid = $("#form_secciones").valid();        
+                if (!isValid)
+                    return false;
                 var seccion = prepareSeccionData(this.$content);
                 updateSeccion(codigo, seccion);
             }
@@ -90,23 +90,14 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
         });
 
         globalFunction = function () {
-            $("#select_materia").removeAttr("disabled");
-            $("#form_secciones").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_secciones").show();
-            content.find("#form_secciones :input").each(function () {
-                $(this).focus();
-            });
+            onRequestsFinished("#form_secciones");
         };
         checkPendingRequest();
 
         content.find("#numero_secciones").val(numeroSecciones);
         content.find("#cantidad_alumnos").val(cantidadAlumnos);
         content.find(".onlyNum").on("keypress", onlyNum);
+        validateSeccionHandler();
     };
     confirmAlert("Editar Secciones", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Secciones.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -229,4 +220,42 @@ function updateSeccion(codigo, seccion) {
         },
         onError, seccion, "PUT", onComplete
     );
+}
+
+/**
+ * Valdia que una seccion tenga todas sus propiedades
+ * @param {string} selector Selector del formulario seccion (#form_secciones por defecto)
+ */
+function validateSeccionHandler(selector = "#form_secciones") {
+    var valdiate = $(selector).validate({
+        rules: {
+            numero_secciones: {
+                required: true,
+                range:[1,9]
+            },
+            cantidad_alumnos: {
+                required: true,
+                range:[10,45]
+            },
+            select_materia: {
+                required: true
+            }
+        },
+        messages: {
+            numero_secciones: {
+                required: "El numero de secciones es requerido. ",
+                range:"El numero de secciones debe estar entre 1-9. "
+            },
+            cantidad_alumnos: {
+                required: "La cantidad de alumnos de la seccion es requerida. ",
+                range: "La cantidad de alumnos debe estar entre 10-45. "
+            },
+            select_materia: {
+                required: "Debe seleccionar una materia. "
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.appendTo(selector);
+        }
+    });
 }

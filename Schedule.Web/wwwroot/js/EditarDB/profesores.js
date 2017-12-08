@@ -4,6 +4,9 @@ function confirmCreateProfesores() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
+                var isValid = $("#form_profesores").valid();        
+                if (!isValid)
+                    return false; 
                 var profesor = prepareProfesorData(this.$content);
                 createProfesor(profesor);
             }
@@ -29,15 +32,10 @@ function confirmCreateProfesores() {
         });
 
         globalFunction = function () {
-            $("#form_profesores").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_profesores").show();
+            onRequestsFinished("#form_profesores");
         };
         checkPendingRequest();
+        validateProfesorHandler();
     };
     confirmAlert("Agregar Profesores", "blue", "fa fa-plus", "url:" + urlBase + "modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -65,6 +63,9 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
+                var isValid = $("#form_profesores").valid();        
+                if (!isValid)
+                    return false; 
                 var profesor = prepareProfesorData(this.$content);
                 updateProfesor(cedula, profesor);
             }
@@ -89,16 +90,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
         });
 
         globalFunction = function () {
-            $("#form_profesores").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_profesores").show();
-            content.find("#form_profesores :input").each(function () {
-                $(this).focus();
-            });
+            onRequestsFinished("#form_profesores");
         };
         checkPendingRequest();
 
@@ -106,6 +98,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
         content.find("#nombre").val(nombre);
         content.find("#apellido").val(apellido);
         content.find(".onlyNum").on("keypress", onlyNum);
+        validateProfesorHandler();
     };
     confirmAlert("Editar Profesores", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Profesores.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -229,4 +222,53 @@ function updateProfesor(cedula, profesor) {
         },
         onError, profesor, "PUT", onComplete
     );
+}
+
+/**
+ * Valdia que una profesor tenga todas sus propiedades
+ * @param {string} selector Selector del formulario profesor (#form_profesores por defecto)
+ */
+function validateProfesorHandler(selector = "#form_profesores"){
+    var valdiate = $(selector).validate({
+        ignore:[],
+        rules: {
+            cedula: {
+                required: true,
+                minlength: 8,
+                maxlength: 8
+            },
+            select_prioridad: "required",
+            nombre: {
+                required: true,
+                minlength: 3,
+                maxlength: 20
+            },
+            apellido: {
+                required: true,
+                minlength: 3,
+                maxlength: 20
+            },
+        },
+        messages: {
+            cedula: {
+                required: "La cedula es requerida. ",
+                minlength: "La cedula debe contener 8 digitos. ",
+                maxlength: "La cedula debe contener 8 digitos. "
+            },
+            select_prioridad: "Debe seleccionar una prioridad .",
+            nombre: {
+                required: "El nombre es requerido. ",
+                minlength: "El nombre debe contener 3 caracteres como minimo. ",
+                maxlength: "El nombre debe contener 20 caracteres como maximo. "
+            },
+            apellido: {
+                required: "El apellido es requerido. ",
+                minlength: "El apellido debe contener 3 caracteres como minimo. ",
+                maxlength: "El apellido debe contener 20 caracteres como maximo. "
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.appendTo(selector);
+        }
+    });
 }

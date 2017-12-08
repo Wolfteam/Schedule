@@ -4,6 +4,9 @@ function confirmCreateProfesorMateria() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
+                var isValid = $("#form_profesores_materias").valid();        
+                if (!isValid)
+                    return false;
                 var relacion = prepareProfesorMateriaData(this.$content);
                 createProfesorMateria(relacion);
             }
@@ -38,15 +41,10 @@ function confirmCreateProfesorMateria() {
         });
 
         globalFunction = function () {
-            $("#form_profesores_materias").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_profesores_materias").show();
+            onRequestsFinished("#form_profesores_materias");
         };
         checkPendingRequest();
+        validateProfesorMateriaHandler();
     };
     confirmAlert("Agregar Relacion", "blue", "fa fa-plus", "url:" + urlBase + "modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -74,6 +72,9 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
+                var isValid = $("#form_profesores_materias").valid();        
+                if (!isValid)
+                    return false;
                 var relacion = prepareProfesorMateriaData(this.$content);
                 updateProfesorMateria(id, relacion);
             }
@@ -111,15 +112,10 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
         });
 
         globalFunction = function () {
-            $("#form_profesores_materias").find(".select2").select2({
-                placeholder: "Seleccione una opcion",
-                dropdownParent: $(".selectResults"),
-                width: '100%'
-            });
-            $(".progressBar").hide();
-            $("#form_profesores_materias").show();
+            onRequestsFinished("#form_profesores_materias");
         };
         checkPendingRequest();
+        validateProfesorMateriaHandler();
     };
     confirmAlert("Editar Relacion", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/ProfesorMateria.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -241,4 +237,32 @@ function updateProfesorMateria(id, relacion) {
         },
         onError, relacion, "PUT", onComplete
     );
+}
+
+/**
+ * Valdia que una relacion profesor_materia tenga todas sus propiedades
+ * @param {string} selector Selector del formulario profesor_materia (#form_profesores_materias por defecto)
+ */
+function validateProfesorMateriaHandler(selector = "#form_profesores_materias") {
+    var valdiate = $(selector).validate({
+        rules: {
+            select_profesor: {
+                required: true
+            },
+            select_materia: {
+                required: true
+            }
+        },
+        messages: {
+            select_profesor: {
+                required: "Debe seleccionar un profesor. "
+            },
+            select_materia: {
+                required: "Debe seleccionar una materia. "
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.appendTo(selector);
+        }
+    });
 }
