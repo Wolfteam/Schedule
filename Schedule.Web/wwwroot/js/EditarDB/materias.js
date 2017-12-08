@@ -4,6 +4,9 @@ function confirmCreateMaterias() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
+                var isValid = $("#form_materias").valid();        
+                if (!isValid)
+                    return false; 
                 var materia = prepareMateriaData(this.$content);
                 createMateria(materia);
             }
@@ -50,6 +53,7 @@ function confirmCreateMaterias() {
             $("#form_materias").show();
         };
         checkPendingRequest();
+        validateMateriaHandler();
     };
     confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -77,6 +81,9 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
+                var isValid = $("#form_materias").valid();        
+                if (!isValid)
+                    return false; 
                 var materia = prepareMateriaData(this.$content);
                 updateMateria(codigo, materia);
             }
@@ -119,9 +126,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             });
             $(".progressBar").hide();
             $("#form_materias").show();
-            content.find("#form_materias :input").each(function () {
-                $(this).focus();
-            });
+            Materialize.updateTextFields();
         };
         checkPendingRequest();
 
@@ -131,6 +136,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find("#horas_academicas_s").val(horasAcademicasSemanales);
         content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         content.find(".onlyNum").on("keypress", onlyNum);
+        validateMateriaHandler();
     };
     confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
 }
@@ -258,4 +264,61 @@ function updateMateria(codigo, materia) {
         },
         onError, materia, "PUT", onComplete
     );
+}
+
+function validateMateriaHandler(selector = "#form_materias") {
+    var valdiate = $(selector).validate({
+        rules: {
+            codigo: {
+                required: true,
+                minlength: 4,
+                maxlength: 5
+            },
+            asignatura: {
+                required: true,
+                minlength: 4,
+            },
+            select_semestre: {
+                required: true
+            },
+            select_carrera: {
+                required: true
+            },
+            horas_academicas_t: {
+                required: true,
+                range: [10, 99]
+            },
+            horas_academicas_s: {
+                required: true,
+                range: [1, 6]
+            },
+        },
+        messages: {
+            codigo: {
+                required: "El codigo de la materia es requerido. ",
+                minlength: "El codigo de la materia debe contener 4-5 digitos. "
+            },
+            asignatura: {
+                required: "El nombre de la asignatura es requerido. ",
+                minlength: "El nombre de la asignatura debe contener 4 caracteres minimo. "
+            },
+            select_semestre: {
+                required: "Debe seleccionar un semestre. ",
+            },
+            select_carrera: {
+                required: "Debe seleccionar una carrera. ",
+            },
+            horas_academicas_t: {
+                required: "El numero de horas academicas totales es requerido. ",
+                range: "El numero de horas academicas totales debe estar entre 10-99 horas. "
+            },
+            horas_academicas_s: {
+                required: "El numero de horas academicas semanales es requerido. ",
+                range: "El numero de horas academicas semanales debe estar entre 1-6 horas. "
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.appendTo(selector);
+        }
+    });
 }

@@ -4,19 +4,10 @@ function confirmCreateAulas() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var aula = {
-                    nombreAula: this.$content.find("#nombre_aula").val(),
-                    capacidad: this.$content.find("#capacidad").val(),
-                    idTipo: this.$content.find("#tipo_aula").is(":checked") ? 2 : 1
-                };
-                if (aula.nombreAula.length < 4) {
-                    this.$content.find("#nombre_aula").focus();
-                    return false;
-                }
-                if (aula.capacidad.length !== 2) {
-                    this.$content.find("#capacidad").focus();
-                    return false;
-                }
+                var isValid = $("#form_aulas").valid();        
+                if (!isValid)
+                    return false;  
+                var aula = prepareAulaData();
                 createAula(aula);
             }
         },
@@ -27,6 +18,7 @@ function confirmCreateAulas() {
     };
     var onContentReady = function () {
         this.$content.find("#capacidad").on("keypress", onlyNum);
+        validateAulaHandler();
     };
     confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
 }
@@ -53,20 +45,11 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         Ok: {
             text: 'Actualizar',
             btnClass: 'btn-orange',
-            action: function () {
-                var aula = {
-                    nombreAula: this.$content.find("#nombre_aula").val(),
-                    capacidad: this.$content.find("#capacidad").val(),
-                    idTipo: this.$content.find("#tipo_aula").is(":checked") ? 2 : 1
-                };
-                if (aula.nombreAula.length < 4) {
-                    this.$content.find("#nombre_aula").focus();
-                    return false;
-                }
-                if (aula.capacidad.length !== 2) {
-                    this.$content.find("#capacidad").focus();
-                    return false;
-                }
+            action: function () {           
+                var isValid = $("#form_aulas").valid();        
+                if (!isValid)
+                    return false;  
+                var aula = prepareAulaData();
                 updateAula(this.$content.find("#id_aula").val(), aula);
             }
         },
@@ -82,9 +65,8 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         this.$content.find("#capacidad").val(capacidad);
         this.$content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         this.$content.find("#capacidad").on("keypress", onlyNum);
-        this.$content.find("#nombre_aula").focus();
-        this.$content.find("#capacidad").focus();
-        validarAula("#form_aulas");
+        Materialize.updateTextFields();
+        validateAulaHandler();
     };
     confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
 }
@@ -170,6 +152,20 @@ function getAllAulas(callback) {
 }
 
 /**
+ * Prepara la data introducida/existente de los modales y devuelve un objeto
+ * tipo aula
+ * @returns {Object} Objeto de tipo aula
+ */
+function prepareAulaData() {
+    var aula = {
+        nombreAula: $("#nombre_aula").val(),
+        capacidad: $("#capacidad").val(),
+        idTipo: $("#tipo_aula").is(":checked") ? 2 : 1
+    };
+    return aula;
+}
+
+/**
  * Actualiza una aula
  * @param {number} id Id del aula a actualizar
  * @param {Object} aula Objeto de tipo aula
@@ -196,8 +192,12 @@ function updateAula(id, aula) {
     );
 }
 
-function validarAula(selector) {
-    $(selector).validate({
+/**
+ * Valdia que una aula tenga todas sus propiedades
+ * @param {string} selector Selector del formulario aula (#form_aulas por defecto)
+ */
+function validateAulaHandler(selector = "#form_aulas") {
+    var valdiate = $(selector).validate({
         rules: {
             nombre_aula: {
                 required: true,
@@ -205,22 +205,22 @@ function validarAula(selector) {
             },
             capacidad: {
                 required: true,
-                minlength: 2
+                range: [10, 99]
             }
         },
         messages: {
             nombre_aula: {
-                required: "El nombre del aula es requerido",
-                minlength: "La longitud minima es de 4 caracteres"
+                required: "El nombre del aula es requerido.",
+                minlength: "El nombre del aula debe contener 4 caracteres minimo."
             },
             capacidad: {
-                required: "La capacidad es requerida",
-                minlength: "La longitud minima/maxima es de 2 digitos"
-            }
+                required: "La capacidad del aula es requerida.",
+                minlength: "La capacidad del aula debe ser de 2 digitos.",
+                range: "La capacidad del aula debe ser mayor a 10 y menor a 99."
+            },
         },
-        invalidHandler: function (event, validator) { //display error alert on form submit              
-            console.log("formulario malo");
-            return false;
-        },
+        errorPlacement: function (error, element) {
+            error.appendTo("#form_aulas");
+        }
     });
 }
