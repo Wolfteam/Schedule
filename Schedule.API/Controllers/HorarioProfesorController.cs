@@ -7,6 +7,11 @@ using Schedule.Entities;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.Drawing;
 
 namespace Schedule.API.Controllers
 {
@@ -17,19 +22,161 @@ namespace Schedule.API.Controllers
     public class HorarioProfesorController : Controller
     {
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public HorarioProfesorController(IHostingEnvironment environment)
+        {
+            _hostingEnvironment = environment;
+        }
 
         [HttpGet("Generate")]
         public IActionResult Generate(bool fromStart)
         {
-            bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
-            if (!recordsExists)
-            {
-                Generate();
-            }
+            // bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
+            // if (!recordsExists)
+            // {
+            //     Generate();
+            // }
+            // return Ok();
+            ReadExcel();
+            //CreateExcel();
             return Ok();
         }
+        //TODO: Dividir modelo de excel en varias hojas?
+        private void CreateExcel()
+        {
+            string path = _hostingEnvironment.ContentRootPath;
+            var newFile = new FileInfo(path + @"\sample1.xlsx");
+            if (newFile.Exists)
+            {
+                newFile.Delete();  // ensures we create a new workbook
+                newFile = new FileInfo(path + @"\sample1.xlsx");
+            }
+            using (var package = new ExcelPackage(newFile))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Inventory");
+                //Add the headers
+                worksheet.Cells[1, 1].Value = "ID";
+                worksheet.Cells[1, 2].Value = "Product";
+                worksheet.Cells[1, 3].Value = "Quantity";
+                worksheet.Cells[1, 4].Value = "Price";
+                worksheet.Cells[1, 5].Value = "Value";
 
-        //TODO: Aveces no funciona bien lo de que la materia no se encuentre en el rango del medidoia
+                //Add some items...
+                worksheet.Cells["A2"].Value = 12001;
+                worksheet.Cells["B2"].Value = "Nails";
+                worksheet.Cells["C2"].Value = 37;
+                worksheet.Cells["D2"].Value = 3.99;
+
+                worksheet.Cells["A3"].Value = 12002;
+                worksheet.Cells["B3"].Value = "Hammer";
+                worksheet.Cells["C3"].Value = 5;
+                worksheet.Cells["D3"].Value = 12.10;
+
+                worksheet.Cells["A4"].Value = 12003;
+                worksheet.Cells["B4"].Value = "Saw";
+                worksheet.Cells["C4"].Value = 12;
+                worksheet.Cells["D4"].Value = 15.37;
+
+                //Add a formula for the value-column
+                worksheet.Cells["E2:E4"].Formula = "C2*D2";
+
+                //Ok now format the values;
+                using (var range = worksheet.Cells[1, 1, 1, 5])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                    range.Style.Font.Color.SetColor(Color.White);
+                }
+
+                worksheet.Cells["A5:E5"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A5:E5"].Style.Font.Bold = true;
+
+                worksheet.Cells[5, 3, 5, 5].Formula = string.Format("SUBTOTAL(9,{0})", new ExcelAddress(2, 3, 4, 3).Address);
+                worksheet.Cells["C2:C5"].Style.Numberformat.Format = "#,##0";
+                worksheet.Cells["D2:E5"].Style.Numberformat.Format = "#,##0.00";
+
+                //Create an autofilter for the range
+                worksheet.Cells["A1:E4"].AutoFilter = true;
+
+                worksheet.Cells["A2:A4"].Style.Numberformat.Format = "@";   //Format as text
+
+                //There is actually no need to calculate, Excel will do it for you, but in some cases it might be useful. 
+                //For example if you link to this workbook from another workbook or you will open the workbook in a program that hasn't a calculation engine or 
+                //you want to use the result of a formula in your program.
+                worksheet.Calculate();
+
+                worksheet.Cells.AutoFitColumns(0);  //Autofit columns for all cells
+
+                // lets set the header text 
+                worksheet.HeaderFooter.OddHeader.CenteredText = "&24&U&\"Arial,Regular Bold\" Inventory";
+                // add the page number to the footer plus the total number of pages
+                worksheet.HeaderFooter.OddFooter.RightAlignedText =
+                    string.Format("Page {0} of {1}", ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
+                // add the sheet name to the footer
+                worksheet.HeaderFooter.OddFooter.CenteredText = ExcelHeaderFooter.SheetName;
+                // add the file path to the footer
+                worksheet.HeaderFooter.OddFooter.LeftAlignedText = ExcelHeaderFooter.FilePath + ExcelHeaderFooter.FileName;
+
+                worksheet.PrinterSettings.RepeatRows = worksheet.Cells["1:2"];
+                worksheet.PrinterSettings.RepeatColumns = worksheet.Cells["A:G"];
+
+                // Change the sheet view to show it in page layout mode
+                //worksheet.View.PageLayoutView = true;
+
+                // set some document properties
+                package.Workbook.Properties.Title = "Invertory";
+                package.Workbook.Properties.Author = "Jan Källman";
+                package.Workbook.Properties.Comments = "This sample demonstrates how to create an Excel 2007 workbook using EPPlus";
+
+                // set some extended property values
+                package.Workbook.Properties.Company = "AdventureWorks Inc.";
+
+                // set some custom property values
+                package.Workbook.Properties.SetCustomPropertyValue("Checked by", "Jan Källman");
+                package.Workbook.Properties.SetCustomPropertyValue("AssemblyName", "EPPlus");
+                // save our new workbook and we are done!
+                package.Save();
+            }
+            //return newFile.FullName;
+        }
+
+        public void ReadExcel()
+        {
+            string path = _hostingEnvironment.ContentRootPath;
+            var modelDir = new FileInfo(path + @"\wwwroot\Resources\ModeloPlanificacion.xlsx");
+
+            using (var excel = new ExcelPackage(modelDir))
+            {
+                ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
+                planificacion.Cells["B3"].Value = 44023;
+                planificacion.Cells["C3"].Value = "Sistemas de Comunicacion";
+                planificacion.Cells["D3"].Value = "Alexander Tinoco";
+                planificacion.Cells["E3"].Value = 1;
+                planificacion.Cells["F3"].Value = "Lunes";
+                planificacion.Cells["G3"].Value = "7:00 a 8:40 am";
+                planificacion.Cells["H3"].Value = 2412;
+                planificacion.Cells["I3"].Value = 30;
+                using (ExcelRange range = planificacion.Cells["B3:I3"])
+                {
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(23, 55, 93));
+                    range.Style.Font.Color.SetColor(Color.White);
+                    range.Style.Font.Bold = true;
+                    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                }
+                //Esto copia varias files y columnas a otra posicion
+                //Cells[RowStart, ColumnStart, RowEnd, ColumnEnd ]
+                planificacion.Cells[1,2, 2, 9].Copy(planificacion.Cells[5, 2, 7, 9]);
+                //Esto le hace un autofit a toda la hoja
+                planificacion.Cells[planificacion.Dimension.Address].AutoFitColumns();
+                string outputDir = path + @"\sample4.xlsx";
+                FileInfo x = new FileInfo(outputDir);
+                if (x.Exists)
+                    x.Delete();
+                excel.SaveAs(x);
+            }
+        }
 
         /// <summary>
         /// Genera los horarios de los profesores acorde a su prioridad, semestre
