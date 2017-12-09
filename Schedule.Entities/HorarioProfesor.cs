@@ -37,4 +37,19 @@ namespace Schedule.Entities
         [Required]
         public int IdTipoAsignacion { get; set; }
     }
+
+    public class HorarioProfesorDetailsDTO : PersonaBase
+    {
+        public string Asignatura { get; set; }
+        public string Aula { get; set; }
+        public int CantidadAlumnos { get; set; }
+        public int Codigo { get; set; }
+        public string Dia { get; set; }
+        public string HoraInicio { get; set; }
+        public string HoraFin { get; set; }
+        public int NumeroSeccion { get; set; }
+        public int Prioridad { get; set; }
+        public string Profesor { get; set; }
+        public int Semestre { get; set; }
+    }
 }

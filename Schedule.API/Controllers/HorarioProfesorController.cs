@@ -21,161 +21,245 @@ namespace Schedule.API.Controllers
     //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class HorarioProfesorController : Controller
     {
+        #region Variables
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly string _contentRootPath;
+        //TODO: Mover esto al appsettings.json
+        private const string _pathModeloPlanificacion = @"\wwwroot\Resources\ModeloPlanificacion.xlsx";
+        private const string _savePath = @"\wwwroot\Generated";
+        private const string _paExcelFileName = @"\PlanificacionAcademica";
+        #endregion
         public HorarioProfesorController(IHostingEnvironment environment)
         {
             _hostingEnvironment = environment;
+            _contentRootPath = environment.ContentRootPath;
         }
 
-        [HttpGet("Generate")]
-        public IActionResult Generate(bool fromStart)
+
+        [HttpGet("PlanificacionAcademica")]
+        public void GeneratePlanificacionAcademica()
         {
-            // bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
-            // if (!recordsExists)
-            // {
-            //     Generate();
-            // }
-            // return Ok();
-            ReadExcel();
-            //CreateExcel();
-            return Ok();
-        }
-        //TODO: Dividir modelo de excel en varias hojas?
-        private void CreateExcel()
-        {
-            string path = _hostingEnvironment.ContentRootPath;
-            var newFile = new FileInfo(path + @"\sample1.xlsx");
-            if (newFile.Exists)
-            {
-                newFile.Delete();  // ensures we create a new workbook
-                newFile = new FileInfo(path + @"\sample1.xlsx");
-            }
-            using (var package = new ExcelPackage(newFile))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Inventory");
-                //Add the headers
-                worksheet.Cells[1, 1].Value = "ID";
-                worksheet.Cells[1, 2].Value = "Product";
-                worksheet.Cells[1, 3].Value = "Quantity";
-                worksheet.Cells[1, 4].Value = "Price";
-                worksheet.Cells[1, 5].Value = "Value";
-
-                //Add some items...
-                worksheet.Cells["A2"].Value = 12001;
-                worksheet.Cells["B2"].Value = "Nails";
-                worksheet.Cells["C2"].Value = 37;
-                worksheet.Cells["D2"].Value = 3.99;
-
-                worksheet.Cells["A3"].Value = 12002;
-                worksheet.Cells["B3"].Value = "Hammer";
-                worksheet.Cells["C3"].Value = 5;
-                worksheet.Cells["D3"].Value = 12.10;
-
-                worksheet.Cells["A4"].Value = 12003;
-                worksheet.Cells["B4"].Value = "Saw";
-                worksheet.Cells["C4"].Value = 12;
-                worksheet.Cells["D4"].Value = 15.37;
-
-                //Add a formula for the value-column
-                worksheet.Cells["E2:E4"].Formula = "C2*D2";
-
-                //Ok now format the values;
-                using (var range = worksheet.Cells[1, 1, 1, 5])
-                {
-                    range.Style.Font.Bold = true;
-                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    range.Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
-                    range.Style.Font.Color.SetColor(Color.White);
-                }
-
-                worksheet.Cells["A5:E5"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells["A5:E5"].Style.Font.Bold = true;
-
-                worksheet.Cells[5, 3, 5, 5].Formula = string.Format("SUBTOTAL(9,{0})", new ExcelAddress(2, 3, 4, 3).Address);
-                worksheet.Cells["C2:C5"].Style.Numberformat.Format = "#,##0";
-                worksheet.Cells["D2:E5"].Style.Numberformat.Format = "#,##0.00";
-
-                //Create an autofilter for the range
-                worksheet.Cells["A1:E4"].AutoFilter = true;
-
-                worksheet.Cells["A2:A4"].Style.Numberformat.Format = "@";   //Format as text
-
-                //There is actually no need to calculate, Excel will do it for you, but in some cases it might be useful. 
-                //For example if you link to this workbook from another workbook or you will open the workbook in a program that hasn't a calculation engine or 
-                //you want to use the result of a formula in your program.
-                worksheet.Calculate();
-
-                worksheet.Cells.AutoFitColumns(0);  //Autofit columns for all cells
-
-                // lets set the header text 
-                worksheet.HeaderFooter.OddHeader.CenteredText = "&24&U&\"Arial,Regular Bold\" Inventory";
-                // add the page number to the footer plus the total number of pages
-                worksheet.HeaderFooter.OddFooter.RightAlignedText =
-                    string.Format("Page {0} of {1}", ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
-                // add the sheet name to the footer
-                worksheet.HeaderFooter.OddFooter.CenteredText = ExcelHeaderFooter.SheetName;
-                // add the file path to the footer
-                worksheet.HeaderFooter.OddFooter.LeftAlignedText = ExcelHeaderFooter.FilePath + ExcelHeaderFooter.FileName;
-
-                worksheet.PrinterSettings.RepeatRows = worksheet.Cells["1:2"];
-                worksheet.PrinterSettings.RepeatColumns = worksheet.Cells["A:G"];
-
-                // Change the sheet view to show it in page layout mode
-                //worksheet.View.PageLayoutView = true;
-
-                // set some document properties
-                package.Workbook.Properties.Title = "Invertory";
-                package.Workbook.Properties.Author = "Jan Källman";
-                package.Workbook.Properties.Comments = "This sample demonstrates how to create an Excel 2007 workbook using EPPlus";
-
-                // set some extended property values
-                package.Workbook.Properties.Company = "AdventureWorks Inc.";
-
-                // set some custom property values
-                package.Workbook.Properties.SetCustomPropertyValue("Checked by", "Jan Källman");
-                package.Workbook.Properties.SetCustomPropertyValue("AssemblyName", "EPPlus");
-                // save our new workbook and we are done!
-                package.Save();
-            }
-            //return newFile.FullName;
-        }
-
-        public void ReadExcel()
-        {
-            string path = _hostingEnvironment.ContentRootPath;
-            var modelDir = new FileInfo(path + @"\wwwroot\Resources\ModeloPlanificacion.xlsx");
-
+            VerifyRecords();
+            int limiteSuperior = 0, limiteInferior = 3;
+            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
-                planificacion.Cells["B3"].Value = 44023;
-                planificacion.Cells["C3"].Value = "Sistemas de Comunicacion";
-                planificacion.Cells["D3"].Value = "Alexander Tinoco";
-                planificacion.Cells["E3"].Value = 1;
-                planificacion.Cells["F3"].Value = "Lunes";
-                planificacion.Cells["G3"].Value = "7:00 a 8:40 am";
-                planificacion.Cells["H3"].Value = 2412;
-                planificacion.Cells["I3"].Value = 30;
-                using (ExcelRange range = planificacion.Cells["B3:I3"])
+                for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
-                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(23, 55, 93));
-                    range.Style.Font.Color.SetColor(Color.White);
-                    range.Style.Font.Bold = true;
-                    range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, periodoAcademico);
+                    planificacion.Cells[String.Format("B{0}:I{0}", limiteInferior - 2)].Value = titulo;
+                    var materias = _unitOfWork.Materias.GetBySemestre(idSemestre);
+                    var listaHorarios = _unitOfWork.HorarioProfesor.GetBySemestre(idSemestre);
+                    foreach (MateriasDTO materia in materias)
+                    {
+                        var horariosByMateria = listaHorarios.Where(hp => hp.Codigo == materia.Codigo);
+                        if (horariosByMateria.Count() == 0)
+                            continue;
+
+                        int numeroSecciones = horariosByMateria.Select(h => h.NumeroSeccion).Distinct().Count();
+                        var secciones = horariosByMateria.Select(h => h.NumeroSeccion).Distinct();
+
+                        limiteSuperior = limiteInferior + numeroSecciones - 1;
+                        string celdaCodigo = String.Format("B{0}:B{1}", limiteInferior, limiteSuperior);
+                        string celdaAsignatura = String.Format("C{0}:C{1}", limiteInferior, limiteSuperior);
+                        bool merge = true;
+                        foreach (int seccion in secciones)
+                        {
+                            var horarioProfesor = horariosByMateria.Where(h => h.NumeroSeccion == seccion);
+                            int horariosDisponibiles = horarioProfesor.Count();
+                            if (horariosDisponibiles > 0)
+                            {
+                                int cantidadAlumnos = horarioProfesor.Select(hp => hp.CantidadAlumnos).FirstOrDefault();
+                                string profesor = horarioProfesor.Select(hp => hp.Profesor).FirstOrDefault();
+                                string dias = string.Join("\n", horarioProfesor.Select(hp => hp.Dia));
+                                string horas = string.Join("\n", horarioProfesor.Select(hp => hp.HoraInicio + " a " + hp.HoraFin));
+                                string aulas = string.Join("\n", horarioProfesor.Select(hp => hp.Aula));
+
+                                SetPlanificacionAcademicaReportValues(planificacion, limiteInferior, profesor, seccion, dias,
+                                    horas, aulas, cantidadAlumnos, merge, materia.Codigo, materia.Asignatura, celdaCodigo, celdaAsignatura);
+
+                                SetPlanifacionAcademicaReportBodyStyles(planificacion, limiteInferior);
+                                merge = false;
+                            }
+                            limiteInferior++;
+                        }
+                    }
+                    if (idSemestre == 14)
+                        break;
+                    //Esto copia varias filas y columnas a otra posicion. Cells[RowStart, ColumnStart, RowEnd, ColumnEnd ]
+                    planificacion.Cells[1, 2, 2, 9].Copy(planificacion.Cells[limiteInferior + 1, 2, limiteInferior + 2, 9]);
+                    limiteInferior += 3;
                 }
-                //Esto copia varias files y columnas a otra posicion
-                //Cells[RowStart, ColumnStart, RowEnd, ColumnEnd ]
-                planificacion.Cells[1,2, 2, 9].Copy(planificacion.Cells[5, 2, 7, 9]);
-                //Esto le hace un autofit a toda la hoja
-                planificacion.Cells[planificacion.Dimension.Address].AutoFitColumns();
-                string outputDir = path + @"\sample4.xlsx";
-                FileInfo x = new FileInfo(outputDir);
-                if (x.Exists)
-                    x.Delete();
-                excel.SaveAs(x);
+                //Autofit no funciona con filas merged. Por eso uso WrapText, ademas de que los saltos de linea lo requieren
+                planificacion.Cells.AutoFitColumns();
+                planificacion.Column(3).Style.WrapText = true;
+                for (int i = 6; i <= 8; i++)
+                    planificacion.Column(i).Style.WrapText = true;
+                SaveExcel(excel, _contentRootPath + _savePath, _paExcelFileName);
             }
+        }
+
+        /// <summary>
+        /// Verifica si existen registros en la DB, de no ser el caso
+        /// los genera
+        /// </summary>
+        private void VerifyRecords()
+        {
+            bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
+            if (!recordsExists)
+                Generate();
+        }
+
+        #region Metodos usados para la generacion de los archivos excel
+        /// <summary>
+        /// Obtiene un titulo acorde al semestre para ser usado en el excel de PlanifacionAcademica
+        /// </summary>
+        /// <param name="idSemestre">Id del semestre</param>
+        /// <param name="periodoAcademico">Periodo academico actual</param>
+        /// <returns>Titulo acorde al semestre pasado</returns>
+        private string GetPlanifacionAcademicaReportHeaderTitle(int idSemestre, string periodoAcademico)
+        {
+            string titulo = String.Empty;
+            switch (idSemestre)
+            {
+                case 3:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE III";
+                    break;
+                case 4:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE IV";
+                    break;
+                case 5:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE V";
+                    break;
+                case 6:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VI";
+                    break;
+                case 7:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VII";
+                    break;
+                case 8:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VIII";
+                    break;
+                case 9:
+                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE IX";
+                    break;
+                case 10:
+                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Maquinas Electricas Cod-41";
+                    break;
+                case 11:
+                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Controles Industriales Cod-43";
+                    break;
+                case 12:
+                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Sistemas de Comunicacion Cod-44";
+                    break;
+                case 13:
+                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas de Computacion Cod-46";
+                    break;
+                case 14:
+                    titulo = "Planificación Académica DIS " + periodoAcademico + " Asignaturas del DIS a otras carreras";
+                    break;
+            }
+            return titulo;
+        }
+
+        /// <summary>
+        /// Guarda un excel en particular en la ruta y con 
+        /// el nombre que le indiques
+        /// </summary>
+        /// <param name="excel">Archivo excel a guardar</param>
+        /// <param name="rootPath">Ruta raiz de la pagina</param>
+        /// <param name="excelFileName">Nombre del archivo (e.g: PlanificacionAcademica)</param>
+        private void SaveExcel(ExcelPackage excel, string rootPath, string excelFileName)
+        {
+            excelFileName = String.Format(excelFileName + "_{0}.xlsx", DateTime.Now.ToString("yyyyMMdd"));
+            string outputDir = rootPath + excelFileName;
+            FileInfo file = new FileInfo(outputDir);
+            if (file.Exists)
+                file.Delete();
+            // set some document properties
+            excel.Workbook.Properties.Title = "Planificacion Academica y Horarios";
+            excel.Workbook.Properties.Author = "Efrain Bastidas";
+            excel.Workbook.Properties.Comments = "Creado con el fin de aprender..";
+            excel.SaveAs(file);
+        }
+
+        /// <summary>
+        /// Aplica algunos estilos al excel de PlanifacionAcademica
+        /// </summary>
+        /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
+        /// <param name="limiteInferior">Entero usado para calcular el rango de la celda</param>
+        public void SetPlanifacionAcademicaReportBodyStyles(ExcelWorksheet worksheet, int limiteInferior)
+        {
+            string celda = String.Format("B{0}:I{0}", limiteInferior);
+            using (ExcelRange range = worksheet.Cells[celda])
+            {
+                range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                range.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(23, 55, 93));
+                range.Style.Font.Color.SetColor(Color.White);
+                range.Style.Font.Bold = true;
+                range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            }
+        }
+
+        /// <summary>
+        /// Aplica los valores pasados al excel de PlanifacionAcademica
+        /// </summary>
+        /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
+        /// <param name="limiteInferior">Entero usado para calcular el rango de la celda</param>
+        /// <param name="nombreProfesor">Nombre del profesor</param>
+        /// <param name="seccion">Numero de la seccion</param>
+        /// <param name="dias">Dias en los que el profesor da la materia para una seccion</param>
+        /// <param name="horas">Horas en las que el profesor da la materia para una seccion<</param>
+        /// <param name="aulas">Aulas en las que el profesor da la materia para una seccion<</param>
+        /// <param name="cantidadAlumnos">Cantidad de alumnos para una seccion</param>
+        /// <param name="merge">Indica si se debe unir las celdas de Codigo y Asignatura</param>
+        /// <param name="codigo">Codigo de la materia</param>
+        /// <param name="asignatura">Nombre de la materia</param>
+        /// <param name="celdaCodigo">Rango de la celda en caso de unirla</param>
+        /// <param name="celdaAsignatura">Rango de la celda en caso de unirla</param>
+        private void SetPlanificacionAcademicaReportValues(ExcelWorksheet worksheet, int limiteInferior, string nombreProfesor,
+            int seccion, string dias, string horas, string aulas, int cantidadAlumnos, bool merge,
+            int codigo, string asignatura, string celdaCodigo, string celdaAsignatura)
+        {
+            if (merge)
+            {
+                worksheet.Cells[celdaCodigo].Merge = true;
+                worksheet.Cells[celdaAsignatura].Merge = true;
+                worksheet.Cells[celdaCodigo].Value = codigo;
+                worksheet.Cells[celdaAsignatura].Value = asignatura;
+            }
+            worksheet.Cells["D" + limiteInferior].Value = nombreProfesor;
+            worksheet.Cells["E" + limiteInferior].Value = seccion;
+            worksheet.Cells["F" + limiteInferior].Value = dias;
+            worksheet.Cells["G" + limiteInferior].Value = horas;
+            worksheet.Cells["H" + limiteInferior].Value = aulas;
+            worksheet.Cells["I" + limiteInferior].Value = cantidadAlumnos;
+        }
+        #endregion
+
+        #region Metodos usados para la generacion de los horarios y guardado en la DB
+        /// <summary>
+        /// Calcula cuantas horas debe tener una materia diariamente en base
+        /// a los dias disponibles del profesor y el tipo de materia
+        /// </summary>
+        /// <param name="horasPorSemana">Horas por semana de la materia</param>
+        /// <param name="diasDisponibles">Numero de dias disponibles en la semana</param>
+        /// <param name="idTipoMateria">Tipo materia</param>
+        /// <returns>Horas por semana de una materia en una seccion</returns>
+        private int CalculateHorasDiarias(int horasPorSemana, int diasDisponibles, int idTipoMateria)
+        {
+            if (diasDisponibles >= 2 && idTipoMateria == 1)
+                return (int)Math.Round((horasPorSemana / 2.0));
+            else
+                return horasPorSemana;
         }
 
         /// <summary>
@@ -247,23 +331,6 @@ namespace Schedule.API.Controllers
                     }
                 }
             }
-        }
-
-
-        /// <summary>
-        /// Calcula cuantas horas debe tener una materia diariamente en base
-        /// a los dias disponibles del profesor y el tipo de materia
-        /// </summary>
-        /// <param name="horasPorSemana">Horas por semana de la materia</param>
-        /// <param name="diasDisponibles">Numero de dias disponibles en la semana</param>
-        /// <param name="idTipoMateria">Tipo materia</param>
-        /// <returns>Horas por semana de una materia en una seccion</returns>
-        private int CalculateHorasDiarias(int horasPorSemana, int diasDisponibles, int idTipoMateria)
-        {
-            if (diasDisponibles >= 2 && idTipoMateria == 1)
-                return (int)Math.Round((horasPorSemana / 2.0));
-            else
-                return horasPorSemana;
         }
 
         /// <summary>
@@ -533,5 +600,6 @@ namespace Schedule.API.Controllers
                 return false;
             return true;
         }
+        #endregion
     }
 }

@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Schedule.API.Helpers;
 
 namespace Schedule.API.Models.Repositories
 {
     public class HorarioProfesorRepository //: IRepository<Aulas, AulasDetailsDTO>
     {
         private readonly HorariosContext _db = new HorariosContext();
-       
+
         /// <summary>
         /// Calcula las horas asignadas para un profesor en particular.
         /// No confundir estas horas asignadas con las de disponibilidad.
@@ -112,6 +113,24 @@ namespace Schedule.API.Models.Repositories
                 )
                 .Select(hp => hp.HorarioProfesor)
                 .ProjectTo<HorarioProfesorDTO>();
+        }
+
+        /// <summary>
+        /// Obtiene los horarios de los profesores del periodo academico actual
+        /// para un semestre en particular
+        /// </summary>
+        /// <param name="idSemestre">Id del semestre</param>
+        /// <returns>IEnumerable de HorarioProfesorDetailsDTO</returns>
+        public IEnumerable<HorarioProfesorDetailsDTO> GetBySemestre(int idSemestre)
+        {
+            IEnumerable<HorarioProfesorDetailsDTO> lista = null;
+            _db.LoadStoredProc("spGetHorariosProfesores")
+                .WithSqlParam("@idSemestre", idSemestre)
+                .ExecuteStoredProc((handler) =>
+                {
+                    lista = handler.ReadToList<HorarioProfesorDetailsDTO>();
+                });
+            return lista;
         }
     }
 }

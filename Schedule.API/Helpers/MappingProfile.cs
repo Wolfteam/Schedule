@@ -41,6 +41,8 @@ namespace Schedule.API.Helpers
                .ForMember(d => d.Semestre, opt => opt.MapFrom(s => s.Semestres))
                .ForMember(d => d.TipoMateria, opt => opt.MapFrom(s => s.TipoAulaMaterias));
 
+            CreateMap<Materias, MateriasDTO>();
+
             CreateMap<Aulas, AulasDetailsDTO>()
                 .ForMember(dto => dto.TipoAula, conf => conf.MapFrom(s => s.TipoAulaMateria));
 
