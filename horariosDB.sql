@@ -645,3 +645,43 @@ INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
 INNER JOIN aulas a on hp.id_aula = a.id_aula
 INNER JOIN dias d on hp.id_dia = d.id_dia
 INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
+
+
+DELIMITER //
+CREATE PROCEDURE spGetHorariosProfesores
+(IN idSemestre INT)
+BEGIN
+	DECLARE idPeriodo INT;
+    SET idPeriodo = (SELECT pc.id_periodo FROM periodo_carrera pc WHERE pc.status = 1 LIMIT 1);
+    SELECT
+		hp.cedula,
+		hp.id_periodo, 
+        concat(p.nombre, " ", p.apellido) AS Profesor,
+        m.asignatura Asignatura,
+        m.codigo AS Codigo,
+        h1.nombre_hora AS HoraInicio,
+        h2.nombre_hora AS HoraFin,
+        a.nombre_aula AS Aula,
+        d.nombre_dia AS Dia,
+        hp.numero_seccion AS NumeroSeccion,
+		sec.cantidad_alumnos AS CantidadAlumnos,
+        m.id_semestre AS Semestre,
+        p.id_prioridad AS Prioridad,
+        ta.nombre_asignacion AS TipoAsignacion
+    FROM 
+        horario_profesores hp
+    INNER JOIN profesores p on hp.cedula = p.cedula
+    INNER JOIN materias m on hp.codigo = m.codigo
+    INNER JOIN horas h1 on hp.id_hora_inicio = h1.id_hora
+    INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
+    INNER JOIN aulas a on hp.id_aula = a.id_aula
+    INNER JOIN dias d on hp.id_dia = d.id_dia
+    INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
+	INNER JOIN secciones sec on hp.codigo = sec.codigo
+    WHERE
+    	m.id_semestre = idSemestre
+        AND hp.id_periodo = idPeriodo
+	ORDER BY
+		m.id_semestre, hp.numero_seccion, d.id_dia;
+END //
+DELIMITER ;
