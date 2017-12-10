@@ -47,6 +47,9 @@ namespace Schedule.Entities
         public string Dia { get; set; }
         public string HoraInicio { get; set; }
         public string HoraFin { get; set; }
+        public int IdDia { get; set; }
+        public int IdHoraInicio { get; set; }
+        public int IdHoraFin { get; set; }
         public int NumeroSeccion { get; set; }
         public int Prioridad { get; set; }
         public string Profesor { get; set; }

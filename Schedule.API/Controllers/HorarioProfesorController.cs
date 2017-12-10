@@ -29,6 +29,9 @@ namespace Schedule.API.Controllers
         private const string _pathModeloPlanificacion = @"\wwwroot\Resources\ModeloPlanificacion.xlsx";
         private const string _savePath = @"\wwwroot\Generated";
         private const string _paExcelFileName = @"\PlanificacionAcademica";
+        private const string _phExcelFileName = @"\PlanificacionHorario";
+        private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
+        private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         #endregion
         public HorarioProfesorController(IHostingEnvironment environment)
         {
@@ -47,9 +50,10 @@ namespace Schedule.API.Controllers
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
+                excel.Workbook.Worksheets.Delete(1);
                 for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
-                    string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, periodoAcademico);
+                    string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPA, periodoAcademico);
                     planificacion.Cells[String.Format("B{0}:I{0}", limiteInferior - 2)].Value = titulo;
                     var materias = _unitOfWork.Materias.GetBySemestre(idSemestre);
                     var listaHorarios = _unitOfWork.HorarioProfesor.GetBySemestre(idSemestre);
@@ -94,11 +98,74 @@ namespace Schedule.API.Controllers
                     limiteInferior += 3;
                 }
                 //Autofit no funciona con filas merged. Por eso uso WrapText, ademas de que los saltos de linea lo requieren
-                planificacion.Cells.AutoFitColumns();
+                //planificacion.Cells.AutoFitColumns();
                 planificacion.Column(3).Style.WrapText = true;
                 for (int i = 6; i <= 8; i++)
                     planificacion.Column(i).Style.WrapText = true;
                 SaveExcel(excel, _contentRootPath + _savePath, _paExcelFileName);
+            }
+        }
+
+        [HttpGet("PlanificacionHorario")]
+        public void GeneratePlanificacionHorario()
+        {
+            VerifyRecords();
+            int contador = 0, puntero = 3;
+            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
+            using (var excel = new ExcelPackage(modelDir))
+            {
+                ExcelWorksheet planificacion = excel.Workbook.Worksheets[1];
+                excel.Workbook.Worksheets.Delete(0);
+                for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
+                {
+                    string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPH, periodoAcademico);
+                    planificacion.Cells[String.Format("B{0}:I{0}", contador + 1)].Value = titulo;
+                    var horarios = _unitOfWork.HorarioProfesor.GetBySemestre(idSemestre);
+                    foreach (var horario in horarios)
+                    {
+                        for (int idDia = 1; idDia < 7; idDia++)
+                        {
+                            for (int idHora = 1; idHora < 14; idHora++)
+                            {
+                                if (horario.IdDia == idDia && horario.IdHoraInicio == idHora)
+                                {
+                                    string value = String.Format("{0} \n {1} \n S-{2}", horario.Asignatura, horario.Codigo, horario.NumeroSeccion);
+                                    int rowStart = puntero + contador;
+                                    int rowEnd = rowStart + horario.IdHoraFin - horario.IdHoraInicio - 1;
+                                    planificacion.Cells[rowStart, idDia + 3, rowEnd, idDia + 3].Merge = true;
+                                    planificacion.Cells[rowStart, idDia + 3, rowEnd, idDia + 3].Value = value;
+                                    puntero = rowEnd + 1;
+                                    break;
+                                }
+                                else
+                                    puntero++;
+                            }
+                            puntero = 3;
+                        }
+                    }
+                    SetPlanifacionHorarioReportBodyStyles(planificacion, contador + 1, contador + 15);
+                    contador += 16;
+                    puntero = 3;
+                    if (idSemestre == 14)
+                        break;
+
+                    //Copia la cabecera
+                    planificacion.Cells[1, 2, 2, 9].Copy(planificacion.Cells[puntero + contador - 2, 2, puntero + contador - 1, 9]);
+
+                    //Copia la fila del almuerzo
+                    planificacion.Cells[9, 4, 9, 9].Copy(planificacion.Cells[contador + 9, 4, contador + 9, 9]);
+
+                    //Copia la columna B de las horas y realizo los merge
+                    planificacion.Cells[3, 2, 15, 2].Copy(planificacion.Cells[puntero + contador, 2, puntero + contador + 12, 2]);
+                    for (int i = puntero + contador; i <= puntero + contador + 12; i++)
+                    {
+                        if (i == puntero + contador + 6)
+                            planificacion.Cells[String.Format("D{0}:I{0}", i)].Merge = true;
+                        planificacion.Cells[String.Format("B{0}:C{0}", i)].Merge = true;
+                    }
+                }
+                SaveExcel(excel, _contentRootPath + _savePath, _phExcelFileName);
             }
         }
 
@@ -118,48 +185,49 @@ namespace Schedule.API.Controllers
         /// Obtiene un titulo acorde al semestre para ser usado en el excel de PlanifacionAcademica
         /// </summary>
         /// <param name="idSemestre">Id del semestre</param>
+        /// <param name="tituloPlanificacion">Constante que se concatena con el periodo actual y semestre</param>
         /// <param name="periodoAcademico">Periodo academico actual</param>
         /// <returns>Titulo acorde al semestre pasado</returns>
-        private string GetPlanifacionAcademicaReportHeaderTitle(int idSemestre, string periodoAcademico)
+        private string GetPlanifacionAcademicaReportHeaderTitle(int idSemestre, string tituloPlanificacion, string periodoAcademico)
         {
             string titulo = String.Empty;
             switch (idSemestre)
             {
                 case 3:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE III";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE III";
                     break;
                 case 4:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE IV";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE IV";
                     break;
                 case 5:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE V";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE V";
                     break;
                 case 6:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VI";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE VI";
                     break;
                 case 7:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VII";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE VII";
                     break;
                 case 8:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE VIII";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE VIII";
                     break;
                 case 9:
-                    titulo = "Planificación Académica Departamento de Ingeniería de Sistemas " + periodoAcademico + " SEMESTRE IX";
+                    titulo = tituloPlanificacion + periodoAcademico + " SEMESTRE IX";
                     break;
                 case 10:
-                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Maquinas Electricas Cod-41";
+                    titulo = tituloPlanificacion + periodoAcademico + " ELECTIVAS MAQUINAS ELECTRICAS COD-41";
                     break;
                 case 11:
-                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Controles Industriales Cod-43";
+                    titulo = tituloPlanificacion + periodoAcademico + " ELECTIVAS CONTROLES INDUSTRIALES COD-43";
                     break;
                 case 12:
-                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas Sistemas de Comunicacion Cod-44";
+                    titulo = tituloPlanificacion + periodoAcademico + " ELECTIVAS SISTEMAS DE COMUNICACION COD-44";
                     break;
                 case 13:
-                    titulo = "Planificación Académica DIS " + periodoAcademico + " Electivas de Computacion Cod-46";
+                    titulo = tituloPlanificacion + periodoAcademico + " ELECTIVAS DE COMPUTACION COD-46";
                     break;
                 case 14:
-                    titulo = "Planificación Académica DIS " + periodoAcademico + " Asignaturas del DIS a otras carreras";
+                    titulo = tituloPlanificacion + periodoAcademico + " ASIGNATURAS DEL DIS A OTRAS CARRERAS";
                     break;
             }
             return titulo;
@@ -190,10 +258,10 @@ namespace Schedule.API.Controllers
         /// Aplica algunos estilos al excel de PlanifacionAcademica
         /// </summary>
         /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
-        /// <param name="limiteInferior">Entero usado para calcular el rango de la celda</param>
-        public void SetPlanifacionAcademicaReportBodyStyles(ExcelWorksheet worksheet, int limiteInferior)
+        /// <param name="rowStart">Entero que indica la fila donde se empieza a aplicar los estilos</param>
+        public void SetPlanifacionAcademicaReportBodyStyles(ExcelWorksheet worksheet, int rowStart)
         {
-            string celda = String.Format("B{0}:I{0}", limiteInferior);
+            string celda = String.Format("B{0}:I{0}", rowStart);
             using (ExcelRange range = worksheet.Cells[celda])
             {
                 range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -207,6 +275,29 @@ namespace Schedule.API.Controllers
                 range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             }
+            worksheet.Row(rowStart).Height = 30;
+        }
+
+        /// <summary>
+        /// Aplica algunos estilos al excel de PlanificacionHorario
+        /// </summary>
+        /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
+        /// <param name="rowStart">Entero que indica la fila donde se empieza a aplicar los estilos</param>
+        /// <param name="rowEnd">Entero que indica la fila donde se termina de aplicar los estilos</param>
+        public void SetPlanifacionHorarioReportBodyStyles(ExcelWorksheet worksheet, int rowStart, int rowEnd)
+        {
+            using (ExcelRange range = worksheet.Cells[rowStart, 2, rowEnd, 9])
+            {
+                range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                range.Style.WrapText = true;
+                range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            }
+            for (int i = rowStart; i <= rowEnd; i++)
+                worksheet.Row(i).Height = 30;
         }
 
         /// <summary>
