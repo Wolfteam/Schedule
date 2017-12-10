@@ -284,7 +284,7 @@ namespace Schedule.API.Controllers
                     {
                         var disponibilidades = _unitOfWork.DisponibilidadProfesor.GetByPrioridadMateria(idPrioridad, seccion.Materia.Codigo);
                         var cedulas = disponibilidades.Select(ci => ci.Cedula).Distinct();
-                        int numeroSeccion = 1;
+                        int numeroSeccion = _unitOfWork.HorarioProfesor.GetLastSeccionAssigned(seccion.Materia.Codigo) + 1;
                         for (int i = 1; i <= seccion.NumeroSecciones; i++)
                         {
                             foreach (uint cedula in cedulas)

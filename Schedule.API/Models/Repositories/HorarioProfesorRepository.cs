@@ -132,5 +132,22 @@ namespace Schedule.API.Models.Repositories
                 });
             return lista;
         }
+
+        /// <summary>
+        /// Obtienes la ultima seccion asignada a una materia en particular
+        /// </summary>
+        /// <param name="codigo">Codigo de la materia</param>
+        /// <returns>Ultima seccion asignada a la materia</returns>
+        public int GetLastSeccionAssigned(ushort codigo)
+        {
+            var horario = _db.HorarioProfesores
+                .Where(hp => hp.Codigo == codigo)
+                .OrderByDescending(hp => hp.NumeroSeccion)
+                .FirstOrDefault();
+            if (horario == null)
+                return 0;
+            else
+                return horario.NumeroSeccion;
+        }
     }
 }
