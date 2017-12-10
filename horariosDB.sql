@@ -659,9 +659,12 @@ BEGIN
         concat(p.nombre, " ", p.apellido) AS Profesor,
         m.asignatura Asignatura,
         m.codigo AS Codigo,
+		h1.id_hora AS IdHoraInicio,
         h1.nombre_hora AS HoraInicio,
+		h2.id_hora AS IdHoraFin,
         h2.nombre_hora AS HoraFin,
         a.nombre_aula AS Aula,
+		d.id_dia AS IdDia,
         d.nombre_dia AS Dia,
         hp.numero_seccion AS NumeroSeccion,
 		sec.cantidad_alumnos AS CantidadAlumnos,
@@ -682,6 +685,6 @@ BEGIN
     	m.id_semestre = idSemestre
         AND hp.id_periodo = idPeriodo
 	ORDER BY
-		m.id_semestre, hp.numero_seccion, d.id_dia;
+		 d.id_dia, hp.numero_seccion;
 END //
 DELIMITER ;
