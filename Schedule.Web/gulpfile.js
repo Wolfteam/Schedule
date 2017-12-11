@@ -89,6 +89,7 @@ gulp.task("copy-files", function () {
 //Esto no ta completo todavia, quizas quitar document ready de los js para poder
 //concatenarlos a todos
 gulp.task("concat-minify-js", function () {
+    //cargarDisponibilidad.min.js
     gulp.src(
             [
                 paths.webroot + "js/CargarDisponibilidad/*.js",
@@ -98,7 +99,7 @@ gulp.task("concat-minify-js", function () {
         .pipe(concat("cargarDisponibilidad.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/CargarDisponibilidad"));
-    
+    //editarDB.min.js
     gulp.src(
             [
                 paths.webroot + "js/EditarDB/*.js",
@@ -108,6 +109,17 @@ gulp.task("concat-minify-js", function () {
         .pipe(concat("editarDB.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/EditarDB"));
+    //home.min.js
+    gulp.src(
+            [
+                paths.webroot + "js/Home/*.js",
+                paths.webroot + "js/EditarDB/periodoCarrera.js",
+                "!" + paths.webroot + 'js/Home/*.min.js'
+            ]
+        )
+        .pipe(concat("home.min.js"))
+        .pipe(uglify())
+        .pipe(gulp.dest(paths.webroot + "js/home"));
 
 });
 
