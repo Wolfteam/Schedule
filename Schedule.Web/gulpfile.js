@@ -125,8 +125,8 @@ gulp.task("concat-minify-js", function () {
 
 //Esto concatena y minifca los js de las librerias/plugin utilizados ademas de las cosas comunes
 gulp.task("concat-minify", function () {
-    return gulp
-        .src(
+    //site.min.js
+    return gulp.src(
             [
                 paths.webroot + "lib/jquery/jquery.min.js",
                 paths.webroot + "lib/materialize-css/js/materialize.min.js",
@@ -153,4 +153,5 @@ gulp.task("concat-minify", function () {
         .pipe(concat("site.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js"));
+
 });
