@@ -249,11 +249,6 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
             // table.columns.adjust();
         }
     });
-
-    if (!needsSelectedRowHandler) {
-        return;
-    }
-    selectedRowHandler(selector);
 }
 
 /**

@@ -186,6 +186,36 @@ function btnBuscarOnClick() {
                 initDataTable("#datatable", data, columnsData, -1, false, "multi");
             });
             break;
+        case "7": //Periodo Carrera
+            getAllPeriodos(function (data, textStatus, xhr) {
+                var titulos = [
+                    "Id", "Periodo", "Status", "Fecha Creacion"
+                ];
+                var columnsData = [{
+                        "data": "idPeriodo"
+                    },
+                    {
+                        "data": "nombrePeriodo"
+                    },
+                    {
+                        "data": "status",
+                        "render": function (data, type, row, meta) {
+                            return data ? "Activo" : "Inactivo";
+                        }
+                    },
+                    {
+                        "data": "fechaCreacion",
+                        "render": function (data, type, row, meta) {
+                            var date = new Date(data);
+                            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                            return date.toLocaleDateString("es-VE", options);
+                        }
+                    },
+                ];
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, 0, false, "multi");
+            });
+            break;
         default:
             toast("Debe seleccionar una opcion");
             $("#barra-progeso").hide();
@@ -212,6 +242,9 @@ function btnCrearOnClick() {
         case "6":
             confirmCreateSecciones();
             break;
+        case "7":
+            confirmCreatePeriodo();
+            break;    
         default:
             toast("Debe seleccionar una opcion");
             break;
@@ -248,6 +281,9 @@ function btnEditarOnClick() {
         case "6":
             confirmEditSecciones(data[0].materia.codigo, data[0].cantidadAlumnos, data[0].numeroSecciones);
             break;
+        case "7":
+            confirmEditPeriodo(data[0].idPeriodo, data[0].nombrePeriodo, data[0].status);
+            break;
         default:
             toast("Debe seleccionar una opcion.");
             break;
@@ -278,6 +314,9 @@ function btnBorrarOnClick() {
         case "6":
             confirmDeleteSecciones(data);
             break;
+        case "7":
+            confirmDeletePeriodo(data);
+            break;
         default:
             toast("Debe seleccionar una opcion.");
             break;
@@ -291,7 +330,9 @@ function removeTable(selector = "#tabla div") {
 
 /**
  * Esta funcion es particular de este submenu, se ejecuta despues 
- * de que todas las peticiones hayan sido concluidas
+ * de que todas las peticiones hayan sido concluidas. Aplica select2 a
+ * los elementos en el formulario, oculta la barra de progreso 
+ * y muestra el formulario.
  * @param {string} formSelector Nombre del selector del formulario (e.g: #form_materias)
  */
 function onRequestsFinished(formSelector) {
