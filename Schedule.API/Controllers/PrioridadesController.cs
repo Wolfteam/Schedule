@@ -10,6 +10,8 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class PrioridadesController : Controller
     {
         private readonly PrioridadesRepository _db = new PrioridadesRepository();

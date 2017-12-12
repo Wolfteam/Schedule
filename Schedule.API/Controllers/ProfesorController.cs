@@ -10,14 +10,14 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class ProfesorController : Controller
     {
         private readonly ProfesorRepository _db = new ProfesorRepository();
 
         // POST api/Profesor
         [HttpPost]
-        //[AuthenticateAttribute].
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
             bool result = _db.Create(Mapper.Map<ProfesorDTO, Profesores>(profesor));
@@ -28,19 +28,16 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Profesor/21255727
         [HttpDelete("{cedula}")]
-        //[AuthenticateAttribute]
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Delete(int cedula)
         {
             bool result = _db.Delete(cedula);
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro el profesor a borrar.");
             return new NoContentResult();
         }
 
         // GET api/Profesor
         [HttpGet]
-        //[AuthenticateAttribute]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
             return _db.Get();
@@ -48,12 +45,11 @@ namespace Schedule.API.Controllers
 
         // GET api/Profesor/1
         [HttpGet("{cedula}", Name = "GetProfesor")]
-        //[AuthenticateAttribute]
         public IActionResult Get(int cedula)
         {
             var profesor = _db.Get(cedula);
             if (profesor == null)
-                return NotFound();
+                return NotFound("No se encontro el profesor buscado.");
             return new ObjectResult(profesor);
         }
 
@@ -63,7 +59,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro el profesor a actualizar.");
             return new NoContentResult();
         }
     }

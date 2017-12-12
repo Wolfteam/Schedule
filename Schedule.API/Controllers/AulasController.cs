@@ -10,8 +10,8 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
-    //[AuthenticateAttribute]
-    //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class AulasController : Controller
     {
         private readonly AulasRepository _db = new AulasRepository();
@@ -32,7 +32,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Delete(id);
             if (!result)
-                return StatusCode(404);
+                return NotFound("No existe el aula a borrar.");
             return new NoContentResult();
         }
 
@@ -57,7 +57,7 @@ namespace Schedule.API.Controllers
         {
             var aula = _db.Get(id);
             if (aula == null)
-                return NotFound();        
+                return NotFound("No se encontro el aula buscada.");        
             return new ObjectResult(aula);
         }
 
@@ -67,7 +67,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Update(id, Mapper.Map<AulasDTO, Aulas>(aula));
             if (!result)
-                return StatusCode(404);
+                return NotFound("No existe el aula a actualizar");
             return new NoContentResult();
         }
 

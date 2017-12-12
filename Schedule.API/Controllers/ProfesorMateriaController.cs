@@ -10,14 +10,14 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class ProfesorMateriaController : Controller
     {
         private readonly ProfesorMateriaRepository _db = new ProfesorMateriaRepository();
 
         // POST api/ProfesorMateria
         [HttpPost]
-        //[AuthenticateAttribute].
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
         {
             bool result = _db.Create(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
@@ -29,19 +29,16 @@ namespace Schedule.API.Controllers
 
         // DELETE api/ProfesorMateria/10
         [HttpDelete("{id}")]
-        //[AuthenticateAttribute]
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Delete(int id)
         {
             bool result = _db.Delete(id);
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la relacion a borrar.");
             return new NoContentResult();
         }
 
         // GET api/ProfesorMateria
         [HttpGet]
-        //[AuthenticateAttribute]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
             return _db.Get();
@@ -49,7 +46,6 @@ namespace Schedule.API.Controllers
 
         // GET api/ProfesorMateria/1234
         [HttpGet("{id}", Name = "GetProfesorMateria")]
-        //[AuthenticateAttribute]
         public ProfesorMateriaDetailsDTO Get(int id)
         {
             return _db.Get(id);
@@ -61,7 +57,7 @@ namespace Schedule.API.Controllers
         {
             bool result = _db.Update(id, Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la relaciona a actualizar.");
             return new NoContentResult();
         }
     }

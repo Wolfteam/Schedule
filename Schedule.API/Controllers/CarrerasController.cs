@@ -10,8 +10,8 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
-    //[AuthenticateAttribute]
-    //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class CarrerasController : Controller
     {
         private readonly CarrerasRepository _db = new CarrerasRepository();

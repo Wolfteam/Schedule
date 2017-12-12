@@ -4,10 +4,13 @@ using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
+using Schedule.API.Filters;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class SeccionesController : Controller
     {
         private readonly SeccionesRepository _db = new SeccionesRepository();
@@ -15,8 +18,6 @@ namespace Schedule.API.Controllers
 
         // POST api/Secciones
         [HttpPost]
-        //[AuthenticateAttribute].
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Create([FromBody] SeccionesDTO seccion)
         {
             seccion.IdPeriodo = pcr.GetCurrentPeriodo().IdPeriodo;
@@ -28,19 +29,16 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Secciones/44605
         [HttpDelete("{codigo}")]
-        //[AuthenticateAttribute]
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Delete(int codigo)
         {
             bool result = _db.Delete(codigo);
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la seccion a borrar.");
             return new NoContentResult();
         }
 
         // GET api/Secciones
         [HttpGet]
-        //[AuthenticateAttribute]
         public IEnumerable<SeccionesDetailsDTO> GetAll()
         {
             return _db.Get();
@@ -48,12 +46,11 @@ namespace Schedule.API.Controllers
 
         // GET api/Secciones/44056
         [HttpGet("{codigo}", Name = "GetSeccion")]
-        //[AuthenticateAttribute]
         public IActionResult Get(int codigo)
         {
             var seccion = _db.Get(codigo);
             if (seccion == null)
-                return NotFound();
+                return NotFound("No se encontro la seccion buscada.");
             return new ObjectResult(seccion);
         }
 
@@ -64,7 +61,7 @@ namespace Schedule.API.Controllers
             seccion.IdPeriodo = pcr.GetCurrentPeriodo().IdPeriodo;
             bool result = _db.Update(codigo, Mapper.Map<SeccionesDTO, Secciones>(seccion));
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la seccion a actualizar.");
             return new NoContentResult();
         }
     }

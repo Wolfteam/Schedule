@@ -12,6 +12,7 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
     public class DisponibilidadController : Controller
     {
         private readonly DisponibilidadProfesorRepository _db = new DisponibilidadProfesorRepository();
@@ -19,7 +20,6 @@ namespace Schedule.API.Controllers
 
         // POST api/Disponibilidad
         [HttpPost]
-        //[AuthenticateAttribute].
         public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
         {
             int idPeriodoActual = _pcr.GetCurrentPeriodo().IdPeriodo;
@@ -33,18 +33,16 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Disponibilidad/21255727
         [HttpDelete("{cedula}")]
-        //[AuthenticateAttribute]
         public IActionResult Delete(uint cedula)
         {
             bool result = _db.Delete(cedula);
             if (!result)
-                return NotFound();
+                return NotFound("No se encontro la disponibilidad para la cedula indicada.");
             return new NoContentResult();
         }
 
         // DELETE api/Disponibilidad
         [HttpDelete]
-        //[AuthenticateAttribute]
         public IActionResult Delete()
         {
             bool result = _db.Delete();
@@ -55,7 +53,6 @@ namespace Schedule.API.Controllers
 
         // GET api/Disponibilidad/21255727
         [HttpGet("{cedula}", Name = "GetDisponibilidad")]
-        //[AuthenticateAttribute]
         public IActionResult Get(int cedula)
         {
             //TODO: Aca deberia ir a pedir las horas a cumplir del profesor en el repo del mismo

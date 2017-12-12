@@ -11,11 +11,10 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     public class AccountController : Controller
     {
+        #region Variables
         private readonly UsuarioRepository _db = new UsuarioRepository();
         private readonly PeriodoCarreraRepository _pr = new PeriodoCarreraRepository();
         private readonly TokenRepository _tokenService = new TokenRepository();
-
-        #region Variables
         //private readonly ITokenService _tokenServices;
         #endregion
 
@@ -80,7 +79,7 @@ namespace Schedule.API.Controllers
 
         //GET api/Account/ProfesorInfo/123456798
         [HttpGet("ProfesorInfo/{token}")]
-        //[AuthenticateAttribute]
+        [AuthenticateAttribute]
         public IActionResult GetProfesorInfoByToken(string token)
         {
             var profesor = _tokenService.GetProfesorInfoByToken(token);

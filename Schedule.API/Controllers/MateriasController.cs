@@ -10,14 +10,14 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
+    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class MateriasController : Controller
     {
         private readonly MateriasRepository _db = new MateriasRepository();
 
         // POST api/Materias
         [HttpPost]
-        //[AuthenticateAttribute].
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Create([FromBody] MateriasDTO materia)
         {
             bool result = _db.Create(Mapper.Map<MateriasDTO, Materias>(materia));
@@ -28,19 +28,16 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Materias/34052
         [HttpDelete("{codigo}")]
-        //[AuthenticateAttribute]
-        //[AuthorizationAttribute(Privilegios.Administrador)]
         public IActionResult Delete(int codigo)
         {
             bool result = _db.Delete(codigo);
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la materia a borrar.");
             return new NoContentResult();
         }
 
         // GET api/Materias
         [HttpGet]
-        //[AuthenticateAttribute]
         public IEnumerable<MateriasDetailsDTO> GetAll()
         {
             return _db.Get();
@@ -48,23 +45,21 @@ namespace Schedule.API.Controllers
 
         // GET api/Materias/1
         [HttpGet("{codigo}", Name = "GetMateria")]
-        //[AuthenticateAttribute]
         public IActionResult Get(int codigo)
         {
             var materia = _db.Get(codigo);
             if (materia == null)
-                return NotFound();       
+                return NotFound("No se encontro la materia buscada.");
             return new ObjectResult(materia);
         }
 
         // PUT api/Materias/1
         [HttpPut("{id}")]
-        //[AuthenticateAttribute]
         public IActionResult Update(int id, [FromBody] MateriasDTO materia)
         {
             bool result = _db.Update(id, Mapper.Map<MateriasDTO, Materias>(materia));
             if (!result)
-                return StatusCode(404);
+                return NotFound("No se encontro la materia a actualizar.");
             return new NoContentResult();
         }
     }

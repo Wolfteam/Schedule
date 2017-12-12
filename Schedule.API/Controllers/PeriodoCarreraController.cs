@@ -11,14 +11,14 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
+    [AuthenticateAttribute]
     public class PeriodoCarreraController : Controller
     {
         private readonly PeriodoCarreraRepository _pcr = new PeriodoCarreraRepository();
 
         // POST api/PeriodoCarrera
         [HttpPost]
-        //[AuthenticateAttribute].
-        //[AuthorizationAttribute(Privilegios.Administrador)]
+        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Create([FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
@@ -30,8 +30,7 @@ namespace Schedule.API.Controllers
 
         // DELETE api/PeriodoCarrera/1
         [HttpDelete("{id}")]
-        //[AuthenticateAttribute]
-        //[AuthorizationAttribute(Privilegios.Administrador)]
+        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Delete(int id)
         {
             bool result = _pcr.Delete(id);
@@ -42,7 +41,6 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera
         [HttpGet]
-        //[AuthenticateAttribute]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
             return _pcr.Get();
@@ -50,7 +48,6 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera/Current
         [HttpGet("Current")]
-        //[AuthenticateAttribute]
         public PeriodoCarreraDTO GetCurrentPeriodo()
         {
             return _pcr.GetCurrentPeriodo();
@@ -58,12 +55,11 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera/1
         [HttpGet("{id}", Name = "GetPeriodoCarrera")]
-        //[AuthenticateAttribute]
         public IActionResult Get(int id)
         {
             var periodo = _pcr.Get(id);
             if (periodo == null)
-                return NotFound();
+                return NotFound("No se encontro el periodo academico buscado.");
             return new ObjectResult(periodo);
         }
 
@@ -83,7 +79,7 @@ namespace Schedule.API.Controllers
 
         // PUT api/PeriodoCarrera/1
         [HttpPut("{id}")]
-        //[AuthenticateAttribute]
+        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Update(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
