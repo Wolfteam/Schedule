@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace Schedule.API.Filters
 {
+    /// <summary>
+    /// Autoriza el acceso a un recurso en base a los permisos de un usuario. 
+    /// Para llegar a este punto se asume que ya se cuenta con un token valido.
+    /// </summary>
     public class AuthorizationAttribute : ActionFilterAttribute
     {
         private readonly TokenRepository _tokenService = new TokenRepository();
@@ -18,7 +22,7 @@ namespace Schedule.API.Filters
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            string token = context.ActionArguments["Token"] as string;
+            string token = context.HttpContext.Request.Headers["Token"];
 
             Privilegios privilegio = _tokenService.GetAllPrivilegiosByToken(token);
 
@@ -27,7 +31,7 @@ namespace Schedule.API.Filters
                 context.HttpContext.Response.StatusCode = 401;
                 context.Result = new ContentResult()
                 {
-                    Content = "El token expiro, no contiene ningun privilegio asociado o no tiene permiso para acceder al recurso"
+                    Content = "El token expiro, no contiene ningun privilegio asociado o no tiene permiso para acceder al recurso."
                 };
                 return;
             }

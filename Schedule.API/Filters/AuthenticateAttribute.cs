@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Schedule.API.Models.Repositories;
 
@@ -15,8 +16,8 @@ namespace Schedule.API.Filters
         {           
             try
             {
-                string token = context.ActionArguments["Token"] as string;
-                if (!_tokenService.Validate(token))
+                string token = context.HttpContext.Request.Headers["Token"];
+                if (String.IsNullOrEmpty(token) || !_tokenService.Validate(token))
                 {
                     context.HttpContext.Response.StatusCode = 401;
                     context.Result = new ContentResult()
@@ -31,7 +32,7 @@ namespace Schedule.API.Filters
                 context.HttpContext.Response.StatusCode = 400;
                 context.Result = new ContentResult()
                 {
-                    Content = "El cuerpo no es de tipo Token"
+                    Content = "No tiene un token de acceso"
                 };
                 return;
             }
