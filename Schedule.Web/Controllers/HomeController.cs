@@ -13,22 +13,12 @@ using Schedule.Web.Helpers;
 namespace Schedule.Web.Controllers
 {
     [AuthenticateAttribute]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        #region Variables   
-        IOptions<AppSettings> _appSettings;
-        static HttpClient _httpClient = null;
-        #endregion
-
         #region Constructor
         public HomeController(IOptions<AppSettings> appSettings)
+            :base(appSettings)
         {
-            _appSettings = appSettings;
-            if (_httpClient == null)
-            {
-                _httpClient = new HttpClient();
-                HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI);
-            }
         }
         #endregion
 
