@@ -33,7 +33,7 @@ namespace Schedule.Web.Models.Repository
         /// <returns>Objeto de tipo ProfesorDetailsDTO</returns>
         public async Task<ProfesorDetailsDTO> GetProfesorInfoByToken(string token)
         {
-            ProfesorDetailsDTO profesor = null;
+            ProfesorDetailsDTO profesor = new ProfesorDetailsDTO();
             HttpResponseMessage response = await _httpClient.GetAsync("api/Account/ProfesorInfo/"+ token);
             if (response.IsSuccessStatusCode)
             {

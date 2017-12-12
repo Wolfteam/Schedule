@@ -14,11 +14,13 @@ namespace Schedule.Web.Helpers
         /// </summary>
         /// <param name="httpClient">Cliente http</param>
         /// <param name="urlBaseAPI">Url base de la api</param>
-        public static void InitializeHttpClient(HttpClient httpClient ,string urlBaseAPI)
+        public static void InitializeHttpClient(HttpClient httpClient, string urlBaseAPI, string token = null)
         {
             httpClient.BaseAddress = new Uri(urlBaseAPI);
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!String.IsNullOrEmpty(token))
+                httpClient.DefaultRequestHeaders.Add("Token", token);      
         }
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace Schedule.Web.Helpers
         /// <returns>Lista de privilegios del usuario autenticado</returns>
         public static async Task<List<Privilegios>> GetAllPrivilegiosByToken(HttpClient httpClient, string token)
         {
-            List<Privilegios> listaPrivilegios = null;
+            List<Privilegios> listaPrivilegios = new List<Privilegios>();
             if (String.IsNullOrEmpty(token)) return listaPrivilegios;
 
             HttpResponseMessage response = await httpClient.GetAsync(String.Format("api/Account/Privilegios/{0}", token));

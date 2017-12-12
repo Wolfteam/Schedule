@@ -73,6 +73,10 @@ function makeAjaxCall(url, onSucess, onError, data = null, type = "POST", onComp
         error: function (result) {
             return onError(result);
         },
+        beforeSend: function (request) {
+            var token = getCookie("Token");
+            request.setRequestHeader("Token", token);
+        },
         complete: onComplete
     });
 }

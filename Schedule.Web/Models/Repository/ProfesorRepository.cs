@@ -34,7 +34,6 @@ namespace Schedule.Web.Models.Repository
         {
             List<ProfesorDetailsDTO> profesores = new List<ProfesorDetailsDTO>();
             HttpResponseMessage response = await _httpClient.GetAsync("api/Profesor");
-            
             if (response.IsSuccessStatusCode)
             {
                 profesores = await response.Content.ReadAsAsync<List<ProfesorDetailsDTO>>();
