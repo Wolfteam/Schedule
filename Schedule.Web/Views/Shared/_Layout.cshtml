@@ -44,10 +44,8 @@
 </head>
 <body>
     @* Header *@
-    <header>
-        @{
-            Html.RenderPartial("_SideNav");
-        }        
+    <header> 
+        @await Component.InvokeAsync("SideNav")    
     </header>
 
     @* Main *@

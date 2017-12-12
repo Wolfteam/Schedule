@@ -1,20 +1,7 @@
-@using Microsoft.Extensions.Options
 @using Schedule.Entities
-@using Schedule.Web.Helpers
-@using System.Net.Http
+@using Schedule.Web.ViewComponents
+@model IEnumerable<Privilegios>
 
-
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
-@inject IOptions<AppSettings> appSettings
-
-@{
-    string token = httpContextAccessor.HttpContext.Request.Cookies["Token"];
-    string urlBaseApi = appSettings.Value.URLBaseAPI;
-    HttpClient httpClient = new HttpClient();
-    HttpHelpers.InitializeHttpClient(httpClient, urlBaseApi);
-
-    List<Privilegios> listaPrivilegios = await HttpHelpers.GetAllPrivilegiosByToken(httpClient, token);
-}
 <nav class="grey darken-4" role="navigation">
     <div class="nav-wrapper container">
         <a href="#!" class="brand-logo center">Schedules<i class="fa fa-list-alt hide-on-small-only" aria-hidden="true"></i></a>
@@ -40,7 +27,7 @@
             <li><div class="divider"></div></li>
             <li><a asp-controller="Home" asp-action="Index" class="waves-effect waves-red">Inicio<i class="fa fa-home fa-2x" aria-hidden="true"></i></a></li>
             <li><a asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
-            @if (listaPrivilegios != null && listaPrivilegios.Contains(Privilegios.Administrador))
+            @if (Model != null && Model.Contains(Privilegios.Administrador))
             {
                 <li><a asp-controller="EditarDB" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></a></li>
             }
