@@ -41,6 +41,7 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera
         [HttpGet]
+        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
             return _pcr.Get();
