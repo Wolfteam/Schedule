@@ -13,20 +13,11 @@ namespace Schedule.Web.Controllers
 {
     public class AccountController : Controller
     {
-        #region Variables
         IOptions<AppSettings> _appSettings;
-        static HttpClient _httpClient = null;
-        #endregion
-
         #region Constructor
         public AccountController(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings;
-            if (_httpClient == null)
-            {
-                _httpClient = new HttpClient();
-                HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI);
-            }
         }
         #endregion
 
@@ -44,30 +35,34 @@ namespace Schedule.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Account/Login", new UsuarioDTO()
+                using (var httpClient = new HttpClient())
                 {
-                    Username = model.Username,
-                    Password = model.Password
-                });
-
-                if (response.IsSuccessStatusCode)
-                {
-                    TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
-                    if (token != null)
+                    HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI);
+                    HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/Account/Login", new UsuarioDTO()
                     {
-                        double expiricyTime = (token.ExpiricyDate - token.CreateDate).TotalMinutes;
-                        CreateCookie("Token", token.AuthenticationToken, expiricyTime);
-                        CreateCookie("User", model.Username, expiricyTime);
-                        return RedirectToAction("Index", "Home");
+                        Username = model.Username,
+                        Password = model.Password
+                    });
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
+                        if (token != null)
+                        {
+                            double expiricyTime = (token.ExpiricyDate - token.CreateDate).TotalMinutes;
+                            CreateCookie("Token", token.AuthenticationToken, expiricyTime);
+                            CreateCookie("User", model.Username, expiricyTime);
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    ModelState.AddModelError("", "Fallo la conexion a la API");
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        ModelState.AddModelError("", "Fallo la conexion a la API");
+                        return View("Index", model);
+                    }
+                    ModelState.AddModelError("", "Usuario o clave invalidas");
                     return View("Index", model);
                 }
-                ModelState.AddModelError("", "Usuario o clave invalidas");
-                return View("Index", model);
             }
             ModelState.AddModelError("", "El modelo no es valido");
             return View("Index", model);
@@ -79,8 +74,11 @@ namespace Schedule.Web.Controllers
 
             if (!String.IsNullOrEmpty(token))
             {
-                HttpResponseMessage response = await _httpClient.DeleteAsync(String.Format("api/Account/Logout/{0}", token));
-
+                using (var httpClient = new HttpClient())
+                {
+                    HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI, token);
+                    HttpResponseMessage response = await httpClient.DeleteAsync(String.Format("api/Account/Logout/{0}", token));
+                }
                 Response.Cookies.Delete("Token");
             }
             return RedirectToAction("Index", "Account");
