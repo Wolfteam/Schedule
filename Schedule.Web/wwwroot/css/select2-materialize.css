@@ -5,6 +5,7 @@
     box-sizing: border-box;
     display: inline-block;
     margin: 0;
+    margin-bottom: 20px;
     position: relative;
     vertical-align: middle
 }
