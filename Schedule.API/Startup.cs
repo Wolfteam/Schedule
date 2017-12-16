@@ -27,7 +27,7 @@ namespace Schedule.API
             services.AddMvc().AddJsonOptions(x =>
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddAutoMapper();
-            services.Configure<AppSettings>(Configuration.GetSection("ConnectionString"));
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
         }
 

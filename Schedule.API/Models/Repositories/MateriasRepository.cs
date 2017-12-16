@@ -81,6 +81,16 @@ namespace Schedule.API.Models.Repositories
         }
 
         /// <summary>
+        /// Obtiene todas las materias para un semestre en particular
+        /// </summary>
+        /// <param name="idSemestre">Id del semestre</param>
+        /// <returns>IEnumerable de MateriasDTO</returns>
+        public IEnumerable<MateriasDTO> GetBySemestre(int idSemestre)
+        {
+            return _db.Materias.ProjectTo<MateriasDTO>().Where(m => m.IdSemestre == idSemestre);
+        }
+
+        /// <summary>
         /// Actualiza una materia en especifico
         /// </summary>
         /// <param name="codigo">Codigo de la materia a actualizar</param>

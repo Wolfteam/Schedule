@@ -304,25 +304,24 @@ INSERT INTO privilegios (nombre_privilegio) VALUES
 
 INSERT INTO aulas (id_aula, nombre_aula, capacidad, id_tipo) VALUES
 (1, '2201', 45, 1),
-(2, 'Lab. Sistemas Eléctricos I', 16, 2),
-(3, 'Lab. Sistemas Eléctricos II', 16, 2),
-(4, 'Lab. Convertidores Eléctricos', 15, 3),
-(5, '2407', 45, 1),
-(6, '2409', 35, 1),
-(7, '2410', 35, 1),
-(8, '2411', 35, 1),
-(9, '2412', 35, 1),
-(10, '2414', 45, 1),
-(11, 'Lab. Sistemas de Comunicaciones', 10, 4),
-(12, 'Lab. Sistemas Electrónicos II', 16, 9),
-(13, 'Lab. Electrónica Industrial', 16, 5),
-(14, 'Lab. Sistemas Digitales II', 12, 6),
-(15, 'Lab. Computacion', 35, 8),
-(16, 'Lab. Sistemas Electrónicos I', 12, 9),
-(17, 'Lab. Sistemas Digitales III', 15, 10),
-(18, 'Lab. Sistemas de Control II', 15, 11),
-(19, 'Lab. Sistemas de Control III', 15, 12),
-(20, 'Lab. Sistemas Digitales I', 15, 7);
+(2, 'Lab. Sistemas Eléctricos I y II', 16, 2),
+(3, 'Lab. Convertidores Eléctricos', 15, 3),
+(4, '2407', 45, 1),
+(5, '2409', 35, 1),
+(6, '2410', 35, 1),
+(7, '2411', 35, 1),
+(8, '2412', 35, 1),
+(9, '2414', 45, 1),
+(10, 'Lab. Sistemas de Comunicaciones', 10, 4),
+(11, 'Lab. Sistemas Electrónicos II', 16, 9),
+(12, 'Lab. Electrónica Industrial', 16, 5),
+(13, 'Lab. Sistemas Digitales II', 12, 6),
+(14, 'Lab. Computacion', 35, 8),
+(15, 'Lab. Sistemas Electrónicos I', 12, 9),
+(16, 'Lab. Sistemas Digitales III', 15, 10),
+(17, 'Lab. Sistemas de Control II', 15, 11),
+(18, 'Lab. Sistemas de Control III', 15, 12),
+(19, 'Lab. Sistemas Digitales I', 15, 7);
 
 INSERT INTO materias (codigo, asignatura, id_semestre, id_tipo, id_carrera, horas_academicas_totales, horas_academicas_semanales) VALUES
 (41144, 'Electrotecnia', 14, 1, 3, 72, 4),
@@ -645,3 +644,88 @@ INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
 INNER JOIN aulas a on hp.id_aula = a.id_aula
 INNER JOIN dias d on hp.id_dia = d.id_dia
 INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
+
+
+DELIMITER //
+CREATE PROCEDURE spGetHorariosProfesores(
+    IN idSemestre INT,
+	IN idAula INT 
+)
+BEGIN
+	DECLARE idPeriodo INT;
+    SET idPeriodo = (SELECT pc.id_periodo FROM periodo_carrera pc WHERE pc.status = 1 LIMIT 1);
+    IF (idSemestre IS NOT NULL) THEN
+    BEGIN
+        SELECT
+            hp.cedula,
+            hp.id_periodo, 
+            concat(p.nombre, " ", p.apellido) AS Profesor,
+            m.asignatura Asignatura,
+            m.codigo AS Codigo,
+            h1.id_hora AS IdHoraInicio,
+            h1.nombre_hora AS HoraInicio,
+            h2.id_hora AS IdHoraFin,
+            h2.nombre_hora AS HoraFin,
+            a.nombre_aula AS Aula,
+            d.id_dia AS IdDia,
+            d.nombre_dia AS Dia,
+            hp.numero_seccion AS NumeroSeccion,
+            sec.cantidad_alumnos AS CantidadAlumnos,
+            m.id_semestre AS Semestre,
+            p.id_prioridad AS Prioridad,
+            ta.nombre_asignacion AS TipoAsignacion
+        FROM 
+            horario_profesores hp
+        INNER JOIN profesores p on hp.cedula = p.cedula
+        INNER JOIN materias m on hp.codigo = m.codigo
+        INNER JOIN horas h1 on hp.id_hora_inicio = h1.id_hora
+        INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
+        INNER JOIN aulas a on hp.id_aula = a.id_aula
+        INNER JOIN dias d on hp.id_dia = d.id_dia
+        INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
+        INNER JOIN secciones sec on hp.codigo = sec.codigo
+        WHERE
+            m.id_semestre = idSemestre
+            AND hp.id_periodo = idPeriodo
+        ORDER BY
+             d.id_dia, hp.numero_seccion;
+    END;
+	ELSE -- IF (idAula IS NOT NULL) THEN
+    BEGIN
+    	SELECT
+            hp.cedula,
+            hp.id_periodo, 
+            concat(p.nombre, " ", p.apellido) AS Profesor,
+            m.asignatura Asignatura,
+            m.codigo AS Codigo,
+            h1.id_hora AS IdHoraInicio,
+            h1.nombre_hora AS HoraInicio,
+            h2.id_hora AS IdHoraFin,
+            h2.nombre_hora AS HoraFin,
+            a.nombre_aula AS Aula,
+            d.id_dia AS IdDia,
+            d.nombre_dia AS Dia,
+            hp.numero_seccion AS NumeroSeccion,
+            sec.cantidad_alumnos AS CantidadAlumnos,
+            m.id_semestre AS Semestre,
+            p.id_prioridad AS Prioridad,
+            ta.nombre_asignacion AS TipoAsignacion
+        FROM 
+            horario_profesores hp
+        INNER JOIN profesores p on hp.cedula = p.cedula
+        INNER JOIN materias m on hp.codigo = m.codigo
+        INNER JOIN horas h1 on hp.id_hora_inicio = h1.id_hora
+        INNER JOIN horas h2 ON hp.id_hora_fin = h2.id_hora
+        INNER JOIN aulas a on hp.id_aula = a.id_aula
+        INNER JOIN dias d on hp.id_dia = d.id_dia
+        INNER JOIN tipo_asignacion ta on hp.id_asignacion = ta.id_asignacion
+        INNER JOIN secciones sec on hp.codigo = sec.codigo
+        WHERE
+            hp.id_aula = idAula
+            AND hp.id_periodo = idPeriodo
+        ORDER BY
+             d.id_dia, hp.id_hora_inicio;
+    END;
+    END IF;
+END //
+DELIMITER ;

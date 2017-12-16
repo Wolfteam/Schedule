@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Schedule.API.Helpers;
 
 namespace Schedule.API.Models.Repositories
 {
     public class HorarioProfesorRepository //: IRepository<Aulas, AulasDetailsDTO>
     {
         private readonly HorariosContext _db = new HorariosContext();
-       
+
         /// <summary>
         /// Calcula las horas asignadas para un profesor en particular.
         /// No confundir estas horas asignadas con las de disponibilidad.
@@ -57,6 +58,25 @@ namespace Schedule.API.Models.Repositories
                 .Include(p => p.PeriodoCarrera)
                 .Where(pc => pc.PeriodoCarrera.Status == true)
                 .Count() > 0 ? true : false;
+        }
+
+        /// <summary>
+        /// Obtiene los horarios de los profesores del periodo academico actual
+        /// para una aula en particular
+        /// </summary>
+        /// <param name="idAula">Id del aula</param>
+        /// <returns>IEnumerable de HorarioProfesorDetailsDTO</returns>
+        public IEnumerable<HorarioProfesorDetailsDTO> GetByAula(int idAula)
+        {
+            IEnumerable<HorarioProfesorDetailsDTO> lista = null;
+            _db.LoadStoredProc("spGetHorariosProfesores")
+                .WithSqlParam("@idSemestre", null)
+                .WithSqlParam("@idAula", idAula)
+                .ExecuteStoredProc((handler) =>
+                {
+                    lista = handler.ReadToList<HorarioProfesorDetailsDTO>();
+                });
+            return lista;
         }
 
         /// <summary>
@@ -112,6 +132,42 @@ namespace Schedule.API.Models.Repositories
                 )
                 .Select(hp => hp.HorarioProfesor)
                 .ProjectTo<HorarioProfesorDTO>();
+        }
+
+        /// <summary>
+        /// Obtiene los horarios de los profesores del periodo academico actual
+        /// para un semestre en particular
+        /// </summary>
+        /// <param name="idSemestre">Id del semestre</param>
+        /// <returns>IEnumerable de HorarioProfesorDetailsDTO</returns>
+        public IEnumerable<HorarioProfesorDetailsDTO> GetBySemestre(int idSemestre)
+        {
+            IEnumerable<HorarioProfesorDetailsDTO> lista = null;
+            _db.LoadStoredProc("spGetHorariosProfesores")
+                .WithSqlParam("@idSemestre", idSemestre)
+                .WithSqlParam("@idAula", null)
+                .ExecuteStoredProc((handler) =>
+                {
+                    lista = handler.ReadToList<HorarioProfesorDetailsDTO>();
+                });
+            return lista;
+        }
+
+        /// <summary>
+        /// Obtienes la ultima seccion asignada a una materia en particular
+        /// </summary>
+        /// <param name="codigo">Codigo de la materia</param>
+        /// <returns>Ultima seccion asignada a la materia</returns>
+        public int GetLastSeccionAssigned(ushort codigo)
+        {
+            var horario = _db.HorarioProfesores
+                .Where(hp => hp.Codigo == codigo)
+                .OrderByDescending(hp => hp.NumeroSeccion)
+                .FirstOrDefault();
+            if (horario == null)
+                return 0;
+            else
+                return horario.NumeroSeccion;
         }
     }
 }
