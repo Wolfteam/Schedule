@@ -12,6 +12,7 @@ using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
+using Microsoft.Extensions.Options;
 
 namespace Schedule.API.Controllers
 {
@@ -25,19 +26,15 @@ namespace Schedule.API.Controllers
         private readonly UnitOfWork _unitOfWork = new UnitOfWork();
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _contentRootPath;
-        //TODO: Mover esto al appsettings.json
-        private const string _pathModeloPlanificacion = @"\wwwroot\Resources\ModeloPlanificacion.xlsx";
-        private const string _savePath = @"\wwwroot\Generated";
-        private const string _paExcelFileName = @"\PlanificacionAcademica";
-        private const string _palExcelFileName = @"\PlanificacionAulas";
-        private const string _phExcelFileName = @"\PlanificacionHorario";
+        private ExcelHorarioProfesorSettings _excelSettings;
         private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         #endregion
-        public HorarioProfesorController(IHostingEnvironment environment)
+        public HorarioProfesorController(IHostingEnvironment environment, IOptions<AppSettings> appSettings)
         {
             _hostingEnvironment = environment;
             _contentRootPath = environment.ContentRootPath;
+            _excelSettings = appSettings.Value.ExcelHorarioProfesorSettings;
         }
 
 
@@ -47,7 +44,7 @@ namespace Schedule.API.Controllers
             VerifyRecords();
             int limiteSuperior = 0, limiteInferior = 3;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
-            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
+            var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
@@ -104,17 +101,17 @@ namespace Schedule.API.Controllers
                 planificacion.Column(3).Style.WrapText = true;
                 for (int i = 6; i <= 8; i++)
                     planificacion.Column(i).Style.WrapText = true;
-                SaveExcel(excel, _contentRootPath + _savePath, _paExcelFileName);
+                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAcademicaExcelFileName);
             }
         }
-        
+
         [HttpGet("PlanificacionAulas")]
         public void GeneratePlanificacionAulas()
         {
             VerifyRecords();
             int contador = 0, puntero = 3, index = 0;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
-            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
+            var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets["PlanificacionAulas"];
@@ -171,7 +168,7 @@ namespace Schedule.API.Controllers
                         planificacion.Cells[$"B{i}:C{i}"].Merge = true;
                     }
                 }
-                SaveExcel(excel, _contentRootPath + _savePath, _palExcelFileName);
+                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAulasExcelFileName);
             }
         }
 
@@ -181,7 +178,7 @@ namespace Schedule.API.Controllers
             VerifyRecords();
             int contador = 0, puntero = 3;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
-            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
+            var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[1];
@@ -235,7 +232,7 @@ namespace Schedule.API.Controllers
                         planificacion.Cells[String.Format("B{0}:C{0}", i)].Merge = true;
                     }
                 }
-                SaveExcel(excel, _contentRootPath + _savePath, _phExcelFileName);
+                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionHorariosExcelFileName);
             }
         }
 
