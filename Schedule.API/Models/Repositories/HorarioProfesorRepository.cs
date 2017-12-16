@@ -61,6 +61,25 @@ namespace Schedule.API.Models.Repositories
         }
 
         /// <summary>
+        /// Obtiene los horarios de los profesores del periodo academico actual
+        /// para una aula en particular
+        /// </summary>
+        /// <param name="idAula">Id del aula</param>
+        /// <returns>IEnumerable de HorarioProfesorDetailsDTO</returns>
+        public IEnumerable<HorarioProfesorDetailsDTO> GetByAula(int idAula)
+        {
+            IEnumerable<HorarioProfesorDetailsDTO> lista = null;
+            _db.LoadStoredProc("spGetHorariosProfesores")
+                .WithSqlParam("@idSemestre", null)
+                .WithSqlParam("@idAula", idAula)
+                .ExecuteStoredProc((handler) =>
+                {
+                    lista = handler.ReadToList<HorarioProfesorDetailsDTO>();
+                });
+            return lista;
+        }
+
+        /// <summary>
         /// Obtiene una lista de los horarios de un profesor en un dia en particular
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
@@ -126,6 +145,7 @@ namespace Schedule.API.Models.Repositories
             IEnumerable<HorarioProfesorDetailsDTO> lista = null;
             _db.LoadStoredProc("spGetHorariosProfesores")
                 .WithSqlParam("@idSemestre", idSemestre)
+                .WithSqlParam("@idAula", null)
                 .ExecuteStoredProc((handler) =>
                 {
                     lista = handler.ReadToList<HorarioProfesorDetailsDTO>();

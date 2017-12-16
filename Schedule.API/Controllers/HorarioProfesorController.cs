@@ -29,6 +29,7 @@ namespace Schedule.API.Controllers
         private const string _pathModeloPlanificacion = @"\wwwroot\Resources\ModeloPlanificacion.xlsx";
         private const string _savePath = @"\wwwroot\Generated";
         private const string _paExcelFileName = @"\PlanificacionAcademica";
+        private const string _palExcelFileName = @"\PlanificacionAulas";
         private const string _phExcelFileName = @"\PlanificacionHorario";
         private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
@@ -50,7 +51,8 @@ namespace Schedule.API.Controllers
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
-                excel.Workbook.Worksheets.Delete(1);
+                excel.Workbook.Worksheets.Delete("PlanificacionAulas");
+                excel.Workbook.Worksheets.Delete("PlanificacionHorarios");
                 for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
                     string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPA, periodoAcademico);
@@ -105,6 +107,73 @@ namespace Schedule.API.Controllers
                 SaveExcel(excel, _contentRootPath + _savePath, _paExcelFileName);
             }
         }
+        
+        [HttpGet("PlanificacionAulas")]
+        public void GeneratePlanificacionAulas()
+        {
+            VerifyRecords();
+            int contador = 0, puntero = 3, index = 0;
+            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            var modelDir = new FileInfo(_contentRootPath + _pathModeloPlanificacion);
+            using (var excel = new ExcelPackage(modelDir))
+            {
+                ExcelWorksheet planificacion = excel.Workbook.Worksheets["PlanificacionAulas"];
+                excel.Workbook.Worksheets.Delete("PlanificacionAcademica");
+                excel.Workbook.Worksheets.Delete("PlanificacionHorarios");
+                var aulas = _unitOfWork.Aulas.Get().OrderBy(a => a.NombreAula);
+                foreach (AulasDetailsDTO aula in aulas)
+                {
+                    string titulo = $"PLANIFICACION AULA {aula.NombreAula} DPTO. DE  INGENIERIA DE SISTEMA PERIODO {periodoAcademico}";
+                    planificacion.Cells[$"B{contador + 1}:I{contador + 1}"].Value = titulo;
+                    var horarios = _unitOfWork.HorarioProfesor.GetByAula(aula.IdAula);
+                    foreach (HorarioProfesorDetailsDTO horario in horarios)
+                    {
+                        for (int idDia = 1; idDia < 7; idDia++)
+                        {
+                            for (int idHora = 1; idHora < 14; idHora++)
+                            {
+                                if (horario.IdDia == idDia && horario.IdHoraInicio == idHora)
+                                {
+                                    string value = $"{horario.Asignatura} \n {horario.Codigo} \n S-{horario.NumeroSeccion}";
+                                    int rowStart = puntero + contador;
+                                    int rowEnd = rowStart + horario.IdHoraFin - horario.IdHoraInicio - 1;
+                                    planificacion.Cells[rowStart, idDia + 3, rowEnd, idDia + 3].Merge = true;
+                                    planificacion.Cells[rowStart, idDia + 3, rowEnd, idDia + 3].Value = value;
+                                    puntero = rowEnd + 1;
+                                    break;
+                                }
+                                else
+                                    puntero++;
+                            }
+                            puntero = 3;
+                        }
+                    }
+                    //Como comparten los mismos estilos se le aplican.
+                    SetPlanifacionHorarioReportBodyStyles(planificacion, contador + 1, contador + 15);
+                    //Si ya inserte todas las aulas me salgo
+                    if (index == aulas.Count() - 1)
+                        break;
+                    index++;
+                    contador += 16;
+                    puntero = 3;
+                    //Copia la cabecera
+                    planificacion.Cells[1, 2, 2, 9].Copy(planificacion.Cells[puntero + contador - 2, 2, puntero + contador - 1, 9]);
+
+                    //Copia la fila del almuerzo
+                    planificacion.Cells[9, 4, 9, 9].Copy(planificacion.Cells[contador + 9, 4, contador + 9, 9]);
+
+                    //Copia la columna B de las horas y realizo los merge
+                    planificacion.Cells[3, 2, 15, 2].Copy(planificacion.Cells[puntero + contador, 2, puntero + contador + 12, 2]);
+                    for (int i = puntero + contador; i <= puntero + contador + 12; i++)
+                    {
+                        if (i == puntero + contador + 6)
+                            planificacion.Cells[$"D{i}:I{i}"].Merge = true;
+                        planificacion.Cells[$"B{i}:C{i}"].Merge = true;
+                    }
+                }
+                SaveExcel(excel, _contentRootPath + _savePath, _palExcelFileName);
+            }
+        }
 
         [HttpGet("PlanificacionHorario")]
         public void GeneratePlanificacionHorario()
@@ -116,7 +185,8 @@ namespace Schedule.API.Controllers
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[1];
-                excel.Workbook.Worksheets.Delete(0);
+                excel.Workbook.Worksheets.Delete("PlanificacionAcademica");
+                excel.Workbook.Worksheets.Delete("PlanificacionAulas");
                 for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
                     string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPH, periodoAcademico);
