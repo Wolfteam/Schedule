@@ -39,12 +39,13 @@ namespace Schedule.API.Controllers
 
 
         [HttpGet("PlanificacionAcademica")]
-        public void GeneratePlanificacionAcademica()
+        public IActionResult GeneratePlanificacionAcademica()
         {
             VerifyRecords();
             int limiteSuperior = 0, limiteInferior = 3;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
+            string filePath;
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[0];
@@ -101,17 +102,19 @@ namespace Schedule.API.Controllers
                 planificacion.Column(3).Style.WrapText = true;
                 for (int i = 6; i <= 8; i++)
                     planificacion.Column(i).Style.WrapText = true;
-                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAcademicaExcelFileName);
+                filePath = SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAcademicaExcelFileName);
             }
+            return GetExcel(filePath, _excelSettings.PlanificacionAcademicaExcelFileName + ".xlsx");
         }
 
         [HttpGet("PlanificacionAulas")]
-        public void GeneratePlanificacionAulas()
+        public IActionResult GeneratePlanificacionAulas()
         {
             VerifyRecords();
             int contador = 0, puntero = 3, index = 0;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
+            string filePath;
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets["PlanificacionAulas"];
@@ -168,17 +171,19 @@ namespace Schedule.API.Controllers
                         planificacion.Cells[$"B{i}:C{i}"].Merge = true;
                     }
                 }
-                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAulasExcelFileName);
+                filePath = SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionAulasExcelFileName);
             }
+            return GetExcel(filePath, _excelSettings.PlanificacionAulasExcelFileName + ".xlsx");
         }
 
         [HttpGet("PlanificacionHorario")]
-        public void GeneratePlanificacionHorario()
+        public IActionResult GeneratePlanificacionHorario()
         {
             VerifyRecords();
             int contador = 0, puntero = 3;
             string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
+            string filePath;
             using (var excel = new ExcelPackage(modelDir))
             {
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets[1];
@@ -232,8 +237,22 @@ namespace Schedule.API.Controllers
                         planificacion.Cells[String.Format("B{0}:C{0}", i)].Merge = true;
                     }
                 }
-                SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionHorariosExcelFileName);
+               filePath = SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionHorariosExcelFileName);
             }
+            return GetExcel(filePath, _excelSettings.PlanificacionHorariosExcelFileName + ".xlsx");
+        }
+
+        /// <summary>
+        /// Obtiene el archivo excel especifado en la ruta
+        /// </summary>
+        /// <param name="filePath">Ruta completa del archivo excel</param>
+        /// <param name="returnFileName">Nombre con el cual se devolvera el archivo al cliente</param>
+        /// <returns>FileContentResult con el nombre especificado de retorno</returns>
+        private FileContentResult GetExcel(string filePath, string returnFileName)
+        {
+            var mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, mimeType, returnFileName);
         }
 
         /// <summary>
@@ -307,7 +326,8 @@ namespace Schedule.API.Controllers
         /// <param name="excel">Archivo excel a guardar</param>
         /// <param name="rootPath">Ruta raiz de la pagina</param>
         /// <param name="excelFileName">Nombre del archivo (e.g: PlanificacionAcademica)</param>
-        private void SaveExcel(ExcelPackage excel, string rootPath, string excelFileName)
+        /// <returns>Devuelve la ruta completa del archivo generado</returns>
+        private string SaveExcel(ExcelPackage excel, string rootPath, string excelFileName)
         {
             excelFileName = String.Format(excelFileName + "_{0}.xlsx", DateTime.Now.ToString("yyyyMMdd"));
             string outputDir = rootPath + excelFileName;
@@ -319,6 +339,7 @@ namespace Schedule.API.Controllers
             excel.Workbook.Properties.Author = "Efrain Bastidas";
             excel.Workbook.Properties.Comments = "Creado con el fin de aprender..";
             excel.SaveAs(file);
+            return outputDir;
         }
 
         /// <summary>
