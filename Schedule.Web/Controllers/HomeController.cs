@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.Web.Models;
 using Schedule.Entities;
 using Microsoft.Extensions.Options;
-using System.Net.Http;
 using Schedule.Web.Filters;
-using Schedule.Web.Helpers;
+using Schedule.Web.ViewModels;
 
 namespace Schedule.Web.Controllers
 {
@@ -24,7 +20,13 @@ namespace Schedule.Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            HomeViewModel model = new HomeViewModel
+            {
+                UrlPlanificacionAcademica = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAcademica",
+                UrlPlanificacionAulas = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAulas",
+                UrlPlanificacionHorarios = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionHorario"
+            };
+            return View(model);
         }
 
         public IActionResult Error()

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Schedule.Web.ViewModels.HomeViewModel
+@{
     ViewData["Title"] = "Home";
 }
 
@@ -26,9 +27,9 @@
                     <p>Aqui encontrara los links a las planificaciones del semestre actual.</p>
                 </div>
                 <div class="card-action">
-                    <a href="#">Planificacion Acad.</a>
-                    <a href="#">Horario</a>
-                    <a href="#">Planificacion Extr.</a>
+                    <a href="@Model.UrlPlanificacionAcademica">Planificacion Acad.</a>
+                    <a href="@Model.UrlPlanificacionAulas">Planificacion Aulas</a>
+                    <a href="@Model.UrlPlanificacionHorarios">Horario</a>
                 </div>
             </div>
         </div>
