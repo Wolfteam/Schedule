@@ -137,7 +137,7 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
         responsive: {
             details: {
                 renderer: function (api, rowIdx, columns) {
-                    var width = $("#tabla").width();
+                    var width = $("#datatable").width();
                     var length = columns.length;
                     if (length === 0) {
                         return false;
@@ -159,17 +159,17 @@ function initDataTable(selector, data, columnsData, hiddenColum, needsSelectedRo
                         }
                         return (table + row + "</table>");
                     } else { //Si el tamaño de la pantalla es mayor a 490 px muestro filas con 3 celdas
-                        for (var i = 0; i < length; i++) {
+                        for (var j = 0; j < length; j++) {
                             //console.log(columns[i]);
-                            if (!columns[i].hidden) {
+                            if (!columns[j].hidden) {
                                 continue;
                             }
                             //padding-right:'+padding+'px; class="text-left"
-                            cell += '<td style="white-space:pre-wrap;width:' + customWidth + 'px" class="text-center"><b>' + $.trim(columns[i].title) + ': ' + '</b>' + $.trim(columns[i].data) + '</td>';
+                            cell += '<td style="white-space:pre-wrap;width:' + customWidth + 'px" class="text-center"><b>' + $.trim(columns[j].title) + ': ' + '</b>' + $.trim(columns[j].data) + '</td>';
                             contador++;
-                            if (contador === 3 || i === (length - 1)) {
+                            if (contador === 3 || j === (length - 1)) {
                                 contador = 0;
-                                row = row + '<tr data-dt-row="' + columns[i].rowIndex[0] + '" data-dt-column="' + columns[i].columnIndex + '">' + cell + "</tr>";
+                                row = row + '<tr data-dt-row="' + columns[j].rowIndex[0] + '" data-dt-column="' + columns[j].columnIndex + '">' + cell + "</tr>";
                                 cell = "";
                             }
                         }
