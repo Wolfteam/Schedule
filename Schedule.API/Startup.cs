@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
 using Schedule.Entities;
 using Schedule.API.Models;
-using Microsoft.EntityFrameworkCore;
+using Schedule.API.Helpers;
 
 namespace Schedule.API
 {
@@ -26,7 +27,14 @@ namespace Schedule.API
             //Esto es necesario para que me deje incluir propiedades extras de un model de ef
             services.AddMvc().AddJsonOptions(x =>
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            services.AddAutoMapper();
+            //services.AddAutoMapper();
+            var config = new AutoMapper.MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new MappingProfile());
+            });
+
+            var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
         }
