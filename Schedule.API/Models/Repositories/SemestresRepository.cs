@@ -1,51 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper.QueryableExtensions;
-using Schedule.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class SemestresRepository : IRepository<Semestres, SemestreDTO>
+    public class SemestresRepository : Repository<Semestres>, ISemestresRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
-
-        public bool Create(Semestres objeto)
+        public HorariosContext HorariosContext
         {
-            throw new NotImplementedException();
+            get { return _context as HorariosContext; }
         }
 
-        public bool Delete()
+        public SemestresRepository(DbContext context)
+            : base(context)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// Obtiene todos los semestres
-        /// </summary>
-        /// <returns>IQueryable de semestres</returns>
-        public IEnumerable<SemestreDTO> Get()
-        {
-            return _db.Semestre.ProjectTo<SemestreDTO>();
-        }
-
-        public SemestreDTO Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(int id, Semestres objeto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(Semestres objeto)
-        {
-            throw new NotImplementedException();
         }
     }
 }

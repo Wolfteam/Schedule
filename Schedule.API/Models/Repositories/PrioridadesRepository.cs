@@ -1,26 +1,18 @@
-using System;
-using System.Linq;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper.QueryableExtensions;
-using System.Collections.Generic;
-using Schedule.Entities;
-using LinqKit;
-using System.Linq.Expressions;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class PrioridadesRepository //: IRepository<Aulas, AulasDetailsDTO>
+    public class PrioridadesRepository
+        : Repository<PrioridadProfesor>, IPrioridadesRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
-
-        /// <summary>
-        /// Obtiene todos las prioridades
-        /// </summary>
-        /// <returns>IQueryable de semestres</returns>
-        public IQueryable<PrioridadProfesorDTO> Get()
+        public HorariosContext HorariosContext
         {
-            return _db.PrioridadProfesor.ProjectTo<PrioridadProfesorDTO>();
+            get { return _context as HorariosContext; }
+        }
+
+        public PrioridadesRepository(DbContext context)
+            : base(context)
+        {
         }
     }
 }

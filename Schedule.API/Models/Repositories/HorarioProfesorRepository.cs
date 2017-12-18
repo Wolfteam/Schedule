@@ -1,17 +1,24 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Schedule.Entities;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Schedule.API.Helpers;
+using Schedule.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class HorarioProfesorRepository //: IRepository<Aulas, AulasDetailsDTO>
+    public class HorarioProfesorRepository 
+        : Repository<HorarioProfesores>, IHorarioProfesorRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
+        public HorariosContext HorariosContext
+        {
+            get { return _context as HorariosContext; }
+        }
+
+        public HorarioProfesorRepository(DbContext context) 
+            : base(context)
+        {
+        }
 
         /// <summary>
         /// Calcula las horas asignadas para un profesor en particular.
@@ -21,30 +28,10 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Numero de horas en las que da clase</returns>
         public int CalculateHorasAsignadas(uint cedula)
         {
-            return _db.HorarioProfesores
-                .Where(hp => hp.Cedula == cedula)
+            return 
+                base.Get(hp => hp.Cedula == cedula)
                 .Select(d => d.IdHoraFin - d.IdHoraInicio)
                 .Sum();
-        }
-
-        /// <summary>
-        /// Guarda una lista de horarios de un profesor
-        /// </summary>
-        /// <param name="horarios">IEnumerable de HorarioProfesores</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Create(IEnumerable<HorarioProfesores> horarios)
-        {
-            try
-            {
-                _db.HorarioProfesores.AddRange(horarios);
-                _db.SaveChanges();
-            }
-            catch (System.Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -54,9 +41,8 @@ namespace Schedule.API.Models.Repositories
         /// <returns>True en caso de existir registros</returns>
         public bool RecordsExists()
         {
-            return _db.HorarioProfesores
-                .Include(p => p.PeriodoCarrera)
-                .Where(pc => pc.PeriodoCarrera.Status == true)
+            return base
+                .Get(pc => pc.PeriodoCarrera.Status == true, null, "PeriodoCarrera")
                 .Count() > 0 ? true : false;
         }
 
@@ -69,7 +55,7 @@ namespace Schedule.API.Models.Repositories
         public IEnumerable<HorarioProfesorDetailsDTO> GetByAula(int idAula)
         {
             IEnumerable<HorarioProfesorDetailsDTO> lista = null;
-            _db.LoadStoredProc("spGetHorariosProfesores")
+            HorariosContext.LoadStoredProc("spGetHorariosProfesores")
                 .WithSqlParam("@idSemestre", null)
                 .WithSqlParam("@idAula", idAula)
                 .ExecuteStoredProc((handler) =>
@@ -87,7 +73,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de HorarioProfesorDTO</returns>
         public IEnumerable<HorarioProfesorDTO> GetByCedulaDia(uint cedula, byte idDia)
         {
-            return _db.HorarioProfesores
+            return HorariosContext.HorarioProfesores
                 .ProjectTo<HorarioProfesorDTO>()
                 .Where(hp => hp.Cedula == cedula && hp.IdDia == idDia);
         }
@@ -100,7 +86,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de HorarioProfesorDTO</returns>
         public IEnumerable<HorarioProfesorDTO> GetByDiaAula(byte idDia, byte idAula)
         {
-            return _db.HorarioProfesores
+            return HorariosContext.HorarioProfesores
                 .Include(pc => pc.PeriodoCarrera)
                 .Where(hp => hp.PeriodoCarrera.Status == true && hp.IdDia == idDia && hp.IdAula == idAula)
                 .ProjectTo<HorarioProfesorDTO>();
@@ -114,12 +100,12 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de HorarioProfesorDTO</returns>
         public IEnumerable<HorarioProfesorDTO> GetBySemestreDia(byte idSemestre, byte idDia)
         {
-            return _db.HorarioProfesores
+            return HorariosContext.HorarioProfesores
                 .Include(pc => pc.PeriodoCarrera)
                 //.Where(hp => hp.PeriodoCarrera.Status == true && hp.IdDia == idDia)
                 .Join
                 (
-                    _db.Materias, //target
+                    HorariosContext.Materias, //target
                     hp => hp.Codigo, //fk
                     m => m.Codigo, //pk
                     (hp, m) => new { Materias = m, HorarioProfesor = hp } //select result
@@ -143,7 +129,7 @@ namespace Schedule.API.Models.Repositories
         public IEnumerable<HorarioProfesorDetailsDTO> GetBySemestre(int idSemestre)
         {
             IEnumerable<HorarioProfesorDetailsDTO> lista = null;
-            _db.LoadStoredProc("spGetHorariosProfesores")
+            HorariosContext.LoadStoredProc("spGetHorariosProfesores")
                 .WithSqlParam("@idSemestre", idSemestre)
                 .WithSqlParam("@idAula", null)
                 .ExecuteStoredProc((handler) =>
@@ -160,7 +146,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Ultima seccion asignada a la materia</returns>
         public int GetLastSeccionAssigned(ushort codigo)
         {
-            var horario = _db.HorarioProfesores
+            var horario = HorariosContext.HorarioProfesores
                 .Where(hp => hp.Codigo == codigo)
                 .OrderByDescending(hp => hp.NumeroSeccion)
                 .FirstOrDefault();
