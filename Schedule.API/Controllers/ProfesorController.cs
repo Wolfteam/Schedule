@@ -14,13 +14,14 @@ namespace Schedule.API.Controllers
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class ProfesorController : Controller
     {
-        private readonly ProfesorRepository _db = new ProfesorRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
 
         // POST api/Profesor
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
-            bool result = _db.Create(Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            _db.ProfesorRepository.Add(Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return CreatedAtRoute("GetProfesor", new { cedula = profesor.Cedula }, profesor);
@@ -28,9 +29,10 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Profesor/21255727
         [HttpDelete("{cedula}")]
-        public IActionResult Delete(int cedula)
+        public IActionResult Delete(uint cedula)
         {
-            bool result = _db.Delete(cedula);
+            _db.ProfesorRepository.Remove(cedula);
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro el profesor a borrar.");
             return new NoContentResult();
@@ -40,27 +42,35 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
-            return _db.Get();
+            var profesores = _db.ProfesorRepository.GetAll();
+            return Mapper.Map<IEnumerable<ProfesorDetailsDTO>>(profesores);
         }
 
         // GET api/Profesor/1
         [HttpGet("{cedula}", Name = "GetProfesor")]
-        public IActionResult Get(int cedula)
+        public IActionResult Get(uint cedula)
         {
-            var profesor = _db.Get(cedula);
+            var profesor = _db.ProfesorRepository.Get(cedula);
             if (profesor == null)
                 return NotFound("No se encontro el profesor buscado.");
-            return new ObjectResult(profesor);
+            return new ObjectResult(Mapper.Map<ProfesorDetailsDTO>(profesor));
         }
 
         // PUT api/Profesor/21255727
         [HttpPut("{cedula}")]
-        public IActionResult Update(int cedula, [FromBody] ProfesorDTO profesor)
+        public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {
-            bool result = _db.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            _db.ProfesorRepository.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro el profesor a actualizar.");
             return new NoContentResult();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

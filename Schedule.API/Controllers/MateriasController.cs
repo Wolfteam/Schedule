@@ -14,13 +14,14 @@ namespace Schedule.API.Controllers
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class MateriasController : Controller
     {
-        private readonly MateriasRepository _db = new MateriasRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
 
         // POST api/Materias
         [HttpPost]
         public IActionResult Create([FromBody] MateriasDTO materia)
         {
-            bool result = _db.Create(Mapper.Map<MateriasDTO, Materias>(materia));
+            _db.MateriasRepository.Add(Mapper.Map<MateriasDTO, Materias>(materia));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return CreatedAtRoute("GetMateria", new { codigo = materia.Codigo }, materia);
@@ -28,9 +29,10 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Materias/34052
         [HttpDelete("{codigo}")]
-        public IActionResult Delete(int codigo)
+        public IActionResult Delete(ushort codigo)
         {
-            bool result = _db.Delete(codigo);
+            _db.MateriasRepository.Remove(codigo);
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la materia a borrar.");
             return new NoContentResult();
@@ -40,27 +42,35 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<MateriasDetailsDTO> GetAll()
         {
-            return _db.Get();
+            var materias = _db.MateriasRepository.GetAll();
+            return Mapper.Map<IEnumerable<MateriasDetailsDTO>>(materias);
         }
 
         // GET api/Materias/1
         [HttpGet("{codigo}", Name = "GetMateria")]
-        public IActionResult Get(int codigo)
+        public IActionResult Get(ushort codigo)
         {
-            var materia = _db.Get(codigo);
+            var materia = _db.MateriasRepository.Get(codigo);
             if (materia == null)
                 return NotFound("No se encontro la materia buscada.");
-            return new ObjectResult(materia);
+            return new ObjectResult(Mapper.Map<MateriasDetailsDTO>(materia));
         }
 
         // PUT api/Materias/1
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] MateriasDTO materia)
+        public IActionResult Update(ushort codigo, [FromBody] MateriasDTO materia)
         {
-            bool result = _db.Update(id, Mapper.Map<MateriasDTO, Materias>(materia));
+            _db.MateriasRepository.Update(codigo, Mapper.Map<MateriasDTO, Materias>(materia));
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la materia a actualizar.");
             return new NoContentResult();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

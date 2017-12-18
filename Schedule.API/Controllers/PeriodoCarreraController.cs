@@ -14,7 +14,7 @@ namespace Schedule.API.Controllers
     [AuthenticateAttribute]
     public class PeriodoCarreraController : Controller
     {
-        private readonly PeriodoCarreraRepository _pcr = new PeriodoCarreraRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
 
         // POST api/PeriodoCarrera
         [HttpPost]
@@ -22,7 +22,8 @@ namespace Schedule.API.Controllers
         public IActionResult Create([FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
-            bool result = _pcr.Create(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Add(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return CreatedAtRoute("GetPeriodoCarrera", new { id = 0 }, periodo);
@@ -33,7 +34,8 @@ namespace Schedule.API.Controllers
         [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Delete(int id)
         {
-            bool result = _pcr.Delete(id);
+            _db.PeriodoCarreraRepository.Remove(id);
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return new NoContentResult();
@@ -44,24 +46,25 @@ namespace Schedule.API.Controllers
         [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
-            return _pcr.Get();
+            var periodosCarrera =  _db.PeriodoCarreraRepository.GetAll();
+            return Mapper.Map<IEnumerable<PeriodoCarreraDTO>>(periodosCarrera);
         }
 
         // GET api/PeriodoCarrera/Current
         [HttpGet("Current")]
         public PeriodoCarreraDTO GetCurrentPeriodo()
         {
-            return _pcr.GetCurrentPeriodo();
+            return _db.PeriodoCarreraRepository.GetCurrentPeriodo();
         }
 
         // GET api/PeriodoCarrera/1
         [HttpGet("{id}", Name = "GetPeriodoCarrera")]
         public IActionResult Get(int id)
         {
-            var periodo = _pcr.Get(id);
+            var periodo = _db.PeriodoCarreraRepository.Get(id);
             if (periodo == null)
                 return NotFound("No se encontro el periodo academico buscado.");
-            return new ObjectResult(periodo);
+            return new ObjectResult(Mapper.Map<PeriodoCarreraDTO>(periodo));
         }
 
         /// <summary>
@@ -73,7 +76,7 @@ namespace Schedule.API.Controllers
         {
             if (periodo.Status)
             {
-                _pcr.UpdateAllCurrentStatus();
+                _db.PeriodoCarreraRepository.UpdateAllCurrentStatus();
             }
             periodo.FechaCreacion = DateTime.Now;
         }
@@ -85,10 +88,17 @@ namespace Schedule.API.Controllers
         {
             SetPeriodoDefaults(periodo);
             periodo.IdPeriodo = id;
-            bool result = _pcr.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return new NoContentResult();
+        }
+        
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

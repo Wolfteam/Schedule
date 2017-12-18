@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
@@ -14,13 +13,20 @@ namespace Schedule.API.Controllers
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class SemestresController : Controller
     {
-        private readonly SemestresRepository _db = new SemestresRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
 
         // GET api/Semestres
         [HttpGet]
         public IEnumerable<SemestreDTO> GetAll()
         {
-            return _db.Get();
+            var semestres = _db.SemestresRepository.GetAll();
+            return Mapper.Map<IEnumerable<SemestreDTO>>(semestres);
+        }
+        
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

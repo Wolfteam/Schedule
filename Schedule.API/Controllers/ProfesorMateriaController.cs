@@ -14,24 +14,26 @@ namespace Schedule.API.Controllers
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
     public class ProfesorMateriaController : Controller
     {
-        private readonly ProfesorMateriaRepository _db = new ProfesorMateriaRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
 
         // POST api/ProfesorMateria
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
         {
-            bool result = _db.Create(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
-            var relacion = _db.Get(pm.Cedula, pm.Codigo);
+            var relacion = _db.ProfesorMateriaRepository.Get(pm.Cedula, pm.Codigo);
             return CreatedAtRoute("GetProfesorMateria", new { id = relacion.Id }, pm);
         }
 
         // DELETE api/ProfesorMateria/10
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(uint id)
         {
-            bool result = _db.Delete(id);
+            _db.ProfesorMateriaRepository.Remove(id);
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la relacion a borrar.");
             return new NoContentResult();
@@ -41,24 +43,33 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
-            return _db.Get();
+            var relaciones = _db.ProfesorMateriaRepository.GetAll();
+            return Mapper.Map<IEnumerable<ProfesorMateriaDetailsDTO>>(relaciones);
         }
 
         // GET api/ProfesorMateria/1234
         [HttpGet("{id}", Name = "GetProfesorMateria")]
-        public ProfesorMateriaDetailsDTO Get(int id)
+        public ProfesorMateriaDetailsDTO Get(uint id)
         {
-            return _db.Get(id);
+            var relacion = _db.ProfesorMateriaRepository.Get(id);
+            return Mapper.Map<ProfesoresMaterias, ProfesorMateriaDetailsDTO>(relacion);
         }
 
         // PUT api/ProfesorMateria/4
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] ProfesorMateriaDTO pm)
+        public IActionResult Update(uint id, [FromBody] ProfesorMateriaDTO pm)
         {
-            bool result = _db.Update(id, Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            _db.ProfesorMateriaRepository.Update(id, Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la relaciona a actualizar.");
             return new NoContentResult();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }
