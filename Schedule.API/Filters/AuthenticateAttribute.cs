@@ -11,13 +11,13 @@ namespace Schedule.API.Filters
     /// </summary>
     public class AuthenticateAttribute : ActionFilterAttribute
     {
-        private readonly TokenRepository _tokenService = new TokenRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
         public override void OnActionExecuting(ActionExecutingContext context)
         {           
             try
             {
                 string token = context.HttpContext.Request.Headers["Token"];
-                if (String.IsNullOrEmpty(token) || !_tokenService.Validate(token))
+                if (String.IsNullOrEmpty(token) || !_db.TokenRepository.TokenExists(token))
                 {
                     context.HttpContext.Response.StatusCode = 401;
                     context.Result = new ContentResult()
