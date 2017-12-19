@@ -23,9 +23,9 @@ namespace Schedule.API.Models.Repositories
         private readonly HorariosContext _horariosContext;
         private bool disposedValue = false; // To detect redundant calls
 
-        public UnitOfWork()
+        public UnitOfWork(HorariosContext horariosContext)
         {
-            _horariosContext = new HorariosContext();
+            _horariosContext = horariosContext;
             AulasRepository = new AulasRepository(_horariosContext);
             CarrerasRepository = new CarrerasRepository(_horariosContext);
             DisponibilidadProfesorRepository = new DisponibilidadProfesorRepository(_horariosContext);
@@ -39,13 +39,6 @@ namespace Schedule.API.Models.Repositories
             SemestresRepository = new SemestresRepository(_horariosContext);
             UsuarioRepository = new UsuarioRepository(_horariosContext);
             TokenRepository = new TokenRepository(_horariosContext);
-        }
-
-        public UnitOfWork(HorariosContext horariosContext)
-        {
-            //TODO: Terminar este
-            _horariosContext = horariosContext;
-            AulasRepository = new AulasRepository(horariosContext);
         }
 
         /// <summary>
