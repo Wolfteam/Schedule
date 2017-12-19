@@ -8,7 +8,7 @@
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "Build Schedule.Web",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceRoot}/Schedule.Web/bin/Debug/netcoreapp2.0/Schedule.Web.dll",
             "args": [],
@@ -30,6 +30,40 @@
                 }
             },
             "env": {
+                "ASPNETCORE_URLS":"http://localhost:55461",
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceRoot}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Launch (api)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Schedule.API",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceRoot}/Schedule.API/bin/Debug/netcoreapp2.0/Schedule.API.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/Schedule.API",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_URLS":"http://localhost:60341",
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {

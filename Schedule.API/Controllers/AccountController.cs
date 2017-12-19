@@ -9,32 +9,20 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        #region Variables
-        private readonly UsuarioRepository _db = new UsuarioRepository();
-        private readonly PeriodoCarreraRepository _pr = new PeriodoCarreraRepository();
-        private readonly TokenRepository _tokenService = new TokenRepository();
-        //private readonly ITokenService _tokenServices;
-        #endregion
-
-        // #region Constructor
-        // public AccountController(ITokenService tokenServices)
-        // {
-        //     _tokenServices = tokenServices;
-        //     _usuario = new UsuarioBLL();
-        // }
-        // #endregion
-
         // POST api/Account/Login
         [HttpPost("Login")]
         public ActionResult Login([FromBody] UsuarioDTO usuario)
         {
-            var periodo = _pr.GetCurrentPeriodo();
-            if (_db.Get(usuario.Username, usuario.Password) && periodo != null)
+            var periodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo();
+            bool userExists = _db.UsuarioRepository.UserExists(usuario.Username, usuario.Password);
+            if (userExists && periodo != null)
             {
-                var token = _tokenService.GenerateToken(usuario.Username);
-                if (_tokenService.Create(token))
+                var token = _db.TokenRepository.GenerateToken(usuario.Username);
+                _db.TokenRepository.Add(token);
+                bool result = _db.Save();
+                if (result)
                 {
                     return Ok(AutoMapper.Mapper.Map<Tokens, TokenDTO>(token));
                 }
@@ -58,11 +46,11 @@ namespace Schedule.API.Controllers
         [AuthenticateAttribute]
         public ActionResult Logout(string token)
         {
-            if (_tokenService.Delete(token))
-            {
+            _db.TokenRepository.RemoveByToken(token);
+            bool result = _db.Save();
+            if (result)
                 return Ok();
-            }
-            return NotFound();
+            return NotFound($"El token {token} no fue encontrado");
         }
 
         //GET api/Account/Privilegios/123456798
@@ -72,7 +60,7 @@ namespace Schedule.API.Controllers
         {
             List<Entities.Privilegios> listaPrivilegios = new List<Entities.Privilegios>
             {
-                _tokenService.GetAllPrivilegiosByToken(token)
+                _db.TokenRepository.GetAllPrivilegiosByToken(token)
             };
             return listaPrivilegios;
         }
@@ -82,9 +70,9 @@ namespace Schedule.API.Controllers
         [AuthenticateAttribute]
         public IActionResult GetProfesorInfoByToken(string token)
         {
-            var profesor = _tokenService.GetProfesorInfoByToken(token);
+            var profesor = _db.TokenRepository.GetProfesorInfoByToken(token);
             if (profesor == null)
-                return NotFound();
+                return NotFound("No se encontro un profesor asociado al token");
             return new ObjectResult(profesor);
         }
     }

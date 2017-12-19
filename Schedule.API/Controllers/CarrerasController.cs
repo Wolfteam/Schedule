@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
@@ -12,15 +11,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class CarrerasController : Controller
+    public class CarrerasController : BaseController
     {
-        private readonly CarrerasRepository _db = new CarrerasRepository();
-
         // GET api/Carreras
         [HttpGet]
         public IEnumerable<CarreraDTO> GetAll()
         {
-            return _db.Get();
+            var carreras =  _db.CarrerasRepository.GetAll();
+            return Mapper.Map<IEnumerable<CarreraDTO>>(carreras);
         }
     }
 }

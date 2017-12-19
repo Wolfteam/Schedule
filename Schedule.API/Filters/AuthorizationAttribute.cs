@@ -12,7 +12,7 @@ namespace Schedule.API.Filters
     /// </summary>
     public class AuthorizationAttribute : ActionFilterAttribute
     {
-        private readonly TokenRepository _tokenService = new TokenRepository();
+        private readonly UnitOfWork _db = new UnitOfWork();
         private readonly Privilegios _privilegio;
 
         public AuthorizationAttribute(Privilegios privilegio)
@@ -24,7 +24,7 @@ namespace Schedule.API.Filters
         {
             string token = context.HttpContext.Request.Headers["Token"];
 
-            Privilegios privilegio = _tokenService.GetAllPrivilegiosByToken(token);
+            Privilegios privilegio = _db.TokenRepository.GetAllPrivilegiosByToken(token);
 
             if (privilegio != _privilegio)
             {

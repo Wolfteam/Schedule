@@ -1,18 +1,18 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using Schedule.API.Filters;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using System.Drawing;
-using Microsoft.Extensions.Options;
+using System.IO;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -20,10 +20,9 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     //[AuthenticateAttribute]
     //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class HorarioProfesorController : Controller
+    public class HorarioProfesorController : BaseController
     {
         #region Variables
-        private readonly UnitOfWork _unitOfWork = new UnitOfWork();
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _contentRootPath;
         private ExcelHorarioProfesorSettings _excelSettings;
@@ -43,7 +42,7 @@ namespace Schedule.API.Controllers
         {
             VerifyRecords();
             int limiteSuperior = 0, limiteInferior = 3;
-            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            string periodoAcademico = _db.PeriodoCarreraRepository.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             string filePath;
             using (var excel = new ExcelPackage(modelDir))
@@ -55,8 +54,8 @@ namespace Schedule.API.Controllers
                 {
                     string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPA, periodoAcademico);
                     planificacion.Cells[String.Format("B{0}:I{0}", limiteInferior - 2)].Value = titulo;
-                    var materias = _unitOfWork.Materias.GetBySemestre(idSemestre);
-                    var listaHorarios = _unitOfWork.HorarioProfesor.GetBySemestre(idSemestre);
+                    var materias = _db.MateriasRepository.GetBySemestre(idSemestre);
+                    var listaHorarios = _db.HorarioProfesorRepository.GetBySemestre(idSemestre);
                     foreach (MateriasDTO materia in materias)
                     {
                         var horariosByMateria = listaHorarios.Where(hp => hp.Codigo == materia.Codigo);
@@ -112,7 +111,7 @@ namespace Schedule.API.Controllers
         {
             VerifyRecords();
             int contador = 0, puntero = 3, index = 0;
-            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            string periodoAcademico = _db.PeriodoCarreraRepository.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             string filePath;
             using (var excel = new ExcelPackage(modelDir))
@@ -120,12 +119,12 @@ namespace Schedule.API.Controllers
                 ExcelWorksheet planificacion = excel.Workbook.Worksheets["PlanificacionAulas"];
                 excel.Workbook.Worksheets.Delete("PlanificacionAcademica");
                 excel.Workbook.Worksheets.Delete("PlanificacionHorarios");
-                var aulas = _unitOfWork.Aulas.Get().OrderBy(a => a.NombreAula);
-                foreach (AulasDetailsDTO aula in aulas)
+                var aulas = _db.AulasRepository.GetAll().OrderBy(a => a.NombreAula);
+                foreach (var aula in aulas)
                 {
                     string titulo = $"PLANIFICACION AULA {aula.NombreAula} DPTO. DE  INGENIERIA DE SISTEMA PERIODO {periodoAcademico}";
                     planificacion.Cells[$"B{contador + 1}:I{contador + 1}"].Value = titulo;
-                    var horarios = _unitOfWork.HorarioProfesor.GetByAula(aula.IdAula);
+                    var horarios = _db.HorarioProfesorRepository.GetByAula(aula.IdAula);
                     foreach (HorarioProfesorDetailsDTO horario in horarios)
                     {
                         for (int idDia = 1; idDia < 7; idDia++)
@@ -181,7 +180,7 @@ namespace Schedule.API.Controllers
         {
             VerifyRecords();
             int contador = 0, puntero = 3;
-            string periodoAcademico = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().NombrePeriodo;
+            string periodoAcademico = _db.PeriodoCarreraRepository.GetCurrentPeriodo().NombrePeriodo;
             var modelDir = new FileInfo(_contentRootPath + _excelSettings.ModeloPlanificacionPath);
             string filePath;
             using (var excel = new ExcelPackage(modelDir))
@@ -193,7 +192,7 @@ namespace Schedule.API.Controllers
                 {
                     string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPH, periodoAcademico);
                     planificacion.Cells[String.Format("B{0}:I{0}", contador + 1)].Value = titulo;
-                    var horarios = _unitOfWork.HorarioProfesor.GetBySemestre(idSemestre);
+                    var horarios = _db.HorarioProfesorRepository.GetBySemestre(idSemestre);
                     foreach (var horario in horarios)
                     {
                         for (int idDia = 1; idDia < 7; idDia++)
@@ -237,7 +236,7 @@ namespace Schedule.API.Controllers
                         planificacion.Cells[String.Format("B{0}:C{0}", i)].Merge = true;
                     }
                 }
-               filePath = SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionHorariosExcelFileName);
+                filePath = SaveExcel(excel, _contentRootPath + _excelSettings.SavePath, _excelSettings.PlanificacionHorariosExcelFileName);
             }
             return GetExcel(filePath, _excelSettings.PlanificacionHorariosExcelFileName + ".xlsx");
         }
@@ -261,7 +260,7 @@ namespace Schedule.API.Controllers
         /// </summary>
         private void VerifyRecords()
         {
-            bool recordsExists = _unitOfWork.HorarioProfesor.RecordsExists();
+            bool recordsExists = _db.HorarioProfesorRepository.RecordsExists();
             if (!recordsExists)
                 Generate();
         }
@@ -448,8 +447,8 @@ namespace Schedule.API.Controllers
         /// </summary>
         private void Generate()
         {
-            int idPeriodo = _unitOfWork.PeriodoCarrera.GetCurrentPeriodo().IdPeriodo;
-            var secciones = _unitOfWork.Secciones.Get();
+            int idPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
+            var secciones = _db.SeccionesRepository.GetAllCurrent();
 
             if (secciones.Count() == 0)
                 return;
@@ -461,9 +460,9 @@ namespace Schedule.API.Controllers
                     var seccionesBySemestre = secciones.Where(sec => sec.Materia.Semestre.IdSemestre == idSemestre);
                     foreach (var seccion in seccionesBySemestre)
                     {
-                        var disponibilidades = _unitOfWork.DisponibilidadProfesor.GetByPrioridadMateria(idPrioridad, seccion.Materia.Codigo);
+                        var disponibilidades = _db.DisponibilidadProfesorRepository.GetByPrioridadMateria(idPrioridad, seccion.Materia.Codigo);
                         var cedulas = disponibilidades.Select(ci => ci.Cedula).Distinct();
-                        int numeroSeccion = _unitOfWork.HorarioProfesor.GetLastSeccionAssigned(seccion.Materia.Codigo) + 1;
+                        int numeroSeccion = _db.HorarioProfesorRepository.GetLastSeccionAssigned(seccion.Materia.Codigo) + 1;
                         for (int i = 1; i <= seccion.NumeroSecciones; i++)
                         {
                             foreach (uint cedula in cedulas)
@@ -472,13 +471,13 @@ namespace Schedule.API.Controllers
                                     break;
 
                                 var disp = disponibilidades.Where(d => d.Cedula == cedula);
-                                int horasAsignadas = _unitOfWork.HorarioProfesor.CalculateHorasAsignadas(cedula);
+                                int horasAsignadas = _db.HorarioProfesorRepository.CalculateHorasAsignadas(cedula);
                                 byte horasRestantes = (byte)(disp.FirstOrDefault().HorasACumplir - horasAsignadas);
 
                                 if (horasRestantes < seccion.Materia.HorasAcademicasSemanales)
                                     break;
 
-                                var aulas = _unitOfWork.Aulas.GetByTipoCapacidad(seccion.Materia.TipoMateria.IdTipo, seccion.CantidadAlumnos);
+                                var aulas = _db.AulasRepository.GetByTipoCapacidad(seccion.Materia.TipoMateria.IdTipo, seccion.CantidadAlumnos);
                                 if (aulas.Count() == 0)
                                     break;
 
@@ -598,8 +597,9 @@ namespace Schedule.API.Controllers
             if (aux != 0)
                 return false;
 
-            return _unitOfWork.HorarioProfesor
-                .Create(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+            _db.HorarioProfesorRepository
+                .AddRange(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+            return _db.Save();
         }
 
         /// <summary>
@@ -677,8 +677,9 @@ namespace Schedule.API.Controllers
             if (aux != 0)
                 return false;
 
-            return _unitOfWork.HorarioProfesor
-                .Create(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+            _db.HorarioProfesorRepository
+                .AddRange(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+            return _db.Save();
         }
 
         /// <summary>
@@ -692,7 +693,7 @@ namespace Schedule.API.Controllers
         /// <returns>True en caso de no estar el aula ocupada</returns>
         private bool ValidateChoqueAula(byte idHoraInicio, byte idHoraFin, byte idDia, byte idAula)
         {
-            var horarioProfesores = _unitOfWork.HorarioProfesor.GetByDiaAula(idDia, idAula);
+            var horarioProfesores = _db.HorarioProfesorRepository.GetByDiaAula(idDia, idAula);
             bool result = true;
             foreach (var horario in horarioProfesores)
             {
@@ -713,7 +714,7 @@ namespace Schedule.API.Controllers
         /// <returns>True en caso de no existir choques de horario</returns>
         private bool ValidateChoqueHorario(uint cedula, byte idHoraInicio, byte idHoraFin, byte idDia)
         {
-            var horarios = _unitOfWork.HorarioProfesor.GetByCedulaDia(cedula, idDia);
+            var horarios = _db.HorarioProfesorRepository.GetByCedulaDia(cedula, idDia);
             bool result = true;
             if (horarios.FirstOrDefault(h => h.IdHoraInicio == idHoraInicio && h.IdHoraFin == idHoraFin) != null)
                 return !result;
@@ -744,7 +745,7 @@ namespace Schedule.API.Controllers
             bool result = true;
             if (idSemestre > 9)
                 return result;
-            var horarios = _unitOfWork.HorarioProfesor.GetBySemestreDia(idSemestre, idDia);
+            var horarios = _db.HorarioProfesorRepository.GetBySemestreDia(idSemestre, idDia);
             foreach (var horario in horarios)
             {
                 result = ValidateHoras(horario.IdHoraInicio, horario.IdHoraFin, idHoraInicio, idHoraFin);

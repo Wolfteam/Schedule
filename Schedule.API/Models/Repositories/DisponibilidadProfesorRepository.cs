@@ -1,93 +1,41 @@
 ﻿using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Schedule.API.Models.Repositories
 {
     public class DisponibilidadProfesorRepository
+        : Repository<DisponibilidadProfesores>, IDisponibilidadProfesorRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
+        public HorariosContext HorariosContext
+        {
+            get { return _context as HorariosContext; }
+        }
+
+        public DisponibilidadProfesorRepository(DbContext context)
+            : base(context)
+        {
+        }
 
         /// <summary>
         /// Crea una nueva disponibilidad a un profesor en particular
         /// </summary>
         /// <param name="disponibilidad">Objeto de tipo DisponibilidadProfesores</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Create(IEnumerable<DisponibilidadProfesores> disponibilidad)
+        public override void AddRange(IEnumerable<DisponibilidadProfesores> disponibilidad)
         {
-            try
-            {
-                Delete(disponibilidad.FirstOrDefault().Cedula);
-                _db.DisponibilidadProfesores.AddRange(disponibilidad);
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("error" + e.Message);
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Borra todas las disponibilidades
-        /// </summary>
-        /// <returns>True en caso de exito</returns>
-        public bool Delete()
-        {
-            //TODO: Pensar una mejor solucion
-            //Ten en cuenta que un borrado de mas de 1000 rows mataria a IIS
-            // y al servidor de la base de datos
-            try
-            {
-                //_db.DisponibilidadProfesores.RemoveRange(Get().ProjectTo<DisponibilidadProfesores>());
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Borra todas las disponibilidades de un profesor
-        /// </summary>
-        /// <param name="cedula">Cedula del profesor</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Delete(uint cedula)
-        {
-            try
-            {
-                _db.DisponibilidadProfesores
-                .RemoveRange
-                (
-                    _db.DisponibilidadProfesores
-                    .Include(pc => pc.PeriodoCarrera)
-                    .Where(x => x.Cedula == cedula && x.PeriodoCarrera.Status == true)
-                    .ToList()
-                );
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
+            RemoveByCedula(disponibilidad.FirstOrDefault().Cedula);
+            base.AddRange(disponibilidad);
         }
 
         /// <summary>
         /// Obtiene una lista de todas las disponibilidades de los profesores
         /// </summary>
         /// <returns>IEnumerable de DisponibilidadProfesorDTO</returns>
-        public IEnumerable<DisponibilidadProfesorDetailsDTO> Get()
+        public IEnumerable<DisponibilidadProfesorDetailsDTO> GetAllCurrent()
         {
-            var disponibilidades = _db.DisponibilidadProfesores
+            var disponibilidades = HorariosContext.DisponibilidadProfesores
                  .Include(pc => pc.PeriodoCarrera)
                  .Include(p => p.Profesores.PrioridadProfesor)
                  .Where(c => c.PeriodoCarrera.Status == true);
@@ -113,9 +61,9 @@ namespace Schedule.API.Models.Repositories
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
         /// <returns>Lista de disponibilidades</returns>
-        public DisponibilidadProfesorDetailsDTO Get(int cedula)
+        public DisponibilidadProfesorDetailsDTO GetByCedula(int cedula)
         {
-            var disponibilidad = _db.DisponibilidadProfesores
+            var disponibilidad = HorariosContext.DisponibilidadProfesores
                 .Include(pc => pc.PeriodoCarrera)
                 .Include(p => p.Profesores.PrioridadProfesor)
                 .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
@@ -143,14 +91,14 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de DisponibilidadProfesorDetailsDTO</returns>
         public IEnumerable<DisponibilidadProfesorDetailsDTO> GetByPrioridadMateria(byte idPrioridad, ushort codigo)
         {
-            var disponibilidades = _db.DisponibilidadProfesores
+            var disponibilidades = HorariosContext.DisponibilidadProfesores
                  .Include(pc => pc.PeriodoCarrera)
                  .Include(pm => pm.Profesores.ProfesoresMaterias)
                  .Include(p => p.Profesores.PrioridadProfesor)
                  .Where
                  (
                      c => c.PeriodoCarrera.Status == true &&
-                     c.Profesores.PrioridadProfesor.IdPrioridad == idPrioridad && 
+                     c.Profesores.PrioridadProfesor.IdPrioridad == idPrioridad &&
                      c.Profesores.ProfesoresMaterias.FirstOrDefault(pm => pm.Codigo == codigo) != null
                  );
 
@@ -170,14 +118,20 @@ namespace Schedule.API.Models.Repositories
             return result;
         }
 
-        public bool Update(int cedula, DisponibilidadProfesores objeto)
+        /// <summary>
+        /// Borra todas las disponibilidades de un profesor
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        public void RemoveByCedula(uint cedula)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(DisponibilidadProfesores objeto)
-        {
-            throw new NotImplementedException();
+            HorariosContext.DisponibilidadProfesores
+            .RemoveRange
+            (
+                HorariosContext.DisponibilidadProfesores
+                .Include(pc => pc.PeriodoCarrera)
+                .Where(x => x.Cedula == cedula && x.PeriodoCarrera.Status == true)
+            );
+            HorariosContext.SaveChanges();
         }
     }
 }
