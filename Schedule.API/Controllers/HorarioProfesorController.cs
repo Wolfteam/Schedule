@@ -20,10 +20,9 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     //[AuthenticateAttribute]
     //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class HorarioProfesorController : Controller
+    public class HorarioProfesorController : BaseController
     {
         #region Variables
-        private readonly UnitOfWork _db = new UnitOfWork();
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _contentRootPath;
         private ExcelHorarioProfesorSettings _excelSettings;
@@ -264,12 +263,6 @@ namespace Schedule.API.Controllers
             bool recordsExists = _db.HorarioProfesorRepository.RecordsExists();
             if (!recordsExists)
                 Generate();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
 
         #region Metodos usados para la generacion de los archivos excel

@@ -9,10 +9,8 @@ namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
     [GlobalAttibute]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/Account/Login
         [HttpPost("Login")]
         public ActionResult Login([FromBody] UsuarioDTO usuario)
@@ -76,12 +74,6 @@ namespace Schedule.API.Controllers
             if (profesor == null)
                 return NotFound("No se encontro un profesor asociado al token");
             return new ObjectResult(profesor);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

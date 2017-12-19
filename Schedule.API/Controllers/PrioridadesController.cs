@@ -11,22 +11,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class PrioridadesController : Controller
+    public class PrioridadesController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // GET api/Prioridades
         [HttpGet]
         public IEnumerable<PrioridadProfesorDTO> GetAll()
         {
             var prioridades = _db.PrioridadesRepository.GetAll();
             return Mapper.Map<IEnumerable<PrioridadProfesorDTO>>(prioridades);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

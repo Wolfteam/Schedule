@@ -27,14 +27,7 @@ namespace Schedule.API
             //Esto es necesario para que me deje incluir propiedades extras de un model de ef
             services.AddMvc().AddJsonOptions(x =>
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            //services.AddAutoMapper();
-            var config = new AutoMapper.MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new MappingProfile());
-            });
-
-            var mapper = config.CreateMapper();
-            services.AddSingleton(mapper);
+            services.AddAutoMapper();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             //services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
         }

@@ -55,7 +55,7 @@ namespace Schedule.API.Models.Repositories
             foreach (var includeProperty in includeProperties.Split
                 (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                query = query.Include(includeProperty);
+                query = query.Include(includeProperty.Trim());
             }
 
             if (orderBy != null)
@@ -96,7 +96,10 @@ namespace Schedule.API.Models.Repositories
             //el cual es PK en la tabla
             var entityToDelete = Get(id);
             if (entityToDelete != null)
+            {
                 Remove(entityToDelete);
+                _context.SaveChanges();
+            }
             Add(entity);
         }
 

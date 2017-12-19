@@ -12,10 +12,8 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class ProfesorController : Controller
+    public class ProfesorController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/Profesor
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
@@ -42,7 +40,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
-            var profesores = _db.ProfesorRepository.GetAll();
+            var profesores = _db.ProfesorRepository.Get(includeProperties:"PrioridadProfesor");
             return Mapper.Map<IEnumerable<ProfesorDetailsDTO>>(profesores);
         }
 
@@ -65,12 +63,6 @@ namespace Schedule.API.Controllers
             if (!result)
                 return NotFound("No se encontro el profesor a actualizar.");
             return new NoContentResult();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

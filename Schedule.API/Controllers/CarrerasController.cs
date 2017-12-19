@@ -11,22 +11,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class CarrerasController : Controller
+    public class CarrerasController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // GET api/Carreras
         [HttpGet]
         public IEnumerable<CarreraDTO> GetAll()
         {
             var carreras =  _db.CarrerasRepository.GetAll();
             return Mapper.Map<IEnumerable<CarreraDTO>>(carreras);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

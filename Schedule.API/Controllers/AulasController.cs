@@ -12,16 +12,8 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class AulasController : Controller
+    public class AulasController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-        private readonly IMapper _mapper;
-
-        public AulasController(IMapper mapper)
-        {
-            _mapper = mapper;
-        }
-
         // POST api/Aulas
         [HttpPost]
         public IActionResult Create([FromBody] AulasDTO aula)
@@ -48,7 +40,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<AulasDetailsDTO> GetAll()
         {
-            var aulas = _db.AulasRepository.GetAll();
+            var aulas = _db.AulasRepository.Get(includeProperties:"TipoAulaMateria");
             return Mapper.Map<IEnumerable<Aulas>, IEnumerable<AulasDetailsDTO>>(aulas);
         }
 
@@ -67,7 +59,7 @@ namespace Schedule.API.Controllers
             var aula = _db.AulasRepository.Get(id);
             if (aula == null)
                 return NotFound("No se encontro el aula buscada.");
-            return new ObjectResult(_mapper.Map<AulasDetailsDTO>(aula));
+            return new ObjectResult(Mapper.Map<AulasDetailsDTO>(aula));
         }
 
         // PUT api/Aulas/1
@@ -80,13 +72,7 @@ namespace Schedule.API.Controllers
                 return NotFound("No existe el aula a actualizar");
             return new NoContentResult();
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
-        }
-
+        
         #region Pruebas
         [HttpPost("GetTest")]
         public IActionResult GetTest(DataTableAjaxPostModel model)

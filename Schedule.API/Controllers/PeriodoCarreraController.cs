@@ -12,10 +12,8 @@ namespace Schedule.API.Controllers
     [Route("api/[controller]")]
     [GlobalAttibute]
     [AuthenticateAttribute]
-    public class PeriodoCarreraController : Controller
+    public class PeriodoCarreraController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/PeriodoCarrera
         [HttpPost]
         [AuthorizationAttribute(Entities.Privilegios.Administrador)]
@@ -93,12 +91,6 @@ namespace Schedule.API.Controllers
             if (!result)
                 return StatusCode(500);
             return new NoContentResult();
-        }
-        
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

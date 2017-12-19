@@ -12,10 +12,8 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class MateriasController : Controller
+    public class MateriasController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/Materias
         [HttpPost]
         public IActionResult Create([FromBody] MateriasDTO materia)
@@ -42,7 +40,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<MateriasDetailsDTO> GetAll()
         {
-            var materias = _db.MateriasRepository.GetAll();
+            var materias = _db.MateriasRepository.Get(includeProperties: "Carreras, Semestres, TipoAulaMaterias");
             return Mapper.Map<IEnumerable<MateriasDetailsDTO>>(materias);
         }
 
@@ -57,7 +55,7 @@ namespace Schedule.API.Controllers
         }
 
         // PUT api/Materias/1
-        [HttpPut("{id}")]
+        [HttpPut("{codigo}")]
         public IActionResult Update(ushort codigo, [FromBody] MateriasDTO materia)
         {
             _db.MateriasRepository.Update(codigo, Mapper.Map<MateriasDTO, Materias>(materia));
@@ -65,12 +63,6 @@ namespace Schedule.API.Controllers
             if (!result)
                 return NotFound("No se encontro la materia a actualizar.");
             return new NoContentResult();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

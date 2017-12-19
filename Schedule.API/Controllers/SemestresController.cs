@@ -11,22 +11,14 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class SemestresController : Controller
+    public class SemestresController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // GET api/Semestres
         [HttpGet]
         public IEnumerable<SemestreDTO> GetAll()
         {
             var semestres = _db.SemestresRepository.GetAll();
             return Mapper.Map<IEnumerable<SemestreDTO>>(semestres);
-        }
-        
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

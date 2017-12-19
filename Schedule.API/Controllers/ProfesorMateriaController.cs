@@ -5,6 +5,7 @@ using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -12,10 +13,8 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class ProfesorMateriaController : Controller
+    public class ProfesorMateriaController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/ProfesorMateria
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
@@ -32,7 +31,8 @@ namespace Schedule.API.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(uint id)
         {
-            _db.ProfesorMateriaRepository.Remove(id);
+            var entity = _db.ProfesorMateriaRepository.Get(pm => pm.Id == id).FirstOrDefault();
+            _db.ProfesorMateriaRepository.Remove(entity);
             bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la relacion a borrar.");
@@ -43,7 +43,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
-            var relaciones = _db.ProfesorMateriaRepository.GetAll();
+            var relaciones = _db.ProfesorMateriaRepository.Get(includeProperties:"Profesores, Materias, Materias.Semestres, Materias.Carreras, Materias.TipoAulaMaterias");
             return Mapper.Map<IEnumerable<ProfesorMateriaDetailsDTO>>(relaciones);
         }
 
@@ -59,17 +59,13 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(uint id, [FromBody] ProfesorMateriaDTO pm)
         {
-            _db.ProfesorMateriaRepository.Update(id, Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            var oldEntity = _db.ProfesorMateriaRepository.Get(p => p.Id == id).FirstOrDefault();
+            _db.ProfesorMateriaRepository.Remove(oldEntity);
+            _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la relaciona a actualizar.");
             return new NoContentResult();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

@@ -124,14 +124,14 @@ namespace Schedule.API.Models.Repositories
         /// <param name="cedula">Cedula del profesor</param>
         public void RemoveByCedula(uint cedula)
         {
-            base.RemoveRange
+            HorariosContext.DisponibilidadProfesores
+            .RemoveRange
             (
-                base.Get
-                (
-                    x => x.Cedula == cedula && x.PeriodoCarrera.Status == true,
-                    null, includeProperties: "PeriodoCarrera"
-                )
+                HorariosContext.DisponibilidadProfesores
+                .Include(pc => pc.PeriodoCarrera)
+                .Where(x => x.Cedula == cedula && x.PeriodoCarrera.Status == true)
             );
+            HorariosContext.SaveChanges();
         }
     }
 }

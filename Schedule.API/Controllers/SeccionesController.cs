@@ -11,10 +11,8 @@ namespace Schedule.API.Controllers
     [Route("api/[controller]")]
     [AuthenticateAttribute]
     [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class SeccionesController : Controller
+    public class SeccionesController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/Secciones
         [HttpPost]
         public IActionResult Create([FromBody] SeccionesDTO seccion)
@@ -65,12 +63,6 @@ namespace Schedule.API.Controllers
             if (!result)
                 return NotFound("No se encontro la seccion a actualizar.");
             return new NoContentResult();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

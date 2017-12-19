@@ -12,10 +12,8 @@ namespace Schedule.API.Controllers
     [Route("api/[controller]")]
     [GlobalAttibute]
     [AuthenticateAttribute]
-    public class DisponibilidadController : Controller
+    public class DisponibilidadController : BaseController
     {
-        private readonly UnitOfWork _db = new UnitOfWork();
-
         // POST api/Disponibilidad
         [HttpPost]
         public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
@@ -23,7 +21,7 @@ namespace Schedule.API.Controllers
             int idPeriodoActual = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             disponibilidad.ToList().ForEach(d => d.IdPeriodo = idPeriodoActual);
 
-            _db.DisponibilidadProfesorRepository.AddRange(Mapper.Map<IEnumerable<DisponibilidadProfesorDTO>, IEnumerable<DisponibilidadProfesores>>(disponibilidad));
+            _db.DisponibilidadProfesorRepository.AddRange(Mapper.Map<IEnumerable<DisponibilidadProfesores>>(disponibilidad));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
@@ -64,12 +62,6 @@ namespace Schedule.API.Controllers
             //asumo que la cedula existe
             disponibilidad.HorasACumplir = _db.ProfesorRepository.GetHorasACumplir(cedula);
             return new ObjectResult(disponibilidad);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }
