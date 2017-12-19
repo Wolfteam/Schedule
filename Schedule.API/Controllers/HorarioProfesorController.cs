@@ -1,12 +1,11 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System;
@@ -17,9 +16,7 @@ using System.Linq;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    //[AuthenticateAttribute]
-    //[AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador, Profesor")]
     public class HorarioProfesorController : BaseController
     {
         #region Variables
@@ -29,13 +26,14 @@ namespace Schedule.API.Controllers
         private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         #endregion
-        public HorarioProfesorController(IHostingEnvironment environment, IOptions<AppSettings> appSettings)
+        public HorarioProfesorController(IHostingEnvironment environment, 
+            IOptions<AppSettings> appSettings, HorariosContext context)
+            :base (context)
         {
             _hostingEnvironment = environment;
             _contentRootPath = environment.ContentRootPath;
             _excelSettings = appSettings.Value.ExcelHorarioProfesorSettings;
         }
-
 
         [HttpGet("PlanificacionAcademica")]
         public IActionResult GeneratePlanificacionAcademica()

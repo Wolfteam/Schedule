@@ -1,18 +1,21 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
+using Schedule.API.Models;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador")]
     public class PrioridadesController : BaseController
     {
+        public PrioridadesController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // GET api/Prioridades
         [HttpGet]
         public IEnumerable<PrioridadProfesorDTO> GetAll()

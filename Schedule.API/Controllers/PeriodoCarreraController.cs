@@ -1,8 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System;
@@ -10,13 +9,16 @@ using System;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
+    [Authorize(Roles = "Administrador")]
     public class PeriodoCarreraController : BaseController
     {
+        public PeriodoCarreraController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/PeriodoCarrera
         [HttpPost]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Create([FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
@@ -29,7 +31,6 @@ namespace Schedule.API.Controllers
 
         // DELETE api/PeriodoCarrera/1
         [HttpDelete("{id}")]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Delete(int id)
         {
             _db.PeriodoCarreraRepository.Remove(id);
@@ -41,7 +42,6 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera
         [HttpGet]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
             var periodosCarrera =  _db.PeriodoCarreraRepository.GetAll();
@@ -50,6 +50,7 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera/Current
         [HttpGet("Current")]
+        [AllowAnonymous]
         public PeriodoCarreraDTO GetCurrentPeriodo()
         {
             return _db.PeriodoCarreraRepository.GetCurrentPeriodo();
@@ -81,7 +82,6 @@ namespace Schedule.API.Controllers
 
         // PUT api/PeriodoCarrera/1
         [HttpPut("{id}")]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Update(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);

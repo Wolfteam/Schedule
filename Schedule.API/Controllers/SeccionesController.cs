@@ -1,18 +1,21 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador")]
     public class SeccionesController : BaseController
     {
+        public SeccionesController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/Secciones
         [HttpPost]
         public IActionResult Create([FromBody] SeccionesDTO seccion)

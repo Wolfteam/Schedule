@@ -1,8 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +9,14 @@ using System.Linq;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
+    [Authorize(Roles = "Administrador, Profesor")]
     public class DisponibilidadController : BaseController
     {
+        public DisponibilidadController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/Disponibilidad
         [HttpPost]
         public IActionResult Create([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)

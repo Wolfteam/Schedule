@@ -1,8 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +9,14 @@ using System.Linq;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador")]
     public class ProfesorMateriaController : BaseController
     {
+        public ProfesorMateriaController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/ProfesorMateria
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
@@ -43,7 +45,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
-            var relaciones = _db.ProfesorMateriaRepository.Get(includeProperties:"Profesores, Materias, Materias.Semestres, Materias.Carreras, Materias.TipoAulaMaterias");
+            var relaciones = _db.ProfesorMateriaRepository.Get(includeProperties: "Profesores, Materias, Materias.Semestres, Materias.Carreras, Materias.TipoAulaMaterias");
             return Mapper.Map<IEnumerable<ProfesorMateriaDetailsDTO>>(relaciones);
         }
 
