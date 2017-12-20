@@ -5,21 +5,27 @@ using Schedule.Entities;
 using Microsoft.Extensions.Options;
 using Schedule.Web.Filters;
 using Schedule.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Schedule.Web.Controllers
 {
-    [AuthenticateAttribute]
-    public class HomeController : BaseController
+    [Authorize(Roles ="Profesor")]
+    public class HomeController : Controller
     {
+        IOptions<AppSettings> _appSettings;
         #region Constructor
         public HomeController(IOptions<AppSettings> appSettings)
-            :base(appSettings)
         {
+            _appSettings = appSettings;
         }
         #endregion
 
         public IActionResult Index()
         {
+            foreach (var claim in User.Claims)
+            {
+                Debug.WriteLine("Type:"+ claim.Type + ",  value:" +claim.Value);
+            }
             HomeViewModel model = new HomeViewModel
             {
                 UrlPlanificacionAcademica = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAcademica",
