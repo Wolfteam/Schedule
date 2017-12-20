@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Schedule.Web.Controllers
 {
@@ -30,22 +31,34 @@ namespace Schedule.Web.Controllers
         }
         #endregion
 
-        public IActionResult Index()
+        [AllowAnonymous]
+        /// <summary>
+        /// Este metodo devuelve la vista de login o redirecciona a home
+        /// en caso de estar autenticado
+        /// </summary>
+        /// <param name="returnUrl">Es llenado cuando tratas de acceder a un sitio 
+        /// authorized sin estar autenticado
+        /// </param>
+        /// <returns>IActionResult</returns>
+        public IActionResult Index(string returnUrl = null)
         {
-            string token = Request.Cookies["Token"];
-            if (String.IsNullOrEmpty(token))
+            //se pasa a la ViewData["ReturnUrl"] ya que en el form sera renderizado
+            //si returnUrl es null no muestra nada pero sino si coloca algo
+            ViewData["ReturnUrl"] = returnUrl;
+            if (!User.Identity.IsAuthenticated)
             {
                 return View();
             }
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<ActionResult> Login(LoginViewModel model)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
-
-                //User.AddIdentity();
                 using (var httpClient = new HttpClient())
                 {
                     var nvc = new List<KeyValuePair<string, string>>();
@@ -54,52 +67,28 @@ namespace Schedule.Web.Controllers
 
                     var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token") { Content = new FormUrlEncodedContent(nvc) };
                     var response = await httpClient.SendAsync(req);
-                    //HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI);
-                    var stringContent = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(model), Encoding.UTF8, "application/x-www-form-urlencoded");
-                    //httpClient.PostAsync("url")
-                    //HttpResponseMessage response = await httpClient.PostAsJsonAsync("token", stringContent);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        //No me cuadra tener esto aca 
                         string secretKey = "mysupersecret_secretkey!123";
-                        var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-                        var tokenValidationParameters = new TokenValidationParameters
-                        {
-                            // The signing key must match!
-                            ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = signingKey,
+                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey);
 
-                            // Validate the JWT Issuer (iss) claim
-                            ValidateIssuer = true,
-                            ValidIssuer = "ExampleIssuer",
-
-                            // Validate the JWT Audience (aud) claim
-                            ValidateAudience = true,
-                            ValidAudience = "ExampleAudience",
-
-                            // Validate the token expiry
-                            ValidateLifetime = true,
-
-                            // If you want to allow a certain amount of clock drift, set that here:
-                            ClockSkew = TimeSpan.Zero
-                        };
                         var handler = new JwtSecurityTokenHandler();
                         var token = await response.Content.ReadAsAsync<TokenDTO>();
-                        SecurityToken xd = null;
-                        //var algo = handler.ReadToken(token.AuthenticationToken) as JwtSecurityToken;//.
-                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out xd);
-                        
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                        return RedirectToAction("Index", "Home");
-                        //TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
+                        SecurityToken validatedToken = null;
+                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);
 
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                        //returnUrl es pasado automaticamente si es que hay algo en esa variable
+                        if (String.IsNullOrEmpty(returnUrl))
+                            return RedirectToAction("Index", "Home");
+                        else
+                            return Redirect(returnUrl);
 
                         //Interesante esto de aca
-                        var accessToken = await HttpContext.GetTokenAsync("access_token");
-                        var client = new HttpClient();
-                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AuthenticationToken);
-
+                        // var accessToken = await HttpContext.GetTokenAsync("access_token");
+                        // var client = new HttpClient();
+                        // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AuthenticationToken);
                     }
                     else if (response.StatusCode == HttpStatusCode.NotFound)
                     {
@@ -114,19 +103,11 @@ namespace Schedule.Web.Controllers
             return View("Index", model);
         }
 
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Logout()
         {
-            string token = Request.Cookies["Token"];
-
-            if (!String.IsNullOrEmpty(token))
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI, token);
-                    HttpResponseMessage response = await httpClient.DeleteAsync(String.Format("api/Account/Logout/{0}", token));
-                }
-                Response.Cookies.Delete("Token");
-            }
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Account");
         }
 
