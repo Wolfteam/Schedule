@@ -6,6 +6,7 @@
         public string URLBase { get; set; }
         public string ConnectionString { get; set; }
         public ExcelHorarioProfesorSettings ExcelHorarioProfesorSettings { get; set; }
+        public string SecretKey { get; set; }
     }
 
     public class ExcelHorarioProfesorSettings

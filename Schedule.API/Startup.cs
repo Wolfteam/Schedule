@@ -26,7 +26,7 @@ namespace Schedule.API
         // The secret key every token will be signed with.
         // In production, you should store this securely in environment variables
         // or a key management tool. Don't hardcode this into your application!
-        private static readonly string secretKey = "mysupersecret_secretkey!123";
+        private static string secretKey;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -41,6 +41,7 @@ namespace Schedule.API
             services.AddDbContext<HorariosContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
 
+            secretKey = Configuration.GetSection("AppSettings").Get<AppSettings>().SecretKey;
             //Con estas lineas le decimos como debe validar en los Authorize
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             var tokenValidationParameters = new TokenValidationParameters

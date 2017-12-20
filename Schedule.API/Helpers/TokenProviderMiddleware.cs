@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Schedule.Entities;
 
 namespace Schedule.API.Helpers
 {
@@ -77,12 +78,18 @@ namespace Schedule.API.Helpers
                 signingCredentials: _options.SigningCredentials);
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new
+            var response = new TokenDTO
             {
-                authenticationToken = encodedJwt,
-                expires_in = (int)_options.Expiration.TotalSeconds
+                AuthenticationToken = encodedJwt,
+                CreateDate = now,
+                ExpiricyDate = now.Add(_options.Expiration),
+                Username = username
             };
-
+            // var response = new
+            // {
+            //     authenticationToken = encodedJwt,
+            //     expires_in = (int)_options.Expiration.TotalSeconds
+            // };
             // Serialize and return the response
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
@@ -134,6 +141,13 @@ namespace Schedule.API.Helpers
                 //claims.Add(new Claim(userClaim, "True"));
                 claims.Add(new Claim(ClaimTypes.Role, userClaim));
             }
+            var usuario = _db.UsuarioRepository
+                            .Get(x => x.Username == username, includeProperties:"CedulaNavigation")
+                            .FirstOrDefault();
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, usuario.Cedula.ToString()));
+            claims.Add(new Claim(ClaimTypes.Name, usuario.Username));
+            claims.Add(new Claim(ClaimTypes.GivenName, usuario.CedulaNavigation.Nombre));
+            claims.Add(new Claim(ClaimTypes.Surname, usuario.CedulaNavigation.Apellido));
             return claims;
         }
     }
