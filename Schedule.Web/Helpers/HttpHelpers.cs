@@ -14,13 +14,12 @@ namespace Schedule.Web.Helpers
         /// </summary>
         /// <param name="httpClient">Cliente http</param>
         /// <param name="urlBaseAPI">Url base de la api</param>
-        public static void InitializeHttpClient(HttpClient httpClient, string urlBaseAPI, string token = null)
+        public static void InitializeHttpClient(HttpClient httpClient, string urlBaseAPI, TokenDTO token)
         {
             httpClient.BaseAddress = new Uri(urlBaseAPI);
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (!String.IsNullOrEmpty(token))
-                httpClient.DefaultRequestHeaders.Add("Token", token);      
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AuthenticationToken);
         }
 
         /// <summary>

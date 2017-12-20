@@ -1,43 +1,35 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Schedule.Web.Models;
-using Schedule.Entities;
-using Microsoft.Extensions.Options;
-using Schedule.Web.Filters;
-using Schedule.Web.ViewModels;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Schedule.Entities;
+using Schedule.Web.ViewModels;
 
 namespace Schedule.Web.Controllers
 {
-    [Authorize(Roles ="Profesor")]
-    public class HomeController : Controller
+    [Authorize]
+    public class HomeController : BaseController
     {
-        IOptions<AppSettings> _appSettings;
-        #region Constructor
         public HomeController(IOptions<AppSettings> appSettings)
+            : base(appSettings)
         {
-            _appSettings = appSettings;
         }
-        #endregion
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            foreach (var claim in User.Claims)
-            {
-                Debug.WriteLine("Type:"+ claim.Type + ",  value:" +claim.Value);
-            }
+            System.Diagnostics.Debug.WriteLine(User.FindFirstValue("access_token"));
+            var authenticateInfo = await HttpContext.GetTokenAsync("Bearer");
             HomeViewModel model = new HomeViewModel
             {
+                Username = User.Identity.Name,
                 UrlPlanificacionAcademica = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAcademica",
                 UrlPlanificacionAulas = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAulas",
                 UrlPlanificacionHorarios = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionHorario"
             };
             return View(model);
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

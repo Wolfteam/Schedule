@@ -27,7 +27,9 @@ namespace Schedule.Web.Helpers
                 ValidateLifetime = true,
 
                 // If you want to allow a certain amount of clock drift, set that here:
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+
+                SaveSigninToken = true
             };        
         }
     }

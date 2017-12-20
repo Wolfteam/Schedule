@@ -44,7 +44,13 @@ namespace Schedule.Web
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/Forbidden";
                 options.ReturnUrlParameter = "returnUrl";
+                options.Cookie.Name = "IdentityCookie";
             });
+            // .AddJwtBearer(options =>
+            //     {
+            //         options.SaveToken = true;
+            //     }
+            // );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

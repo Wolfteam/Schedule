@@ -15,6 +15,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Schedule.Web.Controllers
 {
@@ -63,21 +64,24 @@ namespace Schedule.Web.Controllers
                     var response = await httpClient.SendAsync(req);
 
                     if (response.IsSuccessStatusCode)
-                    {
-                        string secretKey = _appSettings.Value.SecretKey;
-                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey); 
+                    {        
                         TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
 
                         SecurityToken validatedToken = null;
                         var handler = new JwtSecurityTokenHandler();
+                        string secretKey = _appSettings.Value.SecretKey;
+                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey);
                         ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);
+                        
                         AuthenticationProperties properties = new AuthenticationProperties
                         {
                             ExpiresUtc = token.ExpiricyDate,
                             IsPersistent = true
                         };
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
+                        principal.Claims.Append(new Claim("access_token", token.AuthenticationToken));
 
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
+                        
                         _httpClient = new HttpClient();
                         HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI, token);
                         
@@ -106,7 +110,6 @@ namespace Schedule.Web.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            _httpClient.Dispose();
             return RedirectToAction("Index", "Account");
         }
 
