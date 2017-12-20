@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Schedule.API.Helpers
 {
@@ -44,10 +44,13 @@ namespace Schedule.API.Helpers
                 context.Response.StatusCode = 400;
                 return context.Response.WriteAsync("Bad request.");
             }
-
             return GenerateToken(context);
         }
 
+        /// <summary>
+        /// Genera un JWT para un usuario en particular
+        /// </summary>
+        /// <param name="context">HttpContext</param>
         private async Task GenerateToken(HttpContext context)
         {
             var username = context.Request.Form["username"];
@@ -62,26 +65,7 @@ namespace Schedule.API.Helpers
             }
 
             DateTime now = DateTime.Now;
-            //Saco los privilegios del usuario
-            var userClaims = _db.UsuarioRepository
-                .Get(x => x.Username == username, includeProperties: "IdPrivilegioNavigation")
-                .Select(u => u.IdPrivilegioNavigation.NombrePrivilegio);
-            // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.
-            // You can add other claims here, if you want:           
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64)
-            };
-            //Nota como puedes definir un role o claim y luego usarlo en el authorize
-            //Tambien es interesante ver el payload del jwt
-            foreach (var userClaim in userClaims)
-            {
-                //claims.Add(new Claim(userClaim, "True"));
-                claims.Add(new Claim(ClaimTypes.Role, userClaim));
-            }
-                
+            var claims = GetUserRoles(username, now);
 
             // Create the JWT and write it to a string
             var jwt = new JwtSecurityToken(
@@ -95,7 +79,7 @@ namespace Schedule.API.Helpers
 
             var response = new
             {
-                access_token = encodedJwt,
+                authenticationToken = encodedJwt,
                 expires_in = (int)_options.Expiration.TotalSeconds
             };
 
@@ -104,6 +88,12 @@ namespace Schedule.API.Helpers
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
 
+        /// <summary>
+        /// Obtiene un ClaimsIdentity correspondiente al usuario y password dados
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>Devuelve ClaimsIdentity</returns>
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
             var user = _db.UsuarioRepository
@@ -115,6 +105,36 @@ namespace Schedule.API.Helpers
             }
             // Credentials are invalid, or account doesn't exist
             return Task.FromResult<ClaimsIdentity>(null);
+        }
+
+        /// <summary>
+        /// Obtiene un IEnumerable de Claim acorde a los permisos/roles del usuario
+        /// </summary>
+        /// <param name="username">Usuario a obtener roles/permisos</param>
+        /// <param name="now">Fecha actual, usada para registrar un claim</param>
+        /// <returns>Devuelve IEnumerable de Claim </returns>
+        private IEnumerable<Claim> GetUserRoles(string username, DateTime now)
+        {
+            //Saco los privilegios del usuario
+            var userClaims = _db.UsuarioRepository
+                .Get(x => x.Username == username, includeProperties: "IdPrivilegioNavigation")
+                .Select(u => u.IdPrivilegioNavigation.NombrePrivilegio);
+            // Specifically add the jti (random nonce), iat (issued timestamp), 
+            //and sub (subject/user) claims.          
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64)
+            };
+            //Nota como puedes definir un role o claim y luego usarlo en el authorize
+            //Tambien es interesante ver el payload del jwt
+            foreach (var userClaim in userClaims)
+            {
+                //claims.Add(new Claim(userClaim, "True"));
+                claims.Add(new Claim(ClaimTypes.Role, userClaim));
+            }
+            return claims;
         }
     }
 }
