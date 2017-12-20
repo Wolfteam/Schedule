@@ -18,17 +18,13 @@ using System.Threading.Tasks;
 
 namespace Schedule.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        IOptions<AppSettings> _appSettings;
-        #region Constructor
         public AccountController(IOptions<AppSettings> appSettings)
+            :base(appSettings)
         {
-            _appSettings = appSettings;
         }
-        #endregion
 
-        
         /// <summary>
         /// Este metodo devuelve la vista de login o redirecciona a home
         /// en caso de estar autenticado
@@ -68,25 +64,28 @@ namespace Schedule.Web.Controllers
 
                     if (response.IsSuccessStatusCode)
                     {
-                        string secretKey = "mysupersecret_secretkey!123";
-                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey);
+                        string secretKey = _appSettings.Value.SecretKey;
+                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey); 
+                        TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
 
-                        var handler = new JwtSecurityTokenHandler();
-                        var token = await response.Content.ReadAsAsync<TokenDTO>();
                         SecurityToken validatedToken = null;
+                        var handler = new JwtSecurityTokenHandler();
                         ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);
+                        AuthenticationProperties properties = new AuthenticationProperties
+                        {
+                            ExpiresUtc = token.ExpiricyDate,
+                            IsPersistent = true
+                        };
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
 
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                        _httpClient = new HttpClient();
+                        HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI, token);
+                        
                         //returnUrl es pasado automaticamente si es que hay algo en esa variable
                         if (String.IsNullOrEmpty(returnUrl))
                             return RedirectToAction("Index", "Home");
                         else
                             return Redirect(returnUrl);
-
-                        //Interesante esto de aca
-                        // var accessToken = await HttpContext.GetTokenAsync("access_token");
-                        // var client = new HttpClient();
-                        // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AuthenticationToken);
                     }
                     else if (response.StatusCode == HttpStatusCode.NotFound)
                     {
@@ -101,12 +100,13 @@ namespace Schedule.Web.Controllers
             return View("Index", model);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            _httpClient.Dispose();
             return RedirectToAction("Index", "Account");
         }
 
