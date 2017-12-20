@@ -1,23 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Schedule.Entities;
 using Schedule.Web.Helpers;
 using Schedule.Web.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace Schedule.Web.Controllers
 {
@@ -31,7 +28,7 @@ namespace Schedule.Web.Controllers
         }
         #endregion
 
-        [AllowAnonymous]
+        
         /// <summary>
         /// Este metodo devuelve la vista de login o redirecciona a home
         /// en caso de estar autenticado
@@ -40,6 +37,7 @@ namespace Schedule.Web.Controllers
         /// authorized sin estar autenticado
         /// </param>
         /// <returns>IActionResult</returns>
+        [AllowAnonymous]
         public IActionResult Index(string returnUrl = null)
         {
             //se pasa a la ViewData["ReturnUrl"] ya que en el form sera renderizado
@@ -55,7 +53,7 @@ namespace Schedule.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -103,15 +101,16 @@ namespace Schedule.Web.Controllers
             return View("Index", model);
         }
 
-        [Authorize]
+        
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Logout()
+        public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Account");
         }
 
-        /// <summary>  
+        /// <summary>
         /// Crea una cookie  
         /// </summary>  
         /// <param name="key">Identificador unico</param>  

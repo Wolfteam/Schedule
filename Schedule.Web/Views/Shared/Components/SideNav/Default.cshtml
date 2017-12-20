@@ -53,7 +53,13 @@
                 </ul>
             </li>
             <li><div class="divider"></div></li>
-            <li><a asp-controller="Account" asp-action="Logout" class="red-text waves-effect waves-red">Cerrar Sesión<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a></li>
+            <li>
+                <a id="logout" class="red-text waves-effect waves-red">Cerrar Sesión
+                    <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+                </a>
+                <form id="logout_form" method = "post" asp-controller = "Account" asp-action = "Logout">
+                </form>
+            </li>
             <li><div class="divider"></div></li>
         </ul>
         <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>
