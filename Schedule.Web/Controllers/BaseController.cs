@@ -8,10 +8,11 @@ namespace Schedule.Web.Controllers
     public class BaseController : Controller
     {
         protected readonly IOptions<AppSettings> _appSettings;
-        protected static HttpClient _httpClient;
-        public BaseController(IOptions<AppSettings> appSettings)
+        protected readonly IHttpClientsFactory _httpClientsFactory;
+        public BaseController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
         {
             _appSettings = appSettings;
+            _httpClientsFactory = httpClientsFactory;
         }
     }
 }

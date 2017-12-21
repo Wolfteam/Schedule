@@ -9,8 +9,8 @@ namespace Schedule.Web.Controllers
     [Authorize(Roles = "Administrador")]
     public class EditarDBController : BaseController
     {
-        public EditarDBController(IOptions<AppSettings> appSettings)
-            : base(appSettings)
+        public EditarDBController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
+            : base(appSettings, httpClientsFactory)
         {
         }
 

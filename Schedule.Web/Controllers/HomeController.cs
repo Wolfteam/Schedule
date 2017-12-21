@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
@@ -13,15 +9,13 @@ namespace Schedule.Web.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
-        public HomeController(IOptions<AppSettings> appSettings)
-            : base(appSettings)
+        public HomeController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
+            : base(appSettings, httpClientsFactory)
         {
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            System.Diagnostics.Debug.WriteLine(User.FindFirstValue("access_token"));
-            var authenticateInfo = await HttpContext.GetTokenAsync("Bearer");
             HomeViewModel model = new HomeViewModel
             {
                 Username = User.Identity.Name,

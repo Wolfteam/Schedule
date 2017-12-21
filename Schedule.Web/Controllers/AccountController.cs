@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -15,14 +14,13 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Schedule.Web.Controllers
 {
     public class AccountController : BaseController
     {
-        public AccountController(IOptions<AppSettings> appSettings)
-            :base(appSettings)
+        public AccountController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
+            : base(appSettings, httpClientsFactory)
         {
         }
 
@@ -47,6 +45,13 @@ namespace Schedule.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
+        public IActionResult Forbidden(string returnUrl = null)
+        {
+             ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -59,32 +64,23 @@ namespace Schedule.Web.Controllers
                     var nvc = new List<KeyValuePair<string, string>>();
                     nvc.Add(new KeyValuePair<string, string>("username", model.Username));
                     nvc.Add(new KeyValuePair<string, string>("password", model.Password));
-
+                    //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
                     var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token") { Content = new FormUrlEncodedContent(nvc) };
                     var response = await httpClient.SendAsync(req);
 
                     if (response.IsSuccessStatusCode)
-                    {        
+                    {
                         TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
 
                         SecurityToken validatedToken = null;
                         var handler = new JwtSecurityTokenHandler();
-                        string secretKey = _appSettings.Value.SecretKey;
-                        var tokenValidationParameters = TokenParameters.GetTokenValidationParameters(secretKey);
-                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);
-                        
-                        AuthenticationProperties properties = new AuthenticationProperties
-                        {
-                            ExpiresUtc = token.ExpiricyDate,
-                            IsPersistent = true
-                        };
-                        principal.Claims.Append(new Claim("access_token", token.AuthenticationToken));
 
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
+                        var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
+                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);                       
                         
-                        _httpClient = new HttpClient();
-                        HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI, token);
-                        
+                        var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
+                        await HttpContext.SignInAsync(principal, tokenAuthProperties);
+
                         //returnUrl es pasado automaticamente si es que hay algo en esa variable
                         if (String.IsNullOrEmpty(returnUrl))
                             return RedirectToAction("Index", "Home");
@@ -109,7 +105,7 @@ namespace Schedule.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Account");
         }
 

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Schedule.Web
 {
@@ -33,11 +25,16 @@ namespace Schedule.Web
             //Para que lea la seccion AppSettings definida por nosostros en el appsettings.json
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //Para usar mi custom httpclient
+            services.AddSingleton<IHttpClientsFactory, HttpClientsFactory>();
+
             //Con estas lineas le decimos como debe validar en los Authorize
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme; //JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; //JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;//JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(options =>
             {
                 options.LoginPath = "/Account/Index";
@@ -46,11 +43,6 @@ namespace Schedule.Web
                 options.ReturnUrlParameter = "returnUrl";
                 options.Cookie.Name = "IdentityCookie";
             });
-            // .AddJwtBearer(options =>
-            //     {
-            //         options.SaveToken = true;
-            //     }
-            // );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
