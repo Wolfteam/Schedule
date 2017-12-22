@@ -41,5 +41,13 @@ namespace Schedule.Web.Helpers
             }
             return listaPrivilegios;
         }
+
+        public static void SetHttpClientDefaults(HttpClient httpClient, string token)
+        {
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (token != null)
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
     }
 }

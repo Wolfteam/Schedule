@@ -76,10 +76,9 @@ function btnGuardarCambiosOnClick() {
                             action: function () {}
                         }
                     };
-                    confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);                    
-                }
-                else
-                    confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");    
+                    confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);
+                } else
+                    confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");
             }
         );
     }
@@ -225,7 +224,7 @@ function fillCells(data) {
  * @param {Function} callback Funcion de callback
  */
 function getDisponibilidadProfesor(cedula, callback) {
-    makeAjaxCall(apiDisponibilidad + "/" + cedula,
+    makeAjaxCall(urlCargarDisponibilidad + "/" + cedula,
         function (data, textStatus, xhr) {
             return callback(data);
         },

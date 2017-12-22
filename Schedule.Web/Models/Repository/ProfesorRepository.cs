@@ -11,13 +11,9 @@ namespace Schedule.Web.Models.Repository
         private readonly HttpClient _httpClient = null;
         private const string _apiProfesor = "api/Profesor";
 
-        public ProfesorRepository(HttpClient httpClient, string token)
+        public ProfesorRepository(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (token != null)
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>

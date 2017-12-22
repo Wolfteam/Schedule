@@ -52,3 +52,5 @@ var apiAula = "api/Aulas",
     apiProfesorMateria = "api/ProfesorMateria",
     apiSecciones = "api/Secciones",
     apiSemestres = "api/Semestres";
+
+var urlCargarDisponibilidad = "CargarDisponibilidad";
