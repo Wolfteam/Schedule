@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize]
     public class ProfesorController : BaseController
     {
         public ProfesorController(HorariosContext context) 
@@ -17,6 +17,7 @@ namespace Schedule.API.Controllers
         }
 
         // POST api/Profesor
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
@@ -28,6 +29,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Profesor/21255727
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("{cedula}")]
         public IActionResult Delete(uint cedula)
         {
@@ -39,6 +41,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Profesor
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
@@ -47,6 +50,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Profesor/1
+        [Authorize(Roles = "Administrador, Profesor")]
         [HttpGet("{cedula}", Name = "GetProfesor")]
         public IActionResult Get(uint cedula)
         {
@@ -57,6 +61,7 @@ namespace Schedule.API.Controllers
         }
 
         // PUT api/Profesor/21255727
+        [Authorize(Roles = "Administrador")]
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {

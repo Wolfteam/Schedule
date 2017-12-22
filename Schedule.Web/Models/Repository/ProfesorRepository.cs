@@ -9,6 +9,7 @@ namespace Schedule.Web.Models.Repository
     public class ProfesorRepository
     {
         private readonly HttpClient _httpClient = null;
+        private const string _apiProfesor = "api/Profesor";
 
         public ProfesorRepository(HttpClient httpClient, string token)
         {
@@ -26,7 +27,7 @@ namespace Schedule.Web.Models.Repository
         public async Task<List<ProfesorDetailsDTO>> GetAll()
         {
             List<ProfesorDetailsDTO> profesores = new List<ProfesorDetailsDTO>();
-            HttpResponseMessage response = await _httpClient.GetAsync("api/Profesor");
+            HttpResponseMessage response = await _httpClient.GetAsync(_apiProfesor);
             if (response.IsSuccessStatusCode)
             {
                 profesores = await response.Content.ReadAsAsync<List<ProfesorDetailsDTO>>();
@@ -42,7 +43,7 @@ namespace Schedule.Web.Models.Repository
         public async Task<ProfesorDetailsDTO> Get(int cedula)
         {
             ProfesorDetailsDTO profesor = null;
-            HttpResponseMessage response = await _httpClient.GetAsync("api/Profesores/" + cedula);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_apiProfesor}/{cedula}");
             if (response.IsSuccessStatusCode)
             {
                 profesor = await response.Content.ReadAsAsync<ProfesorDetailsDTO>();

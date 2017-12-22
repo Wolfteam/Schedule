@@ -85,11 +85,6 @@ namespace Schedule.API.Helpers
                 ExpiricyDate = now.Add(_options.Expiration),
                 Username = username
             };
-            // var response = new
-            // {
-            //     authenticationToken = encodedJwt,
-            //     expires_in = (int)_options.Expiration.TotalSeconds
-            // };
             // Serialize and return the response
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
@@ -122,29 +117,26 @@ namespace Schedule.API.Helpers
         /// <returns>Devuelve IEnumerable de Claim </returns>
         private IEnumerable<Claim> GetUserRoles(string username, DateTime now)
         {
+
+            var usuarioConPrivilegios = _db.UsuarioRepository
+                .Get(x => x.Username == username, includeProperties: "IdPrivilegioNavigation, CedulaNavigation");
             //Saco los privilegios del usuario
-            var userClaims = _db.UsuarioRepository
-                .Get(x => x.Username == username, includeProperties: "IdPrivilegioNavigation")
-                .Select(u => u.IdPrivilegioNavigation.NombrePrivilegio);
-            // Specifically add the jti (random nonce), iat (issued timestamp), 
-            //and sub (subject/user) claims.          
+            var userClaims = usuarioConPrivilegios.Select(u => u.IdPrivilegioNavigation.NombrePrivilegio);
+            var usuario = usuarioConPrivilegios.FirstOrDefault();
+
+            //Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.          
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Cedula.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64)
             };
-            //Nota como puedes definir un role o claim y luego usarlo en el authorize
-            //Tambien es interesante ver el payload del jwt
+            //Nota como puedes definir un role o claim y luego usarlo en el authorize.Tambien es interesante ver el payload del jwt
             foreach (var userClaim in userClaims)
             {
                 //claims.Add(new Claim(userClaim, "True"));
                 claims.Add(new Claim(ClaimTypes.Role, userClaim));
             }
-            var usuario = _db.UsuarioRepository
-                            .Get(x => x.Username == username, includeProperties:"CedulaNavigation")
-                            .FirstOrDefault();
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, usuario.Cedula.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, usuario.Username));
             claims.Add(new Claim(ClaimTypes.GivenName, usuario.CedulaNavigation.Nombre));
             claims.Add(new Claim(ClaimTypes.Surname, usuario.CedulaNavigation.Apellido));

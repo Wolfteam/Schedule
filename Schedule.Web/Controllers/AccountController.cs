@@ -61,9 +61,11 @@ namespace Schedule.Web.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var nvc = new List<KeyValuePair<string, string>>();
-                    nvc.Add(new KeyValuePair<string, string>("username", model.Username));
-                    nvc.Add(new KeyValuePair<string, string>("password", model.Password));
+                    var nvc = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("username", model.Username),
+                        new KeyValuePair<string, string>("password", model.Password)
+                    };
                     //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
                     var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token") { Content = new FormUrlEncodedContent(nvc) };
                     var response = await httpClient.SendAsync(req);
@@ -72,11 +74,9 @@ namespace Schedule.Web.Controllers
                     {
                         TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
 
-                        SecurityToken validatedToken = null;
                         var handler = new JwtSecurityTokenHandler();
-
                         var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
-                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out validatedToken);                       
+                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);                       
                         
                         var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
                         await HttpContext.SignInAsync(principal, tokenAuthProperties);
