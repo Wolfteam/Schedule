@@ -127,7 +127,7 @@ namespace Schedule.API.Helpers
             //Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.          
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, usuario.Cedula.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(), ClaimValueTypes.Integer64)
             };
@@ -138,6 +138,7 @@ namespace Schedule.API.Helpers
                 claims.Add(new Claim(ClaimTypes.Role, userClaim));
             }
             claims.Add(new Claim(ClaimTypes.Name, usuario.Username));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, $"{usuario.Cedula}"));
             claims.Add(new Claim(ClaimTypes.GivenName, usuario.CedulaNavigation.Nombre));
             claims.Add(new Claim(ClaimTypes.Surname, usuario.CedulaNavigation.Apellido));
             return claims;

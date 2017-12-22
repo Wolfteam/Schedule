@@ -79,19 +79,19 @@ namespace Schedule.API
                 });
             //Como estamos generando claims basados en lo que traiga de la db
             //aca registramos el nombre de la Policy y el valor que debe tener
-            //para que pase el Authorize(Policy = "Profesor") 
+            //para que pase el Authorize(Policy = "Profesor")
             // services.AddAuthorization(options =>
             //         options.AddPolicy("Profesor", policy => policy.RequireClaim("Profesor", "True")))
             //     .AddAuthorization(options => 
             //         options.AddPolicy("Administrador", policy => policy.RequireClaim("Administrador","True"))
             //);
             //o puedes agregar roles Authorize(Roles = "Profesor, Administrador")
-            services
-                .AddAuthorization(options => 
-                    options.AddPolicy("Administrador", policy => policy.RequireRole("Administrator")))
-                .AddAuthorization(options => 
-                    options.AddPolicy("Profesor",policy => policy.RequireRole("Profesor"))
-            );
+            // services
+            //     .AddAuthorization(options => 
+            //         options.AddPolicy("Administrador", policy => policy.RequireRole("Administrator")))
+            //     .AddAuthorization(options => 
+            //         options.AddPolicy("Profesor",policy => policy.RequireRole("Profesor"))
+            // );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -75,6 +75,7 @@ namespace Schedule.Web.Controllers
                         TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
 
                         var handler = new JwtSecurityTokenHandler();
+                        handler.InboundClaimTypeMap.Clear();
                         var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
                         ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);                       
                         
