@@ -64,7 +64,6 @@ namespace Schedule.API.Models.Repositories
         public DisponibilidadProfesorDetailsDTO GetByCedula(int cedula)
         {
             var disponibilidad = HorariosContext.DisponibilidadProfesores
-                .Include(pc => pc.PeriodoCarrera)
                 .Include(p => p.Profesores.PrioridadProfesor)
                 .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
 
