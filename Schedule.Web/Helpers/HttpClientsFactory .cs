@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
+using Schedule.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 public class HttpClientsFactory : IHttpClientsFactory
 {
@@ -13,7 +15,8 @@ public class HttpClientsFactory : IHttpClientsFactory
     public HttpClientsFactory(IOptions<AppSettings> appSettings)
     {
         _appSettings = appSettings;
-        HttpClients = new Dictionary<string, HttpClient>();
+        if (HttpClients == null)
+            HttpClients = new Dictionary<string, HttpClient>();
         //TODO: Ver si se instancia a cada rato este httpclient
         if (_httpClient == null)
             _httpClient = new HttpClient();
@@ -36,5 +39,13 @@ public class HttpClientsFactory : IHttpClientsFactory
     public HttpClient GetClient(string key)
     {
         return GetClients()[key];
+    }
+
+    public void UpdateClientToken(string key, string token)
+    {
+        HttpClients[key].DefaultRequestHeaders.Accept.Clear();
+        HttpClients[key].DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        if (!String.IsNullOrEmpty(token))
+            HttpClients[key].DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 }
