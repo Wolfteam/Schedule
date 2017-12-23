@@ -95,7 +95,6 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
                 };
             });
             var options = createSelectOptions(arrayData);
-            content.find("#select_profesor").append(options);
             content.find("#select_profesor").append(options).val(cedula);
         });
 
@@ -107,7 +106,6 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
                 };
             });
             var options = createSelectOptions(arrayData);
-            content.find("#select_materia").append(options);
             content.find("#select_materia").append(options).val(codigo);
         });
 
