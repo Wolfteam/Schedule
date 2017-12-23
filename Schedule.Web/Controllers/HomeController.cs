@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
+using Schedule.Web.Models;
 using Schedule.Web.ViewModels;
 
 namespace Schedule.Web.Controllers
@@ -19,9 +20,9 @@ namespace Schedule.Web.Controllers
             HomeViewModel model = new HomeViewModel
             {
                 Username = User.Identity.Name,
-                UrlPlanificacionAcademica = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAcademica",
-                UrlPlanificacionAulas = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAulas",
-                UrlPlanificacionHorarios = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionHorario"
+                UrlPlanificacionAcademica = "api/HorarioProfesor/PlanificacionAcademica",
+                UrlPlanificacionAulas = "api/HorarioProfesor/PlanificacionAulas",
+                UrlPlanificacionHorarios = "api/HorarioProfesor/PlanificacionHorario"
             };
             return View(model);
         }

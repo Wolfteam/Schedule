@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Schedule.Entities;
 using Schedule.Web.Helpers;
+using Schedule.Web.Models;
 using Schedule.Web.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace Schedule.Web.Controllers
         [Authorize]
         public IActionResult Forbidden(string returnUrl = null)
         {
-             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -57,53 +58,55 @@ namespace Schedule.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                using (var httpClient = new HttpClient())
-                {
-                    var nvc = new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("username", model.Username),
-                        new KeyValuePair<string, string>("password", model.Password)
-                    };
-                    //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
-                    var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token") { Content = new FormUrlEncodedContent(nvc) };
-                    var response = await httpClient.SendAsync(req);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
-
-                        var handler = new JwtSecurityTokenHandler();
-                        handler.InboundClaimTypeMap.Clear();
-                        var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
-                        ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);                       
-                        
-                        var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
-                        await HttpContext.SignInAsync(principal, tokenAuthProperties);
-
-                        //returnUrl es pasado automaticamente si es que hay algo en esa variable
-                        if (String.IsNullOrEmpty(returnUrl))
-                            return RedirectToAction("Index", "Home");
-                        else
-                            return Redirect(returnUrl);
-                    }
-                    else if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        ModelState.AddModelError("", "Fallo la conexion a la API");
-                        return View("Index", model);
-                    }
-                    ModelState.AddModelError("", "Usuario o clave invalidas");
-                    return View("Index", model);
-                }
+                ModelState.AddModelError("", "El modelo no es valido");
+                return View("Index", model);
             }
-            ModelState.AddModelError("", "El modelo no es valido");
+            var httpClient = _httpClientsFactory.GetClient(_apiHttpClientName);
+            var nvc = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("username", model.Username),
+                new KeyValuePair<string, string>("password", model.Password)
+            };
+            //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
+            var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token")
+            {
+                Content = new FormUrlEncodedContent(nvc)
+            };
+            var response = await httpClient.SendAsync(req);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
+
+                var handler = new JwtSecurityTokenHandler();
+                handler.InboundClaimTypeMap.Clear();
+                var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
+                ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);
+
+                var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
+                await HttpContext.SignInAsync(principal, tokenAuthProperties);
+
+                _httpClientsFactory.UpdateClientToken(_apiHttpClientName, token.AuthenticationToken);
+                
+                //returnUrl es pasado automaticamente si es que hay algo en esa variable
+                if (String.IsNullOrEmpty(returnUrl))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return Redirect(returnUrl);
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                ModelState.AddModelError("", "Fallo la conexion a la API");
+                return View("Index", model);
+            }
+            ModelState.AddModelError("", "Usuario o clave invalidas");
             return View("Index", model);
         }
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
