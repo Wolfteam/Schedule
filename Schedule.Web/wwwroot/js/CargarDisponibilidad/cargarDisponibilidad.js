@@ -224,7 +224,7 @@ function fillCells(data) {
  * @param {Function} callback Funcion de callback
  */
 function getDisponibilidadProfesor(cedula, callback) {
-    makeAjaxCall(urlCargarDisponibilidad + "/" + cedula,
+    makeAjaxCall(apiDisponibilidad + "/" + cedula,
         function (data, textStatus, xhr) {
             return callback(data);
         },

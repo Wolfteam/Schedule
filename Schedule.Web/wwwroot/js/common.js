@@ -48,9 +48,7 @@ var apiAula = "api/Aulas",
     apiMaterias = "api/Materias",
     apiPeriodoCarrera = "api/PeriodoCarrera",
     apiPrioridadesProfesor = "api/Prioridades",
-    apiProfesores = "api/Profesor",
+    apiProfesores = "api/Profesores",
     apiProfesorMateria = "api/ProfesorMateria",
     apiSecciones = "api/Secciones",
     apiSemestres = "api/Semestres";
-
-var urlCargarDisponibilidad = "CargarDisponibilidad";
