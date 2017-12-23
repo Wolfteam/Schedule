@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Schedule.Entities;
+using Schedule.Web.Models;
 
 namespace Schedule.Web
 {
@@ -58,8 +59,8 @@ namespace Schedule.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
-            app.UseAuthentication();
+            app.UseStaticFiles();    
+            app.UseAuthentication();    
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
