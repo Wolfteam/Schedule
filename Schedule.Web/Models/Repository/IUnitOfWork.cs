@@ -4,6 +4,7 @@ namespace Schedule.Web.Models.Repository
 {
     public interface IUnitOfWork
     {
+        string Token { set; }
         IAulasRepository AulasRepository { get; }
         ICarrerasRepository CarrerasRepository { get; }
         IDisponibilidadProfesorRepository DisponibilidadRepository { get; }

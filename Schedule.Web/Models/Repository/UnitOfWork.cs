@@ -1,7 +1,3 @@
-using System;
-using System.Net.Http;
-using Schedule.Web.Models.Repository;
-
 namespace Schedule.Web.Models.Repository
 {
     public class UnitOfWork : IUnitOfWork
@@ -32,21 +28,39 @@ namespace Schedule.Web.Models.Repository
         public IProfesorRepository ProfesorRepository { get; private set; }
         public ISeccionesRepository SeccionesRepository { get; private set; }
         public ISemestresRepository SemestresRepository { get; private set; }
+
+        public string Token
+        {
+            set
+            {
+                AulasRepository.Token = value;
+                CarrerasRepository.Token = value;
+                DisponibilidadRepository.Token = value;
+                HorarioProfesorRepository.Token = value;
+                MateriasRepository.Token = value;
+                PeriodoCarreraRepository.Token = value;
+                PrioridadesRepository.Token = value;
+                ProfesorMateriaRepository.Token = value;
+                ProfesorRepository.Token = value;
+                SeccionesRepository.Token = value;
+                SemestresRepository.Token = value;
+            }
+        }
         #endregion
 
-        public UnitOfWork(HttpClient httpClient)
+        public UnitOfWork(IHttpClientsFactory httpClientsFactory)
         {
-            AulasRepository = new AulasRepository(httpClient, _apiAulas);
-            CarrerasRepository = new CarrerasRepository(httpClient, _apiCarreras);
-            DisponibilidadRepository = new DisponibilidadProfesorRepository(httpClient, _apiDisponibilidad);
-            HorarioProfesorRepository = new HorarioProfesorRepository(httpClient, _apiHorarioProfesor);
-            MateriasRepository = new MateriasRepository(httpClient, _apiMaterias);
-            PeriodoCarreraRepository = new PeriodoCarreraRepository(httpClient, _apiPeriodoCarrera);
-            PrioridadesRepository = new PrioridadesRepository(httpClient, _apiPrioridades);
-            ProfesorMateriaRepository = new ProfesorMateriaRepository(httpClient, _apiProfesorMateria);
-            ProfesorRepository = new ProfesorRepository(httpClient, _apiProfesor);
-            SeccionesRepository = new SeccionesRepository(httpClient, _apiSecciones);
-            SemestresRepository = new SemestresRepository(httpClient, _apiSemestres);
+            AulasRepository = new AulasRepository(httpClientsFactory, _apiAulas);
+            CarrerasRepository = new CarrerasRepository(httpClientsFactory, _apiCarreras);
+            DisponibilidadRepository = new DisponibilidadProfesorRepository(httpClientsFactory, _apiDisponibilidad);
+            HorarioProfesorRepository = new HorarioProfesorRepository(httpClientsFactory, _apiHorarioProfesor);
+            MateriasRepository = new MateriasRepository(httpClientsFactory, _apiMaterias);
+            PeriodoCarreraRepository = new PeriodoCarreraRepository(httpClientsFactory, _apiPeriodoCarrera);
+            PrioridadesRepository = new PrioridadesRepository(httpClientsFactory, _apiPrioridades);
+            ProfesorMateriaRepository = new ProfesorMateriaRepository(httpClientsFactory, _apiProfesorMateria);
+            ProfesorRepository = new ProfesorRepository(httpClientsFactory, _apiProfesor);
+            SeccionesRepository = new SeccionesRepository(httpClientsFactory, _apiSecciones);
+            SemestresRepository = new SemestresRepository(httpClientsFactory, _apiSemestres);
         }
     }
 }
