@@ -24,5 +24,14 @@ namespace Schedule.Web.Models
         /// <param name="key">Nombre con el cual se creo en el diccionario</param>
         /// <param name="token">Token</param>
         void UpdateClientToken(string key, string token);
+
+
+        /// <summary>
+        /// Actualiza el token de un cliente http indicado
+        /// </summary>
+        /// <param name="key">Nombre con el cual se creo en el diccionario</param>
+        /// <param name="httpClient">HttpClient a usar</param>
+        /// <param name="token">Token</param>
+        void UpdateClientToken(HttpClient httpClient, string token);
     }
 }

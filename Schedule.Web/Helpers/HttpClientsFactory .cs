@@ -43,9 +43,15 @@ public class HttpClientsFactory : IHttpClientsFactory
 
     public void UpdateClientToken(string key, string token)
     {
-        HttpClients[key].DefaultRequestHeaders.Accept.Clear();
-        HttpClients[key].DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        var httpClient = HttpClients[key];
+        UpdateClientToken(httpClient, token);
+    }
+
+    public void UpdateClientToken(HttpClient httpClient, string token)
+    {
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         if (!String.IsNullOrEmpty(token))
-            HttpClients[key].DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 }
