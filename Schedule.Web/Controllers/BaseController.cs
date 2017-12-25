@@ -11,6 +11,7 @@ namespace Schedule.Web.Controllers
         protected readonly IOptions<AppSettings> _appSettings;
         protected readonly IHttpClientsFactory _httpClientsFactory;
         protected const string _apiHttpClientName = "ScheduleAPI";
+        protected const string _tokenName = "access_token";
         public BaseController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
         {
             _appSettings = appSettings;

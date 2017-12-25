@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
@@ -17,12 +18,13 @@ namespace Schedule.Web.Controllers.API
         public HorarioProfesorController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
             : base(appSettings, httpClientsFactory)
         {
-            _unitOfWork = new UnitOfWork(_httpClientsFactory.GetClient(_apiHttpClientName));
+            _unitOfWork = new UnitOfWork(httpClientsFactory);
         }
 
         [HttpGet("PlanificacionAcademica")]
         public async Task<IActionResult> GeneratePlanificacionAcademica()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.HorarioProfesorRepository.GeneratePlanificacionAcademica();
         }
 
@@ -30,12 +32,14 @@ namespace Schedule.Web.Controllers.API
         [HttpGet("PlanificacionAulas")]
         public async Task<IActionResult> GeneratePlanificacionAulas()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.HorarioProfesorRepository.GeneratePlanificacionAulas();
         }
 
         [HttpGet("PlanificacionHorario")]
         public async Task<IActionResult> GeneratePlanificacionHorario()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.HorarioProfesorRepository.GeneratePlanificacionHorario();
         }
     }

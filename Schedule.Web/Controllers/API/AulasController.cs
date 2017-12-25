@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
@@ -18,12 +19,13 @@ namespace Schedule.Web.Controllers.API
         public AulasController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
             : base(appSettings, httpClientsFactory)
         {
-            _unitOfWork = new UnitOfWork(_httpClientsFactory.GetClient(_apiHttpClientName));
+            _unitOfWork = new UnitOfWork(httpClientsFactory);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] AulasDTO aula)
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.AulasRepository.AddAsync(aula);
             if (!result)
                 return StatusCode(500);
@@ -33,18 +35,21 @@ namespace Schedule.Web.Controllers.API
         [HttpGet("{id}", Name = "GetAula")]
         public async Task<AulasDetailsDTO> GetAsync(int id)
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.AulasRepository.GetAsync(id);
         }
 
         [HttpGet]
         public async Task<IEnumerable<AulasDetailsDTO>> GetAllAsync()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.AulasRepository.GetAllAsync();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveAsync(int id)
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.AulasRepository.RemoveAsync(id);
             if (!result)
                 return NotFound("No existe el aula a borrar.");
@@ -54,6 +59,7 @@ namespace Schedule.Web.Controllers.API
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] AulasDTO aula)
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.AulasRepository.UpdateAsync(id, aula);
             if (!result)
                 return NotFound("No existe el aula a actualizar.");

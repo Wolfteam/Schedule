@@ -87,8 +87,6 @@ namespace Schedule.Web.Controllers
 
                 var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
                 await HttpContext.SignInAsync(principal, tokenAuthProperties);
-
-                _httpClientsFactory.UpdateClientToken(_apiHttpClientName, token.AuthenticationToken);
                 
                 //returnUrl es pasado automaticamente si es que hay algo en esa variable
                 if (String.IsNullOrEmpty(returnUrl))

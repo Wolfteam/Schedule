@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
@@ -19,13 +20,13 @@ namespace Schedule.Web.Controllers
         public CargarDisponibilidadController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
             : base(appSettings, httpClientsFactory)
         {
-            _unitOfWork = new UnitOfWork(_httpClientsFactory.GetClient(_apiHttpClientName));
+            _unitOfWork = new UnitOfWork(_httpClientsFactory);
         }
 
         public async Task<ActionResult> Index()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             List<ProfesorDetailsDTO> model = new List<ProfesorDetailsDTO>();
-
             var claims = User.Claims;
             if (User.IsInRole("Administrador"))
                 model = await _unitOfWork.ProfesorRepository.GetAllAsync();

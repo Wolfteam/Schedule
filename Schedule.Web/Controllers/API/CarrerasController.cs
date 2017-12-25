@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Schedule.Entities;
@@ -18,12 +19,13 @@ namespace Schedule.Web.Controllers.API
         public CarrerasController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
             : base(appSettings, httpClientsFactory)
         {
-            _unitOfWork = new UnitOfWork(_httpClientsFactory.GetClient(_apiHttpClientName));
+            _unitOfWork = new UnitOfWork(httpClientsFactory);
         }
 
         [HttpGet]
         public async Task<IEnumerable<CarreraDTO>> GetAllAsync()
         {
+            _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             return await _unitOfWork.CarrerasRepository.GetAllAsync();
         }
     }
