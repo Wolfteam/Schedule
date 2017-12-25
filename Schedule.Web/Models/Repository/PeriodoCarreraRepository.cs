@@ -7,8 +7,8 @@ namespace Schedule.Web.Models.Repository
     public class PeriodoCarreraRepository
         : Repository<PeriodoCarreraDTO, PeriodoCarreraDTO>, IPeriodoCarreraRepository
     {
-        public PeriodoCarreraRepository(HttpClient httpClient, string urlEntityApi)
-            : base(httpClient, urlEntityApi)
+        public PeriodoCarreraRepository(IHttpClientsFactory httpClientsFactory, string urlEntityApi)
+            : base(httpClientsFactory, urlEntityApi)
         {
         }
 

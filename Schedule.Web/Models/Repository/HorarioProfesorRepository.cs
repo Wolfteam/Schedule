@@ -9,8 +9,8 @@ namespace Schedule.Web.Models.Repository
     public class HorarioProfesorRepository
         : Repository<HorarioProfesorDTO, HorarioProfesorDetailsDTO>, IHorarioProfesorRepository
     {
-        public HorarioProfesorRepository(HttpClient httpClient, string urlEntityApi)
-            : base(httpClient, urlEntityApi)
+        public HorarioProfesorRepository(IHttpClientsFactory httpClientsFactory, string urlEntityApi)
+            : base(httpClientsFactory, urlEntityApi)
         {
         }
 
