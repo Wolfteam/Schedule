@@ -8,6 +8,8 @@ namespace Schedule.Web.Models.Repository
         where TEntity : class
         where TEntityDetails : class
     {
+
+        string Token { set; }
         /// <summary>
         /// Crea una entidad mediante la api
         /// </summary>

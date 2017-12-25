@@ -14,10 +14,16 @@ namespace Schedule.Web.Models.Repository
     {
         protected readonly HttpClient _httpClient;
         protected readonly string _urlEntityApi;
-
-        public Repository(HttpClient httpClient, string urlEntityApi)
+        protected readonly IHttpClientsFactory _httpClientsFactory;
+        public string Token
         {
-            _httpClient = httpClient;
+            set { _httpClientsFactory.UpdateClientToken(_httpClient, value); }
+        }
+
+        public Repository(IHttpClientsFactory httpClientsFactory, string urlEntityApi)
+        {
+            _httpClientsFactory = httpClientsFactory;
+            _httpClient = _httpClientsFactory.GetClient("ScheduleAPI");
             _urlEntityApi = urlEntityApi;
         }
 
