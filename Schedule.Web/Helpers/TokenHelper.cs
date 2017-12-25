@@ -14,9 +14,9 @@ namespace Schedule.Web.Helpers
         /// </summary>
         /// <param name="secretKey">Secret key que debe coincidir con la api</param>
         /// <returns>Devuelve TokenValidationParameters</returns>
-        public static TokenValidationParameters GetTokenValidationParameters(string secretKey)
+        public static TokenValidationParameters GetTokenValidationParameters(TokenSettings tokenSettings)
         {
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSettings.SecretKey));
             return new TokenValidationParameters
             {
                 // The signing key must match!
@@ -25,11 +25,11 @@ namespace Schedule.Web.Helpers
 
                 // Validate the JWT Issuer (iss) claim
                 ValidateIssuer = true,
-                ValidIssuer = "ExampleIssuer",
+                ValidIssuer = tokenSettings.Issuer,
 
                 // Validate the JWT Audience (aud) claim
                 ValidateAudience = true,
-                ValidAudience = "ExampleAudience",
+                ValidAudiences = tokenSettings.Audiences,
 
                 // Validate the token expiry
                 ValidateLifetime = true,

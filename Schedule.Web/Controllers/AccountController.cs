@@ -82,7 +82,7 @@ namespace Schedule.Web.Controllers
 
                 var handler = new JwtSecurityTokenHandler();
                 handler.InboundClaimTypeMap.Clear();
-                var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.SecretKey);
+                var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.TokenSettings);
                 ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);
 
                 var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
