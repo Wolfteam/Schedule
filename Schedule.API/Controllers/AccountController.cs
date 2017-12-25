@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
     public class AccountController : BaseController
     {
+        public AccountController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/Account/Login
         [HttpPost("Login")]
         public ActionResult Login([FromBody] UsuarioDTO usuario)
@@ -43,7 +45,6 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Account/Logout/123456789
         [HttpDelete("Logout/{token}")]
-        [AuthenticateAttribute]
         public ActionResult Logout(string token)
         {
             _db.TokenRepository.RemoveByToken(token);
@@ -55,7 +56,6 @@ namespace Schedule.API.Controllers
 
         //GET api/Account/Privilegios/123456798
         [HttpGet("Privilegios/{token}")]
-        [AuthenticateAttribute]
         public List<Entities.Privilegios> GetAllPrivilegiosByToken(string token)
         {
             List<Entities.Privilegios> listaPrivilegios = new List<Entities.Privilegios>
@@ -67,7 +67,6 @@ namespace Schedule.API.Controllers
 
         //GET api/Account/ProfesorInfo/123456798
         [HttpGet("ProfesorInfo/{token}")]
-        [AuthenticateAttribute]
         public IActionResult GetProfesorInfoByToken(string token)
         {
             var profesor = _db.TokenRepository.GetProfesorInfoByToken(token);

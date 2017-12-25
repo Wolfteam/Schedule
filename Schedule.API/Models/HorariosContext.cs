@@ -1,13 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Schedule.Entities;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Schedule.API.Models
 {
     public partial class HorariosContext : DbContext
     {
+        #region DbSets 
         public virtual DbSet<Admin> Admin { get; set; }
         public virtual DbSet<Aulas> Aulas { get; set; }
         public virtual DbSet<Carreras> Carreras { get; set; }
@@ -26,17 +23,13 @@ namespace Schedule.API.Models
         public virtual DbSet<TipoAsignacion> TipoAsignacion { get; set; }
         public virtual DbSet<TipoAulaMaterias> TipoAulaMateria { get; set; }
         public virtual DbSet<Tokens> Tokens { get; set; }
+        #endregion
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public HorariosContext(DbContextOptions options)
+            : base(options)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                //optionsBuilder.UseMySql(_appSetting.Value.ConnectionString);
-                #warning  Debo quitar la connection string de aca
-                optionsBuilder.UseMySql("server=localhost;userid=wolfteam20;pwd=sistemas;port=3306;database=horarios;sslmode=none;");
-            }
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Admin>(entity =>
@@ -230,7 +223,7 @@ namespace Schedule.API.Models
                 entity.Property(e => e.IdHoraInicio).HasColumnName("id_hora_inicio");
 
                 entity.Property(e => e.IdHoraFin).HasColumnName("id_hora_fin");
-                
+
                 entity.Property(e => e.IdPeriodo)
                     .HasColumnName("id_periodo")
                     .HasColumnType("int(11)");

@@ -76,10 +76,9 @@ function btnGuardarCambiosOnClick() {
                             action: function () {}
                         }
                     };
-                    confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);                    
-                }
-                else
-                    confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");    
+                    confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);
+                } else
+                    confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");
             }
         );
     }

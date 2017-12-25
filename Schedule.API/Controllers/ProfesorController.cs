@@ -1,20 +1,23 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize]
     public class ProfesorController : BaseController
     {
+        public ProfesorController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/Profesor
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
@@ -26,6 +29,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Profesor/21255727
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("{cedula}")]
         public IActionResult Delete(uint cedula)
         {
@@ -37,14 +41,16 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Profesor
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
-            var profesores = _db.ProfesorRepository.Get(includeProperties:"PrioridadProfesor");
+            var profesores = _db.ProfesorRepository.Get(includeProperties: "PrioridadProfesor");
             return Mapper.Map<IEnumerable<ProfesorDetailsDTO>>(profesores);
         }
 
         // GET api/Profesor/1
+        [Authorize(Roles = "Administrador, Profesor")]
         [HttpGet("{cedula}", Name = "GetProfesor")]
         public IActionResult Get(uint cedula)
         {
@@ -55,6 +61,7 @@ namespace Schedule.API.Controllers
         }
 
         // PUT api/Profesor/21255727
+        [Authorize(Roles = "Administrador")]
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {

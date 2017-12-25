@@ -25,7 +25,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Lista de secciones</returns>
         public IEnumerable<SeccionesDetailsDTO> GetAllCurrent()
         {
-            return HorariosContext.Secciones.Include(x => x.PeriodoCarrera)
+            return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)
                 .ProjectTo<SeccionesDetailsDTO>();
         }
@@ -37,7 +37,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Objeto Secciones</returns>
         public SeccionesDetailsDTO GetCurrent(int codigo)
         {
-            return HorariosContext.Secciones.Include(x => x.PeriodoCarrera)
+            return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)
                 .ProjectTo<SeccionesDetailsDTO>()
                 .FirstOrDefault(x => x.Materia.Codigo == codigo);

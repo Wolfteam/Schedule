@@ -34,13 +34,21 @@ $('.button-collapse').sideNav({
 //inicializa los select
 $('select').material_select();
 
+/**
+ * Esto permite logearse, ya que estoy usando un tag a
+ */
+$("#logout").click(function (e) {
+    e.preventDefault();
+    $("#logout_form").submit();
+});
+
 var apiAula = "api/Aulas",
     apiCarreras = "api/Carreras",
     apiDisponibilidad = "api/Disponibilidad",
     apiMaterias = "api/Materias",
     apiPeriodoCarrera = "api/PeriodoCarrera",
     apiPrioridadesProfesor = "api/Prioridades",
-    apiProfesores = "api/Profesor",
+    apiProfesores = "api/Profesores",
     apiProfesorMateria = "api/ProfesorMateria",
     apiSecciones = "api/Secciones",
     apiSemestres = "api/Semestres";

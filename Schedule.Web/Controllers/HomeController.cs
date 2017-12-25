@@ -1,37 +1,30 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.Web.Models;
-using Schedule.Entities;
 using Microsoft.Extensions.Options;
-using Schedule.Web.Filters;
+using Schedule.Entities;
+using Schedule.Web.Models;
 using Schedule.Web.ViewModels;
 
 namespace Schedule.Web.Controllers
 {
-    [AuthenticateAttribute]
+    [Authorize]
     public class HomeController : BaseController
     {
-        #region Constructor
-        public HomeController(IOptions<AppSettings> appSettings)
-            :base(appSettings)
+        public HomeController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
+            : base(appSettings, httpClientsFactory)
         {
         }
-        #endregion
 
         public IActionResult Index()
         {
             HomeViewModel model = new HomeViewModel
             {
-                UrlPlanificacionAcademica = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAcademica",
-                UrlPlanificacionAulas = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionAulas",
-                UrlPlanificacionHorarios = $"{_appSettings.Value.URLBaseAPI}api/HorarioProfesor/PlanificacionHorario"
+                Username = User.Identity.Name,
+                UrlPlanificacionAcademica = "api/HorarioProfesor/PlanificacionAcademica",
+                UrlPlanificacionAulas = "api/HorarioProfesor/PlanificacionAulas",
+                UrlPlanificacionHorarios = "api/HorarioProfesor/PlanificacionHorario"
             };
             return View(model);
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

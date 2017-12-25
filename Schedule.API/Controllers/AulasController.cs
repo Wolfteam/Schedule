@@ -1,19 +1,21 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador")]
     public class AulasController : BaseController
     {
+        public AulasController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // POST api/Aulas
         [HttpPost]
         public IActionResult Create([FromBody] AulasDTO aula)
@@ -40,7 +42,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<AulasDetailsDTO> GetAll()
         {
-            var aulas = _db.AulasRepository.Get(includeProperties:"TipoAulaMateria");
+            var aulas = _db.AulasRepository.Get(includeProperties: "TipoAulaMateria");
             return Mapper.Map<IEnumerable<Aulas>, IEnumerable<AulasDetailsDTO>>(aulas);
         }
 
@@ -72,7 +74,7 @@ namespace Schedule.API.Controllers
                 return NotFound("No existe el aula a actualizar");
             return new NoContentResult();
         }
-        
+
         #region Pruebas
         [HttpPost("GetTest")]
         public IActionResult GetTest(DataTableAjaxPostModel model)

@@ -1,18 +1,21 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
+using Schedule.API.Models;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
+    [Authorize(Roles = "Administrador")]
     public class SemestresController : BaseController
     {
+        public SemestresController(HorariosContext context) 
+            : base(context)
+        {
+        }
+
         // GET api/Semestres
         [HttpGet]
         public IEnumerable<SemestreDTO> GetAll()

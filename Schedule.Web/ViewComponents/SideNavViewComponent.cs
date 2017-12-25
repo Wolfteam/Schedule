@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Schedule.Entities;
-using Schedule.Web.Helpers;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Schedule.Web.ViewModels;
+using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Schedule.Web.ViewComponents
 {
@@ -14,25 +15,31 @@ namespace Schedule.Web.ViewComponents
     /// </summary>
     public class SideNavViewComponent : ViewComponent
     {
-        private readonly IOptions<AppSettings> _appSettings;
-        private static HttpClient _httpClient;
-        public SideNavViewComponent(IOptions<AppSettings> appSettings)
-        {
-            _appSettings = appSettings;
-        }
-
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            string token = Request.Cookies["Token"];
-            var privilegios = await GetAllPrivilegiosByToken(token);
-            return View(privilegios);
-        }
+            //TODO: Deberia traer todos los privilegios posibles de la api?
+            List<Privilegios> privilegios = new List<Privilegios>();
+            string[] allPrivilegios = Enum.GetNames(typeof(Privilegios));
+            var cp = UserClaimsPrincipal;
+            foreach (var claim in cp.Claims)
+            {
+                //Si el claim es de tipo role y el valor equivale a alguno de los de allPrivilegios
+                if (allPrivilegios.Any(c => claim.Type == ClaimTypes.Role && c == claim.Value))
+                {
+                    privilegios.Add((Privilegios)Enum.Parse(typeof(Privilegios), claim.Value));
+                }
+            }
 
-        private async Task<IEnumerable<Privilegios>> GetAllPrivilegiosByToken(string token)
-        {
-            _httpClient = new HttpClient();
-            HttpHelpers.InitializeHttpClient(_httpClient, _appSettings.Value.URLBaseAPI, token);
-            return await HttpHelpers.GetAllPrivilegiosByToken(_httpClient, token);
+            string fullname = $"{cp.FindFirstValue(ClaimTypes.GivenName)} {cp.FindFirstValue(ClaimTypes.Surname)}";
+
+            var model = new SideNavViewModel
+            {
+                FullName = fullname,
+                IPAdress = "npi",
+                Privilegios = privilegios,
+                Username = User.Identity.Name
+            };
+            return View(model);
         }
     }
 }
