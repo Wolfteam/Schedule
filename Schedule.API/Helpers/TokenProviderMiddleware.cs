@@ -4,13 +4,13 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
+using Schedule.Entities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Schedule.Entities;
 
 namespace Schedule.API.Helpers
 {
@@ -18,6 +18,7 @@ namespace Schedule.API.Helpers
     {
         private readonly RequestDelegate _next;
         private readonly TokenProviderOptions _options;
+        private IOptions<AppSettings> _appSettings;
         private UnitOfWork _db;
 
         public TokenProviderMiddleware(
@@ -29,8 +30,9 @@ namespace Schedule.API.Helpers
             _options = options.Value;
         }
 
-        public Task Invoke(HttpContext context, HorariosContext db)
+        public Task Invoke(HttpContext context, HorariosContext db, IOptions<AppSettings> appSettings)
         {
+            _appSettings = appSettings;
             _db = new UnitOfWork(db);
             // If the request path doesn't match, skip
             if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
@@ -45,19 +47,21 @@ namespace Schedule.API.Helpers
                 context.Response.StatusCode = 400;
                 return context.Response.WriteAsync("Bad request.");
             }
-            return GenerateToken(context);
+            return GenerateTokenAsync(context);
         }
 
         /// <summary>
         /// Genera un JWT para un usuario en particular
         /// </summary>
         /// <param name="context">HttpContext</param>
-        private async Task GenerateToken(HttpContext context)
+        private async Task GenerateTokenAsync(HttpContext context)
         {
             var username = context.Request.Form["username"];
             var password = context.Request.Form["password"];
+            bool rememberMe = context.Request.Form["rememberme"] == "true" ? true : false;
+            bool isMobile = context.Request.Form["ismobile"] == "true" ? true : false;
 
-            var identity = await GetIdentity(username, password);
+            var identity = await GetIdentityAsync(username, password);
             if (identity == null)
             {
                 context.Response.StatusCode = 400;
@@ -67,22 +71,30 @@ namespace Schedule.API.Helpers
 
             DateTime now = DateTime.Now;
             var claims = GetUserRoles(username, now);
+            TimeSpan expiricyTime;
+            string audience = isMobile ? _options.Audience[1] : _options.Audience[0];
+            if (rememberMe)
+                expiricyTime = TimeSpan.FromDays(365);
+            else if (isMobile)
+                expiricyTime = TimeSpan.FromDays(1095);
+            else
+                expiricyTime = TimeSpan.FromHours(_appSettings.Value.TokenSettings.ExpiricyTime);
 
             // Create the JWT and write it to a string
             var jwt = new JwtSecurityToken(
-                issuer: _options.Issuer,
-                audience: _options.Audience,
-                claims: claims,
-                notBefore: now,
-                expires: now.Add(_options.Expiration),
-                signingCredentials: _options.SigningCredentials);
+                   issuer: _options.Issuer,
+                   audience: audience,
+                   claims: claims,
+                   notBefore: now,
+                   expires: now.Add(expiricyTime),
+                   signingCredentials: _options.SigningCredentials);
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new TokenDTO
             {
                 AuthenticationToken = encodedJwt,
                 CreateDate = now,
-                ExpiricyDate = now.Add(_options.Expiration),
+                ExpiricyDate = now.Add(expiricyTime),
                 Username = username
             };
             // Serialize and return the response
@@ -96,7 +108,7 @@ namespace Schedule.API.Helpers
         /// <param name="username">Username</param>
         /// <param name="password">Password</param>
         /// <returns>Devuelve ClaimsIdentity</returns>
-        private Task<ClaimsIdentity> GetIdentity(string username, string password)
+        private Task<ClaimsIdentity> GetIdentityAsync(string username, string password)
         {
             var user = _db.UsuarioRepository
                         .Get(u => u.Username == username && u.Password == password)

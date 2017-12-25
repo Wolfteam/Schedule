@@ -27,6 +27,7 @@ namespace Schedule.API
         // In production, you should store this securely in environment variables
         // or a key management tool. Don't hardcode this into your application!
         private static string secretKey;
+        private AppSettings _appSettings;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -41,7 +42,8 @@ namespace Schedule.API
             services.AddDbContext<HorariosContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
 
-            secretKey = Configuration.GetSection("AppSettings").Get<AppSettings>().SecretKey;
+            _appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+            secretKey = _appSettings.TokenSettings.SecretKey; //Configuration.GetSection("AppSettings").Get<AppSettings>().Token.SecretKey;
             //Con estas lineas le decimos como debe validar en los Authorize
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             var tokenValidationParameters = new TokenValidationParameters
@@ -52,11 +54,11 @@ namespace Schedule.API
 
                 // Validate the JWT Issuer (iss) claim
                 ValidateIssuer = true,
-                ValidIssuer = "ExampleIssuer",
+                ValidIssuer = _appSettings.TokenSettings.Issuer,
 
                 // Validate the JWT Audience (aud) claim
                 ValidateAudience = true,
-                ValidAudience = "ExampleAudience",
+                ValidAudiences = _appSettings.TokenSettings.Audiences,
 
                 // Validate the token expiry
                 ValidateLifetime = true,
@@ -71,7 +73,7 @@ namespace Schedule.API
                 }).AddJwtBearer(o =>
                 {
                     //o.Authority = "ExampleIssuer";
-                    o.Audience = "ExampleAudience";
+                    //o.Audience = "ExampleAudience";
                     // You also need to update /wwwroot/app/scripts/app.js
                     //o.Authority = Configuration["jwt:authority"]; // Your Configuration
                     //o.Audience = Configuration["jwt:audience"]; // // Your Configuration
@@ -115,8 +117,8 @@ namespace Schedule.API
             var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             var options = new TokenProviderOptions
             {
-                Audience = "ExampleAudience",
-                Issuer = "ExampleIssuer",
+                Audience = _appSettings.TokenSettings.Audiences,
+                Issuer = _appSettings.TokenSettings.Issuer,
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
             };
             //y con esto se registra el middleware que escucha por las peticiones
