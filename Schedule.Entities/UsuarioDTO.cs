@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Schedule.Entities
 {
@@ -10,13 +7,25 @@ namespace Schedule.Entities
         Profesor = 1,
         Administrador = 2
     }
-    public class UsuarioDTO : PersonaBase
+
+    public class UsuarioBaseDTO : PersonaBase
     {
         [Required]
         public string Username { get; set; }
-        
+
         [Required]
         public string Password { get; set; }
-        public Privilegios IdPrivilegio { get; set; }
+    }
+
+    public class UsuarioDTO : UsuarioBaseDTO
+    {
+        [Required]
+        public byte IdPrivilegio { get; set; }
+    }
+
+    public class UsuarioDetailsDTO : UsuarioBaseDTO
+    {
+        public ProfesorDTO Profesor { get; set; }
+        public PrivilegiosDTO Privilegios { get; set; }
     }
 }

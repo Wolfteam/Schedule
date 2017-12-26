@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System.Linq;
+using AutoMapper.QueryableExtensions;
 
 namespace Schedule.API.Models.Repositories
 {
@@ -14,6 +15,19 @@ namespace Schedule.API.Models.Repositories
         public UsuarioRepository(DbContext context)
             : base(context)
         {
+        }
+
+        /// <summary>
+        /// Obtiene un usuario en particular en base a su cedula
+        /// </summary>
+        /// <param name="cedula">Cedula del usuario</param>
+        /// <returns>UsuarioDetailsDTO</returns>
+        public UsuarioDetailsDTO Get(uint cedula)
+        {
+            return HorariosContext.Admin
+                .Where(u => u.Cedula == cedula)
+                .ProjectTo<UsuarioDetailsDTO>()
+                .FirstOrDefault();
         }
 
         /// <summary>

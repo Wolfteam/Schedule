@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
@@ -6,73 +8,64 @@ using System.Collections.Generic;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Administrador")]
     public class AccountController : BaseController
     {
-        public AccountController(HorariosContext context) 
+        public AccountController(HorariosContext context)
             : base(context)
         {
         }
 
-        // POST api/Account/Login
-        [HttpPost("Login")]
-        public ActionResult Login([FromBody] UsuarioDTO usuario)
+        // POST api/Account
+        [HttpPost]
+        public IActionResult Add([FromBody] UsuarioDTO usuario)
         {
-            var periodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo();
-            bool userExists = _db.UsuarioRepository.UserExists(usuario.Username, usuario.Password);
-            if (userExists && periodo != null)
-            {
-                var token = _db.TokenRepository.GenerateToken(usuario.Username);
-                _db.TokenRepository.Add(token);
-                bool result = _db.Save();
-                if (result)
-                {
-                    return Ok(AutoMapper.Mapper.Map<Tokens, TokenDTO>(token));
-                }
-            }
-            return Unauthorized();
-        }
-
-        // //No ha sido implementado
-        // // POST api/Account/Register
-        // [HttpPost("Register")]
-        // [AuthenticateAttribute]
-        // [AuthorizationAttribute(Privilegios.Administrador)]
-        // public ActionResult Register([FromBody]Usuario usuario)
-        // {
-        //     //Este metodo pide que esten autenticado y seas admin
-        //     return Forbid();
-        // }
-
-        // DELETE api/Account/Logout/123456789
-        [HttpDelete("Logout/{token}")]
-        public ActionResult Logout(string token)
-        {
-            _db.TokenRepository.RemoveByToken(token);
+            _db.UsuarioRepository.Add(Mapper.Map<Admin>(usuario));
             bool result = _db.Save();
-            if (result)
-                return Ok();
-            return NotFound($"El token {token} no fue encontrado");
+            if (!result)
+                return StatusCode(500);
+            return CreatedAtRoute("GetUsuario", new { cedula = usuario.Cedula }, usuario);
         }
 
-        //GET api/Account/Privilegios/123456798
-        [HttpGet("Privilegios/{token}")]
-        public List<Entities.Privilegios> GetAllPrivilegiosByToken(string token)
+        // GET api/Account
+        [HttpGet]
+        public IEnumerable<UsuarioDetailsDTO> GetAll()
         {
-            List<Entities.Privilegios> listaPrivilegios = new List<Entities.Privilegios>
-            {
-                _db.TokenRepository.GetAllPrivilegiosByToken(token)
-            };
-            return listaPrivilegios;
+            var usuarios = _db.UsuarioRepository.Get(includeProperties: "CedulaNavigation, IdPrivilegioNavigation");
+            return Mapper.Map<IEnumerable<UsuarioDetailsDTO>>(usuarios);
         }
 
-        //GET api/Account/ProfesorInfo/123456798
-        [HttpGet("ProfesorInfo/{token}")]
-        public IActionResult GetProfesorInfoByToken(string token)
+        // GET api/Account/21255727
+        [HttpGet("{cedula}", Name = "GetUsuario")]
+        public IActionResult Get(uint cedula)
         {
-            var profesor = _db.TokenRepository.GetProfesorInfoByToken(token);
-            if (profesor == null)
-                return NotFound("No se encontro un profesor asociado al token");
-            return new ObjectResult(profesor);
+            //var usuario = _db.UsuarioRepository.Get(u => u.Cedula == cedula, includeProperties: "CedulaNavigation, IdPrivilegioNavigation");
+            var usuario = _db.UsuarioRepository.Get(cedula);
+            if (usuario == null)
+                return NotFound("No se encontro el usuario buscado.");
+            return new ObjectResult(Mapper.Map<UsuarioDetailsDTO>(usuario));
+        }
+
+        // DELETE api/Account/21255727
+        [HttpDelete("{cedula}")]
+        public IActionResult Remove(uint cedula)
+        {
+            _db.UsuarioRepository.Remove(cedula);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No existe el usuario a borrar.");
+            return new NoContentResult();
+        }
+
+        // PUT api/Account/21255727
+        [HttpPut("{cedula}")]
+        public IActionResult Update(uint cedula, [FromBody] UsuarioDTO usuario)
+        {
+            _db.UsuarioRepository.Update(cedula, Mapper.Map<Admin>(usuario));
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No existe el usuario a actualizar");
+            return new NoContentResult();
         }
     }
 }

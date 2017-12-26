@@ -20,9 +20,13 @@ namespace Schedule.API.Helpers
                 .ForMember(d => d.HorasACumplir, opt => opt.MapFrom(s => s.HorasACumplir))
                 .ForMember(d => d.ID, opt => opt.MapFrom(s => s.IdPrioridad));
 
+            CreateMap<Models.Privilegios, PrivilegiosDTO>();
+
             //Nota que le digo que la propiedad Prioridad la mapea de s.PrioridadProfesor, el cual ya fue mapeado arriba
             CreateMap<Profesores, ProfesorDetailsDTO>()
                .ForMember(d => d.Prioridad, opt => opt.MapFrom(s => s.PrioridadProfesor));
+
+            CreateMap<Profesores, ProfesorDTO>();
 
             CreateMap<Carreras, CarreraDTO>()
                 .ForMember(d => d.IdCarrera, opt => opt.MapFrom(s => s.IdCarrera))
@@ -60,6 +64,10 @@ namespace Schedule.API.Helpers
                 .ForMember(dto => dto.Materia, conf => conf.MapFrom(s => s.Materias))
                 .ForMember(dto => dto.PeriodoCarrera, conf => conf.MapFrom(s => s.PeriodoCarrera));
 
+            CreateMap<Admin, UsuarioDetailsDTO>()
+                .ForMember(dto => dto.Profesor, conf => conf.MapFrom(s => s.CedulaNavigation))
+                .ForMember(dto => dto.Privilegios, conf => conf.MapFrom(s => s.IdPrivilegioNavigation));
+
             CreateMap<Tokens, TokenDTO>()
                 .ForMember(dto => dto.AuthenticationToken, conf => conf.MapFrom(s => s.Token))
                 .ForMember(dto => dto.CreateDate, conf => conf.MapFrom(s => s.FechaCreacion))
@@ -92,6 +100,8 @@ namespace Schedule.API.Helpers
                 .ForMember(dto => dto.Codigo, conf => conf.MapFrom(s => s.Codigo));
 
             CreateMap<SeccionesDTO, Secciones>();
+
+            CreateMap<UsuarioDTO, Admin>();
             #endregion
 
         }
