@@ -1,0 +1,33 @@
+<form id="form_usuarios" class="col s12" style="display:none">
+    <div class="row">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">check</i>
+            <select id="select_profesor" name="select_profesor" class="select2 required">
+                <option value="" disabled selected="selected">Seleccione el profesor...</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s6">
+            <i class="material-icons prefix">filter_9_plus</i>
+            <input id="username" name="username" type="text" class="validate onlyNum" minlength="4" maxlength="20" required>
+            <label for="username">Username</label>
+        </div>
+        <div class="input-field col s6">
+            <i class="material-icons prefix">filter_9_plus</i>
+            <input id="password" name="password" type="password" class="validate" minlength="4" maxlength="20" required>
+            <label for="password">Password</label>
+        </div>
+    </div>
+
+    <div class="row" style="position:fixed">
+        <div class="col s12 selectResults"></div>
+    </div>
+</form>
+<div class="col s12 progressBar">
+    <div class="row">
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+    </div>
+</div>

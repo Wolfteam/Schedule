@@ -207,13 +207,49 @@ function btnBuscarOnClick() {
                         "data": "fechaCreacion",
                         "render": function (data, type, row, meta) {
                             var date = new Date(data);
-                            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                            var options = {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            };
                             return date.toLocaleDateString("es-VE", options);
                         }
                     },
                 ];
                 createTable("#tabla", titulos);
                 initDataTable("#datatable", data, columnsData, 0, false, "multi");
+            });
+            break;
+        case "8": //Usuario
+            getAllUsuarios(function (data, textStatus, xhr) {
+                var titulos = [
+                    "Cedula", "Username", "Password", "Nombre", "Apellido", "IdPrivilegio", "Privilegio",
+                ];
+                var columnsData = [{
+                        "data": "cedula"
+                    },
+                    {
+                        "data": "username"
+                    },
+                    {
+                        "data": "password"
+                    },
+                    {
+                        "data": "profesor.nombre"
+                    },
+                    {
+                        "data": "profesor.apellido"
+                    },
+                    {
+                        "data": "privilegios.idPrivilegio",
+                    },
+                    {
+                        "data": "privilegios.nombrePrivilegio",
+                    },
+                ];
+                createTable("#tabla", titulos);
+                initDataTable("#datatable", data, columnsData, 5, false, "multi");
             });
             break;
         default:
@@ -244,7 +280,10 @@ function btnCrearOnClick() {
             break;
         case "7":
             confirmCreatePeriodo();
-            break;    
+            break;
+        case "8":
+            confirmCreateUsuarios();
+            break;
         default:
             toast("Debe seleccionar una opcion");
             break;
@@ -284,6 +323,9 @@ function btnEditarOnClick() {
         case "7":
             confirmEditPeriodo(data[0].idPeriodo, data[0].nombrePeriodo, data[0].status);
             break;
+        case "8":
+            confirmEditUsuario(data[0].cedula, data[0].username, data[0].password, data[0].privilegios.idPrivilegio);
+            break;
         default:
             toast("Debe seleccionar una opcion.");
             break;
@@ -317,6 +359,8 @@ function btnBorrarOnClick() {
         case "7":
             confirmDeletePeriodo(data);
             break;
+        case "8":
+            confirmDeleteUsuarios(data);    
         default:
             toast("Debe seleccionar una opcion.");
             break;

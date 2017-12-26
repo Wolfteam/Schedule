@@ -42,7 +42,8 @@ $("#logout").click(function (e) {
     $("#logout_form").submit();
 });
 
-var apiAula = "api/Aulas",
+var apiAccount = "api/Usuarios",
+    apiAula = "api/Aulas",
     apiCarreras = "api/Carreras",
     apiDisponibilidad = "api/Disponibilidad",
     apiMaterias = "api/Materias",

@@ -3,6 +3,7 @@ namespace Schedule.Web.Models.Repository
     public class UnitOfWork : IUnitOfWork
     {
         #region Constantes
+        private const string _apiAccount = "api/Account";
         private const string _apiAulas = "api/Aulas";
         private const string _apiCarreras = "api/Carreras";
         private const string _apiDisponibilidad = "api/Disponibilidad";
@@ -28,6 +29,7 @@ namespace Schedule.Web.Models.Repository
         public IProfesorRepository ProfesorRepository { get; private set; }
         public ISeccionesRepository SeccionesRepository { get; private set; }
         public ISemestresRepository SemestresRepository { get; private set; }
+        public IUsuarioRepository UsuarioRepository { get; private set; }
 
         public string Token
         {
@@ -44,6 +46,7 @@ namespace Schedule.Web.Models.Repository
                 ProfesorRepository.Token = value;
                 SeccionesRepository.Token = value;
                 SemestresRepository.Token = value;
+                UsuarioRepository.Token = value;
             }
         }
         #endregion
@@ -61,6 +64,7 @@ namespace Schedule.Web.Models.Repository
             ProfesorRepository = new ProfesorRepository(httpClientsFactory, _apiProfesor);
             SeccionesRepository = new SeccionesRepository(httpClientsFactory, _apiSecciones);
             SemestresRepository = new SemestresRepository(httpClientsFactory, _apiSemestres);
+            UsuarioRepository = new UsuarioRepository(httpClientsFactory, _apiAccount);
         }
     }
 }

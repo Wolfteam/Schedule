@@ -16,5 +16,6 @@ namespace Schedule.Web.Models.Repository
         IProfesorRepository ProfesorRepository { get; }
         ISeccionesRepository SeccionesRepository { get; }
         ISemestresRepository SemestresRepository { get; }
+        IUsuarioRepository UsuarioRepository  { get; }
     }
 }
