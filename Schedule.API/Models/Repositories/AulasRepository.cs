@@ -1,94 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper.QueryableExtensions;
-using System.Collections.Generic;
-using Schedule.Entities;
+﻿using AutoMapper.QueryableExtensions;
 using LinqKit;
+using Schedule.Entities;
+using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class AulasRepository : IRepository<Aulas, AulasDetailsDTO>
+    public class AulasRepository : Repository<Aulas>, IAulasRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
-
-        /// <summary>
-        /// Crea una nueva aula
-        /// </summary>
-        /// <param name="aula">Objeto de tipo Aula</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Create(Aulas aula)
+        public HorariosContext HorariosContext
         {
-            try
-            {
-                _db.Aulas.Add(aula);
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
+            get { return _context as HorariosContext; }
         }
 
-        /// <summary>
-        /// Borra un aula especifica
-        /// </summary>
-        /// <param name="id">Id del aula a eliminar</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Delete(int id)
+        public AulasRepository(HorariosContext context)
+            : base(context)
         {
-            try
-            {
-                Aulas aula = _db.Aulas.FirstOrDefault(x => x.IdAula == id);
-                if (aula == null)
-                    return false;
-
-                _db.Aulas.Remove(aula);
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
         }
 
-        public bool Delete()
-        {
-            try
-            {
-                _db.Aulas.RemoveRange(_db.Aulas.OrderBy(x => x.NombreAula));
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
-        }
+        #region Metodos de prueba con Datatables server side el incoveniente yace en la parte del sort debido a que quizas pueda implementarlo mejor
 
-        /// <summary>
-        /// Obtiene todas las aulas
-        /// </summary>
-        /// <returns>IQueryable de aulas</returns>
-        public IEnumerable<AulasDetailsDTO> Get()
-        {
-            return _db.Aulas.ProjectTo<AulasDetailsDTO>();
-        }
-
-        //Estos 2 metodos fueron usados para el procesamiento de lado servidor, el incoveniente yace en la parte del sort
-        //debido a que quizas pueda implementarlo mejor
         public List<AulasDetailsDTO> GetTest(string searchBy, int take, int skip, string sortBy, bool sortDir, out int filteredResultsCount, out int totalResultsCount)
         {
             var whereClause = BuildDynamicWhereClause(searchBy);
 
-            var result = _db.Aulas
+            var result = HorariosContext.Aulas
                 .AsExpandable()
                 .ProjectTo<AulasDetailsDTO>()
                 .Where(whereClause);
@@ -110,8 +48,8 @@ namespace Schedule.API.Models.Repositories
             }
             result = result.Skip(skip).Take(take);
 
-            filteredResultsCount = _db.Aulas.AsExpandable().ProjectTo<AulasDetailsDTO>().Where(whereClause).Count();
-            totalResultsCount = _db.Aulas.Count();
+            filteredResultsCount = HorariosContext.Aulas.AsExpandable().ProjectTo<AulasDetailsDTO>().Where(whereClause).Count();
+            totalResultsCount = HorariosContext.Aulas.Count();
 
             return result.ToList();
         }
@@ -132,17 +70,7 @@ namespace Schedule.API.Models.Repositories
             }
             return predicate;
         }
-
-
-        /// <summary>
-        /// Obtiene un aula en particular
-        /// </summary>
-        /// <param name="id">Id del aula a buscar</param>
-        /// <returns>Objeto tipo aula</returns>
-        public AulasDetailsDTO Get(int id)
-        {
-            return _db.Aulas.ProjectTo<AulasDetailsDTO>().FirstOrDefault(aula => aula.IdAula == id);
-        }
+        #endregion
 
         /// <summary>
         /// Obtiene todas las aulas que pertenecen a un tipo en particular y tienen una
@@ -153,56 +81,9 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de AulasDTO</returns>
         public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
         {
-            return _db.Aulas.ProjectTo<AulasDTO>()
+            return HorariosContext.Aulas.ProjectTo<AulasDTO>()
                 .Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad)
                 .OrderBy(au => au.Capacidad);
-        }
-
-        /// <summary>
-        /// Actualiza una aula en especifico
-        /// </summary>
-        /// <param name="id">Id del aula</param>
-        /// <param name="aulaUpdated">Objeto de tipo aula</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Update(int id, Aulas aulaUpdated)
-        {
-            try
-            {
-                var aula = _db.Aulas.FirstOrDefault(x => x.IdAula == id);
-                if (aula == null)
-                    return false;
-
-                aula.Capacidad = aulaUpdated.Capacidad;
-                aula.IdTipo = aulaUpdated.IdTipo;
-                aula.NombreAula = aulaUpdated.NombreAula;
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Actualiza una aula en especifico
-        /// </summary>
-        /// <param name="aula">Objeto aula a actualizar</param>
-        /// <returns>True en caso de exito</returns>
-        public bool Update(Aulas aula)
-        {
-            try
-            {
-                _db.Entry(aula).State = EntityState.Modified;
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                return false;
-            }
-            return true;
         }
     }
 }

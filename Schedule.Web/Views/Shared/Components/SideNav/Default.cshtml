@@ -1,6 +1,6 @@
 @using Schedule.Entities
 @using Schedule.Web.ViewComponents
-@model IEnumerable<Privilegios>
+@model Schedule.Web.ViewModels.SideNavViewModel
 
 <nav class="grey darken-4" role="navigation">
     <div class="nav-wrapper container">
@@ -12,8 +12,8 @@
                         <img src="~/images/miku.jpg" />
                     </div>
                     <a href="#!user"><img class="circle" src="~/images/logo.jpg" /></a>
-                    <a href="#!name"><span class="red-text text-darken-2 name">Efrain Bastidas</span></a>
-                    <a href="#!name"><span class="red-text lighten-2 name">IP:10.2.5.125</span></a>
+                    <a href="#!name"><span class="red-text text-darken-2 name">Nombre: @Model.FullName</span></a>
+                    <a href="#!name"><span class="red-text text-darken-2 name">IP: @Model.IPAdress</span></a>
                 </div>
             </li>
 
@@ -27,7 +27,7 @@
             <li><div class="divider"></div></li>
             <li><a asp-controller="Home" asp-action="Index" class="waves-effect waves-red">Inicio<i class="fa fa-home fa-2x" aria-hidden="true"></i></a></li>
             <li><a asp-controller="CargarDisponibilidad" asp-action="Index" class="waves-effect waves-red">Cargar Disponibilidad<i class="fa fa-tasks fa-2x" aria-hidden="true"></i></a></li>
-            @if (Model != null && Model.Contains(Privilegios.Administrador))
+            @if (Model.Privilegios.Contains(Privilegios.Administrador))
             {
                 <li><a asp-controller="EditarDB" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></a></li>
             }
@@ -53,7 +53,13 @@
                 </ul>
             </li>
             <li><div class="divider"></div></li>
-            <li><a asp-controller="Account" asp-action="Logout" class="red-text waves-effect waves-red">Cerrar Sesión<i class="fa fa-sign-out fa-2x" aria-hidden="true"></i></a></li>
+            <li>
+                <a id="logout" class="red-text waves-effect waves-red">Cerrar Sesión
+                    <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
+                </a>
+                <form id="logout_form" method = "post" asp-controller = "Account" asp-action = "Logout">
+                </form>
+            </li>
             <li><div class="divider"></div></li>
         </ul>
         <a href="#" data-activates="slide-out" class="button-collapse show-on-large"><i class="material-icons">menu</i></a>

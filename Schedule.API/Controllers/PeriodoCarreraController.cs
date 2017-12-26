@@ -1,8 +1,7 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System;
@@ -10,19 +9,21 @@ using System;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    public class PeriodoCarreraController : Controller
+    [Authorize(Roles = "Administrador")]
+    public class PeriodoCarreraController : BaseController
     {
-        private readonly PeriodoCarreraRepository _pcr = new PeriodoCarreraRepository();
+        public PeriodoCarreraController(HorariosContext context) 
+            : base(context)
+        {
+        }
 
         // POST api/PeriodoCarrera
         [HttpPost]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Create([FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
-            bool result = _pcr.Create(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Add(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return CreatedAtRoute("GetPeriodoCarrera", new { id = 0 }, periodo);
@@ -30,10 +31,10 @@ namespace Schedule.API.Controllers
 
         // DELETE api/PeriodoCarrera/1
         [HttpDelete("{id}")]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Delete(int id)
         {
-            bool result = _pcr.Delete(id);
+            _db.PeriodoCarreraRepository.Remove(id);
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return new NoContentResult();
@@ -41,27 +42,28 @@ namespace Schedule.API.Controllers
 
         // GET api/PeriodoCarrera
         [HttpGet]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
-            return _pcr.Get();
+            var periodosCarrera =  _db.PeriodoCarreraRepository.GetAll();
+            return Mapper.Map<IEnumerable<PeriodoCarreraDTO>>(periodosCarrera);
         }
 
         // GET api/PeriodoCarrera/Current
         [HttpGet("Current")]
+        [AllowAnonymous]
         public PeriodoCarreraDTO GetCurrentPeriodo()
         {
-            return _pcr.GetCurrentPeriodo();
+            return _db.PeriodoCarreraRepository.GetCurrentPeriodo();
         }
 
         // GET api/PeriodoCarrera/1
         [HttpGet("{id}", Name = "GetPeriodoCarrera")]
         public IActionResult Get(int id)
         {
-            var periodo = _pcr.Get(id);
+            var periodo = _db.PeriodoCarreraRepository.Get(id);
             if (periodo == null)
                 return NotFound("No se encontro el periodo academico buscado.");
-            return new ObjectResult(periodo);
+            return new ObjectResult(Mapper.Map<PeriodoCarreraDTO>(periodo));
         }
 
         /// <summary>
@@ -73,19 +75,19 @@ namespace Schedule.API.Controllers
         {
             if (periodo.Status)
             {
-                _pcr.UpdateAllCurrentStatus();
+                _db.PeriodoCarreraRepository.UpdateAllCurrentStatus();
             }
             periodo.FechaCreacion = DateTime.Now;
         }
 
         // PUT api/PeriodoCarrera/1
         [HttpPut("{id}")]
-        [AuthorizationAttribute(Entities.Privilegios.Administrador)]
         public IActionResult Update(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
             periodo.IdPeriodo = id;
-            bool result = _pcr.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return new NoContentResult();

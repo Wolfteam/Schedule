@@ -1,90 +1,117 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Schedule.Entities;
 using Schedule.Web.Helpers;
+using Schedule.Web.Models;
 using Schedule.Web.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Schedule.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        IOptions<AppSettings> _appSettings;
-        #region Constructor
-        public AccountController(IOptions<AppSettings> appSettings)
+        public AccountController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
+            : base(appSettings, httpClientsFactory)
         {
-            _appSettings = appSettings;
         }
-        #endregion
 
-        public IActionResult Index()
+        /// <summary>
+        /// Este metodo devuelve la vista de login o redirecciona a home
+        /// en caso de estar autenticado
+        /// </summary>
+        /// <param name="returnUrl">Es llenado cuando tratas de acceder a un sitio 
+        /// authorized sin estar autenticado
+        /// </param>
+        /// <returns>IActionResult</returns>
+        [AllowAnonymous]
+        public IActionResult Index(string returnUrl = null)
         {
-            string token = Request.Cookies["Token"];
-            if (String.IsNullOrEmpty(token))
+            //se pasa a la ViewData["ReturnUrl"] ya que en el form sera renderizado
+            //si returnUrl es null no muestra nada pero sino si coloca algo
+            ViewData["ReturnUrl"] = returnUrl;
+            if (!User.Identity.IsAuthenticated)
             {
                 return View();
             }
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<ActionResult> Login(LoginViewModel model)
+        [Authorize]
+        public IActionResult Forbidden(string returnUrl = null)
         {
-            if (ModelState.IsValid)
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI);
-                    HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/Account/Login", new UsuarioDTO()
-                    {
-                        Username = model.Username,
-                        Password = model.Password
-                    });
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
-                        if (token != null)
-                        {
-                            double expiricyTime = (token.ExpiricyDate - token.CreateDate).TotalMinutes;
-                            CreateCookie("Token", token.AuthenticationToken, expiricyTime);
-                            CreateCookie("User", model.Username, expiricyTime);
-                            return RedirectToAction("Index", "Home");
-                        }
-                    }
-                    else if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        ModelState.AddModelError("", "Fallo la conexion a la API");
-                        return View("Index", model);
-                    }
-                    ModelState.AddModelError("", "Usuario o clave invalidas");
-                    return View("Index", model);
-                }
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "El modelo no es valido");
+                return View("Index", model);
             }
-            ModelState.AddModelError("", "El modelo no es valido");
+            var httpClient = _httpClientsFactory.GetClient(_apiHttpClientName);
+            var nvc = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("username", model.Username),
+                new KeyValuePair<string, string>("password", model.Password)
+            };
+            //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
+            var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token")
+            {
+                Content = new FormUrlEncodedContent(nvc)
+            };
+            var response = await httpClient.SendAsync(req);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TokenDTO token = await response.Content.ReadAsAsync<TokenDTO>();
+
+                var handler = new JwtSecurityTokenHandler();
+                handler.InboundClaimTypeMap.Clear();
+                var tokenValidationParameters = TokenHelper.GetTokenValidationParameters(_appSettings.Value.TokenSettings);
+                ClaimsPrincipal principal = handler.ValidateToken(token.AuthenticationToken, tokenValidationParameters, out SecurityToken validatedToken);
+
+                var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
+                await HttpContext.SignInAsync(principal, tokenAuthProperties);
+                
+                //returnUrl es pasado automaticamente si es que hay algo en esa variable
+                if (String.IsNullOrEmpty(returnUrl))
+                    return RedirectToAction("Index", "Home");
+                else
+                    return Redirect(returnUrl);
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                ModelState.AddModelError("", "Fallo la conexion a la API");
+                return View("Index", model);
+            }
+            ModelState.AddModelError("", "Usuario o clave invalidas");
             return View("Index", model);
         }
 
-        public async Task<ActionResult> Logout()
-        {
-            string token = Request.Cookies["Token"];
 
-            if (!String.IsNullOrEmpty(token))
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    HttpHelpers.InitializeHttpClient(httpClient, _appSettings.Value.URLBaseAPI, token);
-                    HttpResponseMessage response = await httpClient.DeleteAsync(String.Format("api/Account/Logout/{0}", token));
-                }
-                Response.Cookies.Delete("Token");
-            }
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Account");
         }
 
-        /// <summary>  
+        /// <summary>
         /// Crea una cookie  
         /// </summary>  
         /// <param name="key">Identificador unico</param>  

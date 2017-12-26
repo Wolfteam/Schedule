@@ -1,54 +1,20 @@
-﻿using Schedule.API.Models.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Schedule.Entities;
-using AutoMapper.QueryableExtensions;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Schedule.API.Models.Repositories
 {
-    public class CarrerasRepository : IRepository<Carreras,CarreraDTO>
+    public class CarrerasRepository : Repository<Carreras>, ICarrerasRepository
     {
-        private readonly HorariosContext _db = new HorariosContext();
-
-        public bool Create(Carreras objeto)
+        public HorariosContext HorariosContext
         {
-            throw new NotImplementedException();
+            get
+            {
+                return _context as HorariosContext;
+            }
         }
 
-        public bool Delete()
+        public CarrerasRepository(DbContext context)
+            : base(context)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Obtiene todas las carreras
-        /// </summary>
-        /// <returns>IQueryable de carreras</returns>
-        public IEnumerable<CarreraDTO> Get()
-        {
-            return _db.Carreras.ProjectTo<CarreraDTO>();
-        }
-
-        public CarreraDTO Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(int id, Carreras objeto)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Update(Carreras objeto)
-        {
-            throw new NotImplementedException();
         }
     }
 }

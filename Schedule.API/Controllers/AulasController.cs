@@ -1,26 +1,27 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
 using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class AulasController : Controller
+    [Authorize(Roles = "Administrador")]
+    public class AulasController : BaseController
     {
-        private readonly AulasRepository _db = new AulasRepository();
+        public AulasController(HorariosContext context) 
+            : base(context)
+        {
+        }
 
         // POST api/Aulas
         [HttpPost]
         public IActionResult Create([FromBody] AulasDTO aula)
         {
-            bool result = _db.Create(Mapper.Map<AulasDTO, Aulas>(aula));
+            _db.AulasRepository.Add(Mapper.Map<AulasDTO, Aulas>(aula));
+            bool result = _db.Save();
             if (!result)
                 return StatusCode(500);
             return CreatedAtRoute("GetAula", new { id = aula.IdAula }, aula);
@@ -28,9 +29,10 @@ namespace Schedule.API.Controllers
 
         // DELETE api/Aulas/1
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(byte id)
         {
-            bool result = _db.Delete(id);
+            _db.AulasRepository.Remove(id);
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No existe el aula a borrar.");
             return new NoContentResult();
@@ -40,32 +42,34 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<AulasDetailsDTO> GetAll()
         {
-            return _db.Get();
+            var aulas = _db.AulasRepository.Get(includeProperties: "TipoAulaMateria");
+            return Mapper.Map<IEnumerable<Aulas>, IEnumerable<AulasDetailsDTO>>(aulas);
         }
 
         // GET api/Aulas/Tipo/2/Capacidad/20
         [HttpGet("Tipo/{idTipo}/Capacidad/{capacidad}")]
         public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
         {
-            return _db.GetByTipoCapacidad(idTipo, capacidad);
+            return _db.AulasRepository.GetByTipoCapacidad(idTipo, capacidad);
         }
 
 
         // GET api/Aulas/1
         [HttpGet("{id}", Name = "GetAula")]
-        public IActionResult Get(int id)
+        public IActionResult Get(byte id)
         {
-            var aula = _db.Get(id);
+            var aula = _db.AulasRepository.Get(id);
             if (aula == null)
-                return NotFound("No se encontro el aula buscada.");        
-            return new ObjectResult(aula);
+                return NotFound("No se encontro el aula buscada.");
+            return new ObjectResult(Mapper.Map<AulasDetailsDTO>(aula));
         }
 
         // PUT api/Aulas/1
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] AulasDTO aula)
+        public IActionResult Update(byte id, [FromBody] AulasDTO aula)
         {
-            bool result = _db.Update(id, Mapper.Map<AulasDTO, Aulas>(aula));
+            _db.AulasRepository.Update(id, Mapper.Map<AulasDTO, Aulas>(aula));
+            bool result = _db.Save();
             if (!result)
                 return NotFound("No existe el aula a actualizar");
             return new NoContentResult();
@@ -102,7 +106,7 @@ namespace Schedule.API.Controllers
             }
 
             // search the dbase taking into consideration table sorting and paging
-            var result = _db.GetTest(searchBy, take, skip, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
+            var result = _db.AulasRepository.GetTest(searchBy, take, skip, sortBy, sortDir, out filteredResultsCount, out totalResultsCount);
             if (result == null)
             {
                 // empty collection...

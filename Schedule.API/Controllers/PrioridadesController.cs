@@ -1,26 +1,27 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Schedule.API.Filters;
-using Schedule.API.Models;
-using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
+using Schedule.API.Models;
 
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [GlobalAttibute]
-    [AuthenticateAttribute]
-    [AuthorizationAttribute(Entities.Privilegios.Administrador)]
-    public class PrioridadesController : Controller
+    [Authorize(Roles = "Administrador")]
+    public class PrioridadesController : BaseController
     {
-        private readonly PrioridadesRepository _db = new PrioridadesRepository();
+        public PrioridadesController(HorariosContext context) 
+            : base(context)
+        {
+        }
 
         // GET api/Prioridades
         [HttpGet]
         public IEnumerable<PrioridadProfesorDTO> GetAll()
         {
-            return _db.Get();
+            var prioridades = _db.PrioridadesRepository.GetAll();
+            return Mapper.Map<IEnumerable<PrioridadProfesorDTO>>(prioridades);
         }
     }
 }

@@ -36,7 +36,7 @@
                 <div class="row">
                     <div class="col s12 m8 offset-m2">
                         <div class="z-depth-2 row" style="padding: 15px 15px 0px 0px;">
-                            <form id="formLogin" class="col s12" method="post" asp-controller="Account" asp-action="Login">
+                            <form id="formLogin" class="col s12" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl = "@ViewData["ReturnUrl"]">
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <i class="fa fa-user prefix"></i>
