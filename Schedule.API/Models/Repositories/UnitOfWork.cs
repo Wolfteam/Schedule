@@ -12,6 +12,7 @@ namespace Schedule.API.Models.Repositories
         public MateriasRepository MateriasRepository { get; private set; }
         public PeriodoCarreraRepository PeriodoCarreraRepository { get; private set; }
         public PrioridadesRepository PrioridadesRepository { get; private set; }
+        public PrivilegiosRepository PrivilegiosRepository { get; private set; }
         public ProfesorMateriaRepository ProfesorMateriaRepository { get; private set; }
         public ProfesorRepository ProfesorRepository { get; private set; }
         public SeccionesRepository SeccionesRepository { get; private set; }
@@ -33,6 +34,7 @@ namespace Schedule.API.Models.Repositories
             MateriasRepository = new MateriasRepository(_horariosContext);
             PeriodoCarreraRepository = new PeriodoCarreraRepository(_horariosContext);
             PrioridadesRepository = new PrioridadesRepository(_horariosContext);
+            PrivilegiosRepository = new PrivilegiosRepository(_horariosContext);
             ProfesorMateriaRepository = new ProfesorMateriaRepository(_horariosContext);
             ProfesorRepository = new ProfesorRepository(_horariosContext);
             SeccionesRepository = new SeccionesRepository(_horariosContext);
@@ -50,7 +52,7 @@ namespace Schedule.API.Models.Repositories
             bool result = false;
             try
             {
-                result = _horariosContext.SaveChanges() > 0 ? true: false;
+                result = _horariosContext.SaveChanges() > 0 ? true : false;
             }
             catch (System.Exception e)
             {
