@@ -49,7 +49,7 @@ function confirmCreateMaterias() {
         checkPendingRequest();
         validateMateriaHandler();
     };
-    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady);
 }
 
 function confirmDeleteMaterias(data) {
@@ -125,7 +125,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find(".onlyNum").on("keypress", onlyNum);
         validateMateriaHandler();
     };
-    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 m12 l9 offset-l1");
+    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady);
 }
 
 /**

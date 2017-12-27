@@ -8,7 +8,7 @@
  * @param {Function} onContentReady Funcion a ejecutar cuando se cargue la modal. Por defecto una funcion vacia
  * @param {string} columnClass Clase a aplicar para las diferentes pantallas. Por defecto :"col s12 m6 offset-m3"
  */
-function confirmAlert(title, type, iconClass, content, buttons = null, onContentReady = function () {}, columnClass = "col s12 m6 offset-m3") {
+function confirmAlert(title, type, iconClass, content, buttons = null, onContentReady = function () {}, columnClass = "col s12 m6 offset-m3 l7 offset-l3") {
     if (buttons === null) {
         buttons = {
             ok: {

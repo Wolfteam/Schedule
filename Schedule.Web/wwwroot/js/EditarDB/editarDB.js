@@ -360,7 +360,8 @@ function btnBorrarOnClick() {
             confirmDeletePeriodo(data);
             break;
         case "8":
-            confirmDeleteUsuarios(data);    
+            confirmDeleteUsuarios(data);
+            break;
         default:
             toast("Debe seleccionar una opcion.");
             break;
@@ -381,7 +382,7 @@ function removeTable(selector = "#tabla div") {
  */
 function onRequestsFinished(formSelector) {
     $(formSelector).find(".select2").select2({
-        placeholder: "Seleccione una opcion",
+        //placeholder: "Seleccione una opcion",
         dropdownParent: $(".selectResults"),
         width: '100%'
     }).on('change', function () {

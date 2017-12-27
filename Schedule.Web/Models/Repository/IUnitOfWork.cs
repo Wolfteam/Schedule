@@ -12,6 +12,7 @@ namespace Schedule.Web.Models.Repository
         IMateriasRepository MateriasRepository { get; }
         IPeriodoCarreraRepository PeriodoCarreraRepository { get; }
         IPrioridadesRepository PrioridadesRepository { get; }
+        IPrivilegiosRepository PrivilegiosRepository { get; }
         IProfesorMateriaRepository ProfesorMateriaRepository { get; }
         IProfesorRepository ProfesorRepository { get; }
         ISeccionesRepository SeccionesRepository { get; }

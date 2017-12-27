@@ -11,6 +11,7 @@ namespace Schedule.Web.Models.Repository
         private const string _apiMaterias = "api/Materias";
         private const string _apiPeriodoCarrera = "api/PeriodoCarrera";
         private const string _apiPrioridades = "api/Prioridades";
+        private const string _apiPrivilegios = "api/Privilegios";
         private const string _apiProfesorMateria = "api/ProfesorMateria";
         private const string _apiProfesor = "api/Profesor";
         private const string _apiSecciones = "api/Secciones";
@@ -25,6 +26,7 @@ namespace Schedule.Web.Models.Repository
         public IMateriasRepository MateriasRepository { get; private set; }
         public IPeriodoCarreraRepository PeriodoCarreraRepository { get; private set; }
         public IPrioridadesRepository PrioridadesRepository { get; private set; }
+        public IPrivilegiosRepository PrivilegiosRepository { get; set; }
         public IProfesorMateriaRepository ProfesorMateriaRepository { get; private set; }
         public IProfesorRepository ProfesorRepository { get; private set; }
         public ISeccionesRepository SeccionesRepository { get; private set; }
@@ -42,6 +44,7 @@ namespace Schedule.Web.Models.Repository
                 MateriasRepository.Token = value;
                 PeriodoCarreraRepository.Token = value;
                 PrioridadesRepository.Token = value;
+                PrivilegiosRepository.Token = value;
                 ProfesorMateriaRepository.Token = value;
                 ProfesorRepository.Token = value;
                 SeccionesRepository.Token = value;
@@ -60,6 +63,7 @@ namespace Schedule.Web.Models.Repository
             MateriasRepository = new MateriasRepository(httpClientsFactory, _apiMaterias);
             PeriodoCarreraRepository = new PeriodoCarreraRepository(httpClientsFactory, _apiPeriodoCarrera);
             PrioridadesRepository = new PrioridadesRepository(httpClientsFactory, _apiPrioridades);
+            PrivilegiosRepository = new PrivilegiosRepository(httpClientsFactory, _apiPrivilegios);
             ProfesorMateriaRepository = new ProfesorMateriaRepository(httpClientsFactory, _apiProfesorMateria);
             ProfesorRepository = new ProfesorRepository(httpClientsFactory, _apiProfesor);
             SeccionesRepository = new SeccionesRepository(httpClientsFactory, _apiSecciones);
