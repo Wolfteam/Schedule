@@ -60,23 +60,46 @@ namespace Schedule.API.Models.Repositories
         /// Obtiene una lista con todas las disponibilidad del profesor indicado
         /// </summary>
         /// <param name="cedula">Cedula del profesor</param>
-        /// <returns>Lista de disponibilidades</returns>
+        /// <returns>DisponibilidadProfesorDetailsDTO</returns>
         public DisponibilidadProfesorDetailsDTO GetByCedula(int cedula)
         {
             var disponibilidad = HorariosContext.DisponibilidadProfesores
                 .Include(p => p.Profesores.PrioridadProfesor)
                 .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
 
+            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO();
+            result.Cedula = (uint)cedula;
             if (disponibilidad.Count() == 0)
-                return new DisponibilidadProfesorDetailsDTO();
+                return result;
 
-            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO
-            {
-                Cedula = (uint)cedula,
-                Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(),
-                HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir,
-                HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio))
-            };
+            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>();
+            result.HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir;
+            result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
+
+            return result;
+        }
+
+        /// <summary>
+        /// Obtiene una lista con todas las disponibilidad del profesor indicado en el dia indicado
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        /// <param name="idDia">Id del dia a buscar</param>
+        /// <returns>DisponibilidadProfesorDetailsDTO</returns>
+        public DisponibilidadProfesorDetailsDTO GetByCedulaDia(int cedula, byte idDia)
+        {
+            var disponibilidad = HorariosContext.DisponibilidadProfesores
+                .Include(p => p.Profesores.PrioridadProfesor)
+                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true && c.IdDia == idDia);
+
+            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO();
+            result.Cedula = (uint)cedula;
+            if (disponibilidad.Count() == 0)
+                return result;
+
+            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>();
+            result.HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir;
+            result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
+
             return result;
         }
 
@@ -115,6 +138,19 @@ namespace Schedule.API.Models.Repositories
                 result.Add(dto);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Obtiene las horas asignadas para un profesor en particular
+        /// </summary>
+        /// <param name="cedula">Cedula del profesor</param>
+        /// <returns></returns>
+        public byte GetHorasAsignadas(int cedula)
+        {
+            var query = HorariosContext.DisponibilidadProfesores
+                    .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true)
+                    .Select(d => new { d.IdHoraInicio, d.IdHoraFin });
+            return (byte)(query.Sum(hf => hf.IdHoraFin) - query.Sum(hi => hi.IdHoraInicio));
         }
 
         /// <summary>

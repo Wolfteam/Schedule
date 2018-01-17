@@ -61,7 +61,30 @@ namespace Schedule.API.Controllers
             var disponibilidad = _db.DisponibilidadProfesorRepository.GetByCedula(cedula);
             if (disponibilidad.Disponibilidad != null)
                 return new ObjectResult(disponibilidad);
+            disponibilidad.HorasACumplir = _db.ProfesorRepository.GetHorasACumplir(cedula);
             return new ObjectResult(disponibilidad);
+        }
+
+        [HttpGet("{cedula}/{idDia}")]
+        public IActionResult Get(int cedula, byte idDia)
+        {
+            var disponibilidad = _db.DisponibilidadProfesorRepository.GetByCedulaDia(cedula, idDia);
+            if (disponibilidad.Disponibilidad != null)
+                return new ObjectResult(disponibilidad);
+            disponibilidad.HorasACumplir = _db.ProfesorRepository.GetHorasACumplir(cedula);
+            return new ObjectResult(disponibilidad);
+        }
+
+        [HttpGet("HorasAsignadasACumplir/{cedula}")]
+        public IActionResult GetHorasAsignadasACumplir(int cedula)
+        {
+            var disp = new DisponibilidadProfesorDetailsDTO()
+            {
+                Cedula = (uint)cedula,
+                HorasACumplir = _db.ProfesorRepository.GetHorasACumplir(cedula),
+                HorasAsignadas = _db.DisponibilidadProfesorRepository.GetHorasAsignadas(cedula)
+            };
+            return new ObjectResult(disp);
         }
     }
 }
