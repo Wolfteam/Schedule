@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -35,6 +36,19 @@ namespace Schedule.API.Controllers
             bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la materia a borrar.");
+            return new NoContentResult();
+        }
+
+        // DELETE api/Materias?codigos=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string codigos)
+        {
+            ushort[] materiasToRemove = codigos.Split(",").Select(value => ushort.Parse(value.Trim())).ToArray();
+            foreach (var materia in materiasToRemove)
+                _db.MateriasRepository.Remove(materia);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No se encontro alguna materia a borrar.");
             return new NoContentResult();
         }
 

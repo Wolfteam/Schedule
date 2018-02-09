@@ -5,6 +5,7 @@ using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -36,7 +37,20 @@ namespace Schedule.API.Controllers
             _db.PeriodoCarreraRepository.Remove(id);
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return NotFound("No se encontro el periodo a borrar.");
+            return new NoContentResult();
+        }
+
+        // DELETE api/PeriodoCarrera?idPeriodos=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string idPeriodos)
+        {
+            int[] periodosToRemove = idPeriodos.Split(",").Select(value => int.Parse(value.Trim())).ToArray();
+            foreach (var periodo in periodosToRemove)
+                _db.PeriodoCarreraRepository.Remove(periodo);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No se encontro algun periodo a borrar.");
             return new NoContentResult();
         }
 

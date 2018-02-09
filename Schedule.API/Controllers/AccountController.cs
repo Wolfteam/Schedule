@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -54,6 +55,19 @@ namespace Schedule.API.Controllers
             bool result = _db.Save();
             if (!result)
                 return NotFound("No existe el usuario a borrar.");
+            return new NoContentResult();
+        }
+
+        // DELETE api/Account?cedulas=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string cedulas)
+        {
+            uint[] usersToRemove = cedulas.Split(",").Select(value => uint.Parse(value.Trim())).ToArray();
+            foreach (var usuario in usersToRemove)
+                _db.UsuarioRepository.Remove(usuario);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No se encontro algun usuario a borrar.");
             return new NoContentResult();
         }
 

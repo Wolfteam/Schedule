@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -11,7 +12,7 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = "Administrador")]
     public class AulasController : BaseController
     {
-        public AulasController(HorariosContext context) 
+        public AulasController(HorariosContext context)
             : base(context)
         {
         }
@@ -35,6 +36,19 @@ namespace Schedule.API.Controllers
             bool result = _db.Save();
             if (!result)
                 return NotFound("No existe el aula a borrar.");
+            return new NoContentResult();
+        }
+
+        // DELETE api/Aulas?idAulas=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string idAulas)
+        {
+            byte[] aulasToRemove = idAulas.Split(",").Select(value => byte.Parse(value.Trim())).ToArray();
+            foreach (var aula in aulasToRemove)
+                _db.AulasRepository.Remove(aula);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No existe alguna aula a borrar.");
             return new NoContentResult();
         }
 

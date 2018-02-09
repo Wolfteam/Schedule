@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
 using Schedule.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Schedule.API.Controllers
 {
@@ -36,6 +37,19 @@ namespace Schedule.API.Controllers
             bool result = _db.Save();
             if (!result)
                 return NotFound("No se encontro la seccion a borrar.");
+            return new NoContentResult();
+        }
+
+        // DELETE api/Secciones?codigos=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string codigos)
+        {
+            ushort[] seccionesToRemove = codigos.Split(",").Select(value => ushort.Parse(value.Trim())).ToArray();
+            foreach (var seccion in seccionesToRemove)
+                _db.SeccionesRepository.Remove(seccion);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No se encontro alguna seccion a borrar.");
             return new NoContentResult();
         }
 

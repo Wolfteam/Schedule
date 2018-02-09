@@ -41,6 +41,19 @@ namespace Schedule.API.Controllers
             return new NoContentResult();
         }
 
+        // DELETE api/ProfesorMateria?ids=1,2,3,4
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] string ids)
+        {
+            uint[] relacionesToRemove = ids.Split(",").Select(value => uint.Parse(value.Trim())).ToArray();
+            foreach (var relacion in relacionesToRemove)
+                _db.ProfesorMateriaRepository.Remove(relacion);
+            bool result = _db.Save();
+            if (!result)
+                return NotFound("No se encontro alguna relacion a borrar.");
+            return new NoContentResult();
+        }
+
         // GET api/ProfesorMateria
         [HttpGet]
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
