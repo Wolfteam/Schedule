@@ -17,4 +17,6 @@ Los primeros 3 en caso de hostear
 * dotnet restore
 * dotnet run
 
+[Login](https://i.imgur.com/hH1fvqw.png)<br>
 
+[Home](https://i.imgur.com/JNMdKyP.png)<br>
