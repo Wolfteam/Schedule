@@ -18,6 +18,7 @@ namespace Schedule.API.Models.Repositories
         SeccionesRepository SeccionesRepository { get; }
         SemestresRepository SemestresRepository { get; }
         UsuarioRepository UsuarioRepository { get; }
+        TipoAulaMateriaRepository TipoAulaMateriaRepository { get; }
         TokenRepository TokenRepository { get; }
         bool Save();
     }

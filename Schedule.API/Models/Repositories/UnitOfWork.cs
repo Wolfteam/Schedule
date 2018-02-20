@@ -18,6 +18,7 @@ namespace Schedule.API.Models.Repositories
         public SeccionesRepository SeccionesRepository { get; private set; }
         public SemestresRepository SemestresRepository { get; private set; }
         public UsuarioRepository UsuarioRepository { get; private set; }
+        public TipoAulaMateriaRepository TipoAulaMateriaRepository { get; private set; }
         public TokenRepository TokenRepository { get; private set; }
         #endregion
 
@@ -40,6 +41,7 @@ namespace Schedule.API.Models.Repositories
             SeccionesRepository = new SeccionesRepository(_horariosContext);
             SemestresRepository = new SemestresRepository(_horariosContext);
             UsuarioRepository = new UsuarioRepository(_horariosContext);
+            TipoAulaMateriaRepository = new TipoAulaMateriaRepository(_horariosContext);
             TokenRepository = new TokenRepository(_horariosContext);
         }
 
