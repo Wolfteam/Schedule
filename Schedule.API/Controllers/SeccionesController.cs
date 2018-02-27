@@ -21,11 +21,13 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] SeccionesDTO seccion)
         {
+            if (SeccionExists(seccion.Codigo))
+                return BadRequest($"La seccion ya existe {seccion.Codigo}");
             seccion.IdPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             _db.SeccionesRepository.Add(Mapper.Map<SeccionesDTO, Secciones>(seccion));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al crear la seccion {seccion.Codigo}");
             return CreatedAtRoute("GetSeccion", new { codigo = seccion.Codigo }, seccion);
         }
 
@@ -36,7 +38,7 @@ namespace Schedule.API.Controllers
             _db.SeccionesRepository.Remove(codigo);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la seccion a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar la seccion {codigo}");
             return new NoContentResult();
         }
 
@@ -49,7 +51,7 @@ namespace Schedule.API.Controllers
                 _db.SeccionesRepository.Remove(seccion);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro alguna seccion a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar las secciones {codigos}");
             return new NoContentResult();
         }
 
@@ -74,12 +76,19 @@ namespace Schedule.API.Controllers
         [HttpPut("{codigo}")]
         public IActionResult Update(ushort codigo, [FromBody] SeccionesDTO seccion)
         {
+            if (!SeccionExists(codigo))
+                return NotFound($"La seccion {codigo} no existe");
             seccion.IdPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             _db.SeccionesRepository.Update(codigo, Mapper.Map<SeccionesDTO, Secciones>(seccion));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la seccion a actualizar.");
+                return StatusCode(500, $"Ocurrio un error al actualizar la seccion {codigo}");
             return new NoContentResult();
+        }
+
+        private bool SeccionExists(int codigo)
+        {
+            return _db.SeccionesRepository.GetCurrent(codigo) != null;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = "Administrador")]
     public class MateriasController : BaseController
     {
-        public MateriasController(HorariosContext context) 
+        public MateriasController(HorariosContext context)
             : base(context)
         {
         }
@@ -21,10 +21,12 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] MateriasDTO materia)
         {
+            if (MateriaExists(materia.Codigo))
+                return BadRequest($"La materia {materia.Codigo} ya existe");
             _db.MateriasRepository.Add(Mapper.Map<MateriasDTO, Materias>(materia));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al crear la materia {materia.Codigo}");
             return CreatedAtRoute("GetMateria", new { codigo = materia.Codigo }, materia);
         }
 
@@ -35,7 +37,7 @@ namespace Schedule.API.Controllers
             _db.MateriasRepository.Remove(codigo);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la materia a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar la materia {codigo}");
             return new NoContentResult();
         }
 
@@ -48,7 +50,7 @@ namespace Schedule.API.Controllers
                 _db.MateriasRepository.Remove(materia);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro alguna materia a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar las materias {codigos}");
             return new NoContentResult();
         }
 
@@ -74,11 +76,20 @@ namespace Schedule.API.Controllers
         [HttpPut("{codigo}")]
         public IActionResult Update(ushort codigo, [FromBody] MateriasDTO materia)
         {
+            if (!MateriaExists(materia.Codigo))
+                return NotFound($"La materia {materia.Codigo} no existe");
             _db.MateriasRepository.Update(codigo, Mapper.Map<MateriasDTO, Materias>(materia));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la materia a actualizar.");
+                return StatusCode(500, $"Ocurrio un error al tratar de actualizar la materia {materia.Codigo}.");
             return new NoContentResult();
+        }
+
+        private bool MateriaExists(ushort codigo)
+        {
+            var materia = _db.MateriasRepository.Get(codigo);
+            return materia != null;
         }
     }
 }
+

@@ -22,10 +22,12 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
+            if (ProfesorExists(profesor.Cedula))
+                return BadRequest($"El profesor {profesor.Cedula} ya existe");
             _db.ProfesorRepository.Add(Mapper.Map<ProfesorDTO, Profesores>(profesor));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al actualzar el profesor {profesor.Cedula}");
             return CreatedAtRoute("GetProfesor", new { cedula = profesor.Cedula }, profesor);
         }
 
@@ -37,7 +39,7 @@ namespace Schedule.API.Controllers
             _db.ProfesorRepository.Remove(cedula);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro el profesor a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar el profesor {cedula}");
             return new NoContentResult();
         }
 
@@ -50,7 +52,7 @@ namespace Schedule.API.Controllers
                 _db.ProfesorRepository.Remove(profesor);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro algun profesor a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar los profesores {cedulas}");
             return new NoContentResult();
         }
 
@@ -79,11 +81,18 @@ namespace Schedule.API.Controllers
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {
+            if (!ProfesorExists(profesor.Cedula))
+                return NotFound($"El profesor {profesor.Cedula} no existe");
             _db.ProfesorRepository.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro el profesor a actualizar.");
+                return StatusCode(500, $"Ocurrio un error al actualizar el profesor {profesor.Cedula}.");
             return new NoContentResult();
+        }
+
+        private bool ProfesorExists(uint cedula)
+        {
+            return _db.ProfesorRepository.Get(cedula) != null;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = "Administrador")]
     public class ProfesorMateriaController : BaseController
     {
-        public ProfesorMateriaController(HorariosContext context) 
+        public ProfesorMateriaController(HorariosContext context)
             : base(context)
         {
         }
@@ -24,7 +24,7 @@ namespace Schedule.API.Controllers
             _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al crear la relacion {pm.Cedula} - {pm.Codigo}");
             var relacion = _db.ProfesorMateriaRepository.Get(pm.Cedula, pm.Codigo);
             return CreatedAtRoute("GetProfesorMateria", new { id = relacion.Id }, pm);
         }
@@ -37,7 +37,7 @@ namespace Schedule.API.Controllers
             _db.ProfesorMateriaRepository.Remove(entity);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la relacion a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar la relacion {id}");
             return new NoContentResult();
         }
 
@@ -50,7 +50,7 @@ namespace Schedule.API.Controllers
                 _db.ProfesorMateriaRepository.Remove(relacion);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro alguna relacion a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar la relacion {ids}");
             return new NoContentResult();
         }
 
@@ -74,12 +74,15 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(uint id, [FromBody] ProfesorMateriaDTO pm)
         {
+
             var oldEntity = _db.ProfesorMateriaRepository.Get(p => p.Id == id).FirstOrDefault();
+            if (oldEntity == null)
+                return NotFound("La relacion a actualizar no existe");
             _db.ProfesorMateriaRepository.Remove(oldEntity);
             _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro la relaciona a actualizar.");
+                return StatusCode(500, $"Ocurrio un error al intentar actualizar la relacion {id} : {pm.Cedula} - {pm.Codigo}.");
             return new NoContentResult();
         }
     }

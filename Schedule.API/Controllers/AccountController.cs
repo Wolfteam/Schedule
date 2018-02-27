@@ -21,10 +21,13 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] UsuarioDTO usuario)
         {
+            bool userAlreadyExist = UserExists(usuario.Cedula);
+            if (userAlreadyExist)
+                return BadRequest("El usuario ya existe");
             _db.UsuarioRepository.Add(Mapper.Map<Admin>(usuario));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, "Ocurrio un error al crear el usuario");
             return CreatedAtRoute("GetUsuario", new { cedula = usuario.Cedula }, usuario);
         }
 
@@ -54,7 +57,7 @@ namespace Schedule.API.Controllers
             _db.UsuarioRepository.Remove(cedula);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No existe el usuario a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar el usuario con la cedula {cedula}");
             return new NoContentResult();
         }
 
@@ -67,7 +70,7 @@ namespace Schedule.API.Controllers
                 _db.UsuarioRepository.Remove(usuario);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro algun usuario a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar las cedulas: {cedulas}");
             return new NoContentResult();
         }
 
@@ -75,11 +78,20 @@ namespace Schedule.API.Controllers
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] UsuarioDTO usuario)
         {
+            bool userAlreadyExist = UserExists(cedula);
+            if (!userAlreadyExist)
+                return NotFound("No existe el usuario a actualizar.");
             _db.UsuarioRepository.Update(cedula, Mapper.Map<Admin>(usuario));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No existe el usuario a actualizar");
+                return StatusCode(500, $"Ocurrio un error al actualizar el usuario {cedula}");
             return new NoContentResult();
+        }
+
+        private bool UserExists(uint cedula)
+        {
+            var user = _db.UsuarioRepository.Get(cedula);
+            return user != null;
         }
     }
 }

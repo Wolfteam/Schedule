@@ -24,7 +24,7 @@ namespace Schedule.API.Controllers
             _db.AulasRepository.Add(Mapper.Map<AulasDTO, Aulas>(aula));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al crear el aula {aula.NombreAula}");
             return CreatedAtRoute("GetAula", new { id = aula.IdAula }, aula);
         }
 
@@ -35,7 +35,7 @@ namespace Schedule.API.Controllers
             _db.AulasRepository.Remove(id);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No existe el aula a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar el aula {id}.");
             return new NoContentResult();
         }
 
@@ -48,7 +48,7 @@ namespace Schedule.API.Controllers
                 _db.AulasRepository.Remove(aula);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No existe alguna aula a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar las aulas {idAulas}.");
             return new NoContentResult();
         }
 
@@ -82,11 +82,20 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(byte id, [FromBody] AulasDTO aula)
         {
+            bool aulaExists = AulaExist(aula.IdAula);
+            if (!aulaExists)
+                return NotFound("No existe el aula a actualizar");
             _db.AulasRepository.Update(id, Mapper.Map<AulasDTO, Aulas>(aula));
             bool result = _db.Save();
             if (!result)
-                return NotFound("No existe el aula a actualizar");
+                return StatusCode(500, $"Ocurrio un error al actualizar el aula {aula.IdAula} : {aula.NombreAula}");
             return new NoContentResult();
+        }
+
+        private bool AulaExist(int idAula)
+        {
+            var aula = _db.AulasRepository.Get(idAula);
+            return aula != null;
         }
 
         #region Pruebas

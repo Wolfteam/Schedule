@@ -13,7 +13,7 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = "Administrador")]
     public class PeriodoCarreraController : BaseController
     {
-        public PeriodoCarreraController(HorariosContext context) 
+        public PeriodoCarreraController(HorariosContext context)
             : base(context)
         {
         }
@@ -26,7 +26,7 @@ namespace Schedule.API.Controllers
             _db.PeriodoCarreraRepository.Add(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al crear el periodo {periodo.NombrePeriodo}");
             return CreatedAtRoute("GetPeriodoCarrera", new { id = 0 }, periodo);
         }
 
@@ -37,7 +37,7 @@ namespace Schedule.API.Controllers
             _db.PeriodoCarreraRepository.Remove(id);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro el periodo a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar el periodo {id}");
             return new NoContentResult();
         }
 
@@ -50,7 +50,7 @@ namespace Schedule.API.Controllers
                 _db.PeriodoCarreraRepository.Remove(periodo);
             bool result = _db.Save();
             if (!result)
-                return NotFound("No se encontro algun periodo a borrar.");
+                return StatusCode(500, $"Ocurrio un error al borrar los periodos {idPeriodos}");
             return new NoContentResult();
         }
 
@@ -58,7 +58,7 @@ namespace Schedule.API.Controllers
         [HttpGet]
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
-            var periodosCarrera =  _db.PeriodoCarreraRepository.GetAll();
+            var periodosCarrera = _db.PeriodoCarreraRepository.GetAll();
             return Mapper.Map<IEnumerable<PeriodoCarreraDTO>>(periodosCarrera);
         }
 
@@ -98,13 +98,20 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
+            if (!PeriodoExists(periodo.IdPeriodo))
+                return NotFound($"El periodo academico no existe {periodo.IdPeriodo}");
             SetPeriodoDefaults(periodo);
             periodo.IdPeriodo = id;
             _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500);
+                return StatusCode(500, $"Ocurrio un error al actualizar el periodo {periodo.NombrePeriodo}");
             return new NoContentResult();
+        }
+
+        private bool PeriodoExists(int idPeriodo)
+        {
+            return _db.PeriodoCarreraRepository.Get(idPeriodo) != null;
         }
     }
 }
