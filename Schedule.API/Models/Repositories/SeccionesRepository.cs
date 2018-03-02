@@ -35,7 +35,7 @@ namespace Schedule.API.Models.Repositories
         /// </summary>
         /// <param name="codigo">Id de la materia a buscar</param>
         /// <returns>Objeto Secciones</returns>
-        public SeccionesDetailsDTO GetCurrent(int codigo)
+        public SeccionesDetailsDTO GetCurrent(ushort codigo)
         {
             return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)

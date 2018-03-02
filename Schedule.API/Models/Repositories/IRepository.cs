@@ -10,6 +10,7 @@ namespace Schedule.API.Models.Repositories
     {
         void Add(TEntity entity);
         void AddRange(IEnumerable<TEntity> entity);
+        bool Exists(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(object id);
         IEnumerable<TEntity> GetAll();

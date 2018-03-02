@@ -7,6 +7,6 @@ namespace Schedule.API.Models.Repositories
     {
         IEnumerable<SeccionesDetailsDTO> GetAllCurrent();
 
-        SeccionesDetailsDTO GetCurrent(int codigo);
+        SeccionesDetailsDTO GetCurrent(ushort codigo);
     }
 }

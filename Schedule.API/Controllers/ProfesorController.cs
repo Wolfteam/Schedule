@@ -12,7 +12,7 @@ namespace Schedule.API.Controllers
     [Authorize]
     public class ProfesorController : BaseController
     {
-        public ProfesorController(HorariosContext context) 
+        public ProfesorController(HorariosContext context)
             : base(context)
         {
         }
@@ -81,8 +81,8 @@ namespace Schedule.API.Controllers
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {
-            if (!ProfesorExists(profesor.Cedula))
-                return NotFound($"El profesor {profesor.Cedula} no existe");
+            if (!ProfesorExists(cedula) || (cedula != profesor.Cedula && ProfesorExists(profesor.Cedula)))
+                return NotFound($"El profesor {cedula} no existe o la ci:{profesor.Cedula} ya existe");
             _db.ProfesorRepository.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
             bool result = _db.Save();
             if (!result)
@@ -92,7 +92,7 @@ namespace Schedule.API.Controllers
 
         private bool ProfesorExists(uint cedula)
         {
-            return _db.ProfesorRepository.Get(cedula) != null;
+            return _db.ProfesorRepository.Exists(prof => prof.Cedula == cedula);
         }
     }
 }

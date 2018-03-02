@@ -78,9 +78,8 @@ namespace Schedule.API.Controllers
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] UsuarioDTO usuario)
         {
-            bool userAlreadyExist = UserExists(cedula);
-            if (!userAlreadyExist)
-                return NotFound("No existe el usuario a actualizar.");
+            if (!UserExists(cedula) || (cedula != usuario.Cedula && UserExists(usuario.Cedula)))
+                return NotFound($"No existe el usuario {cedula} a actualizar o la nueva cedula {usuario.Cedula} no existe.");
             _db.UsuarioRepository.Update(cedula, Mapper.Map<Admin>(usuario));
             bool result = _db.Save();
             if (!result)
@@ -90,8 +89,7 @@ namespace Schedule.API.Controllers
 
         private bool UserExists(uint cedula)
         {
-            var user = _db.UsuarioRepository.Get(cedula);
-            return user != null;
+            return _db.UsuarioRepository.Exists(u => u.Cedula == cedula);
         }
     }
 }

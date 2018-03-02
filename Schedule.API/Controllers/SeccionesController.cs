@@ -76,8 +76,8 @@ namespace Schedule.API.Controllers
         [HttpPut("{codigo}")]
         public IActionResult Update(ushort codigo, [FromBody] SeccionesDTO seccion)
         {
-            if (!SeccionExists(codigo))
-                return NotFound($"La seccion {codigo} no existe");
+            if (!SeccionExists(codigo) || (codigo != seccion.Codigo && SeccionExists(seccion.Codigo)))
+                return NotFound($"No existe la materia {codigo} o ya existe una seccion para {seccion.Codigo}");
             seccion.IdPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             _db.SeccionesRepository.Update(codigo, Mapper.Map<SeccionesDTO, Secciones>(seccion));
             bool result = _db.Save();
@@ -86,7 +86,7 @@ namespace Schedule.API.Controllers
             return new NoContentResult();
         }
 
-        private bool SeccionExists(int codigo)
+        private bool SeccionExists(ushort codigo)
         {
             return _db.SeccionesRepository.GetCurrent(codigo) != null;
         }

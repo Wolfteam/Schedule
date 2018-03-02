@@ -82,20 +82,19 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(byte id, [FromBody] AulasDTO aula)
         {
-            bool aulaExists = AulaExist(aula.IdAula);
-            if (!aulaExists)
-                return NotFound("No existe el aula a actualizar");
-            _db.AulasRepository.Update(id, Mapper.Map<AulasDTO, Aulas>(aula));
+            if (!AulaExist(id))
+                return NotFound($"No existe el aula {id} a actualizar");
+            aula.IdAula = id;
+            _db.AulasRepository.Update(Mapper.Map<Aulas>(aula));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el aula {aula.IdAula} : {aula.NombreAula}");
             return new NoContentResult();
         }
 
-        private bool AulaExist(int idAula)
+        private bool AulaExist(byte idAula)
         {
-            var aula = _db.AulasRepository.Get(idAula);
-            return aula != null;
+            return _db.AulasRepository.Exists(aula => aula.IdAula == idAula);
         }
 
         #region Pruebas

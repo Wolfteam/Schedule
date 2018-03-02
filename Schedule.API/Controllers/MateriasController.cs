@@ -76,19 +76,18 @@ namespace Schedule.API.Controllers
         [HttpPut("{codigo}")]
         public IActionResult Update(ushort codigo, [FromBody] MateriasDTO materia)
         {
-            if (!MateriaExists(materia.Codigo))
-                return NotFound($"La materia {materia.Codigo} no existe");
-            _db.MateriasRepository.Update(codigo, Mapper.Map<MateriasDTO, Materias>(materia));
+            if (!MateriaExists(codigo) || (codigo != materia.Codigo && MateriaExists(materia.Codigo)))
+                return NotFound($"La materia {codigo} no existe o el codigo: {materia.Codigo} ya existe");
+            _db.MateriasRepository.Update(codigo, Mapper.Map<Materias>(materia));
             bool result = _db.Save();
             if (!result)
-                return StatusCode(500, $"Ocurrio un error al tratar de actualizar la materia {materia.Codigo}.");
+                return StatusCode(500, $"Ocurrio un error al tratar de actualizar la materia {codigo}.");
             return new NoContentResult();
         }
 
         private bool MateriaExists(ushort codigo)
         {
-            var materia = _db.MateriasRepository.Get(codigo);
-            return materia != null;
+            return _db.MateriasRepository.Exists(materia => materia.Codigo == codigo);
         }
     }
 }

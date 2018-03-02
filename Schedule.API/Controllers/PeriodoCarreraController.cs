@@ -98,11 +98,11 @@ namespace Schedule.API.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
-            if (!PeriodoExists(periodo.IdPeriodo))
-                return NotFound($"El periodo academico no existe {periodo.IdPeriodo}");
+            if (!PeriodoExists(id))
+                return NotFound($"El periodo academico no existe {id}");
             SetPeriodoDefaults(periodo);
             periodo.IdPeriodo = id;
-            _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarrera>(periodo));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el periodo {periodo.NombrePeriodo}");
@@ -111,7 +111,7 @@ namespace Schedule.API.Controllers
 
         private bool PeriodoExists(int idPeriodo)
         {
-            return _db.PeriodoCarreraRepository.Get(idPeriodo) != null;
+            return _db.PeriodoCarreraRepository.Exists(pc => pc.IdPeriodo == idPeriodo);
         }
     }
 }

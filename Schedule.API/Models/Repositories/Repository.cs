@@ -39,6 +39,16 @@ namespace Schedule.API.Models.Repositories
         }
 
         /// <summary>
+        /// Indica si existe una entidad que concuerde con la expresion pasada
+        /// </summary>
+        /// <param name="predicate">Predicado de filtrado</param>
+        /// <returns>True en caso de existir(>=1), False en caso contrario </returns>
+        public virtual bool Exists(Expression<Func<TEntity, bool>> predicate)
+        {
+            return _dbSet.Where(predicate).Count() >= 1;
+        }
+
+        /// <summary>
         /// Obtiene un IEnumerable de TEntity acorde al predicado
         /// </summary>
         /// <param name="predicate">Predicado de filtrado</param>
