@@ -4,9 +4,9 @@ function confirmCreateAulas() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_aulas").valid();        
+                var isValid = $("#form_aulas").valid();
                 if (!isValid)
-                    return false;  
+                    return false;
                 var aula = prepareAulaData();
                 createAula(aula);
             }
@@ -17,7 +17,23 @@ function confirmCreateAulas() {
         }
     };
     var onContentReady = function () {
-        this.$content.find("#capacidad").on("keypress", onlyNum);
+        var content = this.$content;
+        content.find("#capacidad").on("keypress", onlyNum);
+        getAllTipoAulaMateria(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idTipo,
+                    text: obj.nombreTipo
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_tipo_aula").append(options);
+        });
+
+        globalFunction = function () {
+            onRequestsFinished("#form_aulas");
+        };
+        checkPendingRequest();
         validateAulaHandler();
     };
     confirmAlert("Agregar Aulas", "blue", "fa fa-plus", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
@@ -45,10 +61,10 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
         Ok: {
             text: 'Actualizar',
             btnClass: 'btn-orange',
-            action: function () {           
-                var isValid = $("#form_aulas").valid();        
+            action: function () {
+                var isValid = $("#form_aulas").valid();
                 if (!isValid)
-                    return false;  
+                    return false;
                 var aula = prepareAulaData();
                 updateAula(this.$content.find("#id_aula").val(), aula);
             }
@@ -60,12 +76,27 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
     };
 
     var onContentReady = function () {
+        var content = this.$content;
+        getAllTipoAulaMateria(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idTipo,
+                    text: obj.nombreTipo
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_tipo_aula").append(options).val(idTipoAula);
+        });
+
+        globalFunction = function () {
+            onRequestsFinished("#form_aulas");
+        };
+        checkPendingRequest();
+
         this.$content.find("#id_aula").val(idAula);
         this.$content.find("#nombre_aula").val(nombreAula);
         this.$content.find("#capacidad").val(capacidad);
-        this.$content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         this.$content.find("#capacidad").on("keypress", onlyNum);
-        Materialize.updateTextFields();
         validateAulaHandler();
     };
     confirmAlert("Editar Aula", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Aulas.html", buttons, onContentReady);
@@ -160,7 +191,7 @@ function prepareAulaData() {
     var aula = {
         nombreAula: $("#nombre_aula").val(),
         capacidad: $("#capacidad").val(),
-        idTipo: $("#tipo_aula").is(":checked") ? 2 : 1
+        idTipo: $("#select_tipo_aula").val()
     };
     return aula;
 }
@@ -206,6 +237,9 @@ function validateAulaHandler(selector = "#form_aulas") {
             capacidad: {
                 required: true,
                 range: [10, 99]
+            },
+            select_tipo_aula: {
+                required: true
             }
         },
         messages: {
@@ -218,6 +252,9 @@ function validateAulaHandler(selector = "#form_aulas") {
                 minlength: "La capacidad del aula debe ser de 2 digitos.",
                 range: "La capacidad del aula debe ser mayor a 10 y menor a 99."
             },
+            select_tipo_aula: {
+                required: "Debe seleccionar un tipo de aula. ",
+            }
         },
         errorPlacement: function (error, element) {
             error.appendTo("#form_aulas");

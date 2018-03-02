@@ -8,7 +8,7 @@
 
 <head>
     <title>Login</title>
-    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" href="~/favicon.ico" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +36,7 @@
                 <div class="row">
                     <div class="col s12 m8 offset-m2">
                         <div class="z-depth-2 row" style="padding: 15px 15px 0px 0px;">
-                            <form id="formLogin" class="col s12" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl = "@ViewData["ReturnUrl"]">
+                            <form id="formLogin" class="col s12" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <i class="fa fa-user prefix"></i>
@@ -70,9 +70,9 @@
                 </div>
                 @* Si existe algun error en el modelo se genera esto *@
                 @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
-            {
-                    @foreach (var modelError in Html.ViewData.ModelState.SelectMany(keyValuePair => keyValuePair.Value.Errors))
                 {
+                    @foreach (var modelError in Html.ViewData.ModelState.SelectMany(keyValuePair => keyValuePair.Value.Errors))
+                    {
                         <input type="hidden" class="error" value="@modelError.ErrorMessage" />
                     }
                 }

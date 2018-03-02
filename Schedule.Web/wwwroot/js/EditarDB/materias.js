@@ -4,9 +4,9 @@ function confirmCreateMaterias() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_materias").valid();        
+                var isValid = $("#form_materias").valid();
                 if (!isValid)
-                    return false; 
+                    return false;
                 var materia = prepareMateriaData(this.$content);
                 createMateria(materia);
             }
@@ -43,13 +43,24 @@ function confirmCreateMaterias() {
             content.find("#select_carrera").append(options);
         });
 
+        getAllTipoAulaMateria(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idTipo,
+                    text: obj.nombreTipo
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_tipo_materia").append(options);
+        });
+
         globalFunction = function () {
             onRequestsFinished("#form_materias");
         };
         checkPendingRequest();
         validateMateriaHandler();
     };
-    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady);
+    confirmAlert("Agregar Materias", "blue", "fa fa-plus", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 l10 offset-l1");
 }
 
 function confirmDeleteMaterias(data) {
@@ -69,15 +80,15 @@ function confirmDeleteMaterias(data) {
     confirmAlert("Borrar Materia", "red", "fa fa-question-circle", "¿Está seguro que desea continuar?", buttons);
 }
 
-function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarrera, horasAcademicasTotales, horasAcademicasSemanales) {
+function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoMateria, idCarrera, horasAcademicasTotales, horasAcademicasSemanales) {
     var buttons = {
         Ok: {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                var isValid = $("#form_materias").valid();        
+                var isValid = $("#form_materias").valid();
                 if (!isValid)
-                    return false; 
+                    return false;
                 var materia = prepareMateriaData(this.$content);
                 updateMateria(codigo, materia);
             }
@@ -112,6 +123,17 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
             content.find("#select_carrera").append(options).val(idCarrera);
         });
 
+        getAllTipoAulaMateria(function (data) {
+            var arrayData = data.map(function (obj) {
+                return {
+                    id: obj.idTipo,
+                    text: obj.nombreTipo
+                };
+            });
+            var options = createSelectOptions(arrayData);
+            content.find("#select_tipo_materia").append(options).val(idTipoMateria);
+        });
+
         globalFunction = function () {
             onRequestsFinished("#form_materias");
         };
@@ -121,11 +143,10 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoAula, idCarre
         content.find("#asignatura").val(asignatura);
         content.find("#horas_academicas_t").val(horasAcademicasTotales);
         content.find("#horas_academicas_s").val(horasAcademicasSemanales);
-        content.find("#tipo_aula").prop("checked", idTipoAula == 2 ? true : false);
         content.find(".onlyNum").on("keypress", onlyNum);
         validateMateriaHandler();
     };
-    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady);
+    confirmAlert("Editar Materias", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Materias.html", buttons, onContentReady, "col s12 l10 offset-l1");
 }
 
 /**
@@ -138,7 +159,7 @@ function prepareMateriaData(object) {
         codigo: object.find("#codigo").val(),
         asignatura: object.find("#asignatura").val(),
         idSemestre: object.find("#select_semestre").val(),
-        idTipo: object.find("#tipo_aula").is(":checked") ? 2 : 1,
+        idTipo: object.find("#select_tipo_materia").val(),
         idCarrera: object.find("#select_carrera").val(),
         horasAcademicasTotales: object.find("#horas_academicas_t").val(),
         horasAcademicasSemanales: object.find("#horas_academicas_s").val()
@@ -272,6 +293,9 @@ function validateMateriaHandler(selector = "#form_materias") {
             select_semestre: {
                 required: true
             },
+            select_tipo_materia: {
+                required: true
+            },
             select_carrera: {
                 required: true
             },
@@ -298,6 +322,9 @@ function validateMateriaHandler(selector = "#form_materias") {
             },
             select_carrera: {
                 required: "Debe seleccionar una carrera. ",
+            },
+            select_tipo_materia: {
+                required: "Debe seleccionar una materia. "
             },
             horas_academicas_t: {
                 required: "El numero de horas academicas totales es requerido. ",

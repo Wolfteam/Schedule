@@ -1,4 +1,4 @@
-<form id="form_aulas" class="col s12">
+<form id="form_aulas" class="col s12" style="display:none">
     <div class="row">
         <div class="input-field col s12">
             <i class="material-icons prefix">comment</i>
@@ -15,11 +15,22 @@
         </div>
     </div>
     <div class="row">
-        <div class="switch">
-            <label>Teoria
-                <input id="tipo_aula" type="checkbox">
-                <span class="lever"></span>Laboratorio
-            </label>
+        <div class="input-field col s12">
+            <i class="material-icons prefix">check</i>
+            <select id="select_tipo_aula" name="select_tipo_aula" class="select2 required">
+                <option value="" disabled selected="selected">Seleccione el tipo de aula...</option>
+            </select>
         </div>
     </div>
+    <div class="row" style="position:fixed">
+        <div class="col s12 selectResults"></div>
+    </div>
 </form>
+
+<div class="col s12 progressBar">
+    <div class="row">
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+    </div>
+</div>

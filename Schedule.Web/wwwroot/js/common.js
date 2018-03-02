@@ -53,4 +53,5 @@ var apiAccount = "api/Usuarios",
     apiProfesores = "api/Profesores",
     apiProfesorMateria = "api/ProfesorMateria",
     apiSecciones = "api/Secciones",
-    apiSemestres = "api/Semestres";
+    apiSemestres = "api/Semestres",
+    apiTipoAulaMateria = "api/TipoAulaMateria";
