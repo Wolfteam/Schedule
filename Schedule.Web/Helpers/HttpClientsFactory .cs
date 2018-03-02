@@ -28,6 +28,8 @@ public class HttpClientsFactory : IHttpClientsFactory
         // Agregamos la api
         var apiServer = _appSettings.Value.URLBaseAPI;
         _httpClient.BaseAddress = new Uri(apiServer);
+        _httpClient.DefaultRequestHeaders.Accept.Clear();
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         HttpClients.Add("ScheduleAPI", _httpClient);
     }
 
@@ -49,8 +51,6 @@ public class HttpClientsFactory : IHttpClientsFactory
 
     public void UpdateClientToken(HttpClient httpClient, string token)
     {
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         if (!String.IsNullOrEmpty(token))
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
