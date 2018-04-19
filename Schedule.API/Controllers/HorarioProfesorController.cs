@@ -344,7 +344,7 @@ namespace Schedule.API.Controllers
         /// </summary>
         /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
         /// <param name="rowStart">Entero que indica la fila donde se empieza a aplicar los estilos</param>
-        public void SetPlanifacionAcademicaReportBodyStyles(ExcelWorksheet worksheet, int rowStart)
+        private void SetPlanifacionAcademicaReportBodyStyles(ExcelWorksheet worksheet, int rowStart)
         {
             string celda = String.Format("B{0}:I{0}", rowStart);
             using (ExcelRange range = worksheet.Cells[celda])
@@ -369,7 +369,7 @@ namespace Schedule.API.Controllers
         /// <param name="worksheet">Hoja de PlanifacionAcademica</param>
         /// <param name="rowStart">Entero que indica la fila donde se empieza a aplicar los estilos</param>
         /// <param name="rowEnd">Entero que indica la fila donde se termina de aplicar los estilos</param>
-        public void SetPlanifacionHorarioReportBodyStyles(ExcelWorksheet worksheet, int rowStart, int rowEnd)
+        private void SetPlanifacionHorarioReportBodyStyles(ExcelWorksheet worksheet, int rowStart, int rowEnd)
         {
             using (ExcelRange range = worksheet.Cells[rowStart, 2, rowEnd, 9])
             {
@@ -738,7 +738,7 @@ namespace Schedule.API.Controllers
         /// <param name="idHoraFin">Id de la hora de fin</param>
         /// <param name="idDia">Id del dia</param>
         /// <returns>True en caso de no existir choque de semestre</returns>
-        public bool ValidateChoqueSemestre(ushort codigo, byte idSemestre, byte idHoraInicio, byte idHoraFin, byte idDia)
+        private bool ValidateChoqueSemestre(ushort codigo, byte idSemestre, byte idHoraInicio, byte idHoraFin, byte idDia)
         {
             bool result = true;
             if (idSemestre > 9)
