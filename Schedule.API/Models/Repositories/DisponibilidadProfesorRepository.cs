@@ -64,7 +64,6 @@ namespace Schedule.API.Models.Repositories
         public DisponibilidadProfesorDetailsDTO GetByCedula(int cedula)
         {
             var disponibilidad = HorariosContext.DisponibilidadProfesores
-                .Include(p => p.Profesores.PrioridadProfesor)
                 .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
 
             DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO();
@@ -73,7 +72,6 @@ namespace Schedule.API.Models.Repositories
                 return result;
 
             result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>();
-            result.HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir;
             result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
 
             return result;
