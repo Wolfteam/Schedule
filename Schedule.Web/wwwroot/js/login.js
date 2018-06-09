@@ -1,18 +1,12 @@
-﻿$(".progress").hide();
+﻿showLoading(false);
 $(document).ready(function () {
     //Si existen errores en el formulario muestra un toast con los mismos
     $(".error").each(function () {
         toast($(this).val());
     });
 
-    //Para que se borren todos los toast
-    $(".dismissToast").click(function () {
-        Materialize.Toast.removeAll();
-    });
+    $("#btnLogin").click(() => showLoading(true));
 
-    $("#btnLogin").click(function () {
-        $(".progress").show();
-    });
     //Valida el formulario de lado cliente
     $("#formLogin").validate({
         rules: {
@@ -28,7 +22,7 @@ $(document).ready(function () {
         messages: {
             username: {
                 required: "El username es requerido",
-                minlength:"La longitud minima es de 4 caracteres"
+                minlength: "La longitud minima es de 4 caracteres"
             },
             password: {
                 required: "La password es requerida",
@@ -36,7 +30,7 @@ $(document).ready(function () {
             }
         },
         invalidHandler: function (event, validator) { //display error alert on form submit              
-            $(".progress").hide();
+            showLoading(false);
         },
     });
 });

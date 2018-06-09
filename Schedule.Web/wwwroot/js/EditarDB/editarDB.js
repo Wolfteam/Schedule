@@ -1,6 +1,3 @@
-var onError = function (error) {
-    toast("Error, Fallo al comunicar con la api. Codigo: " + error.status + ", " + error.statusText);
-};
 var onComplete = function () {
     $("#barra-progeso").hide();
 };
