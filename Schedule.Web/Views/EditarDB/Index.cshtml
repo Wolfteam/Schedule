@@ -1,13 +1,9 @@
 @{ ViewData["Title"] = "Editar Bases de datos"; }
 
 <div class="container">
-    <div class="row" id="barra-progeso" style="display:none">
-        <div class="col s12">
-            <div class="progress">
-                <div class="indeterminate"></div>
-            </div>
-        </div>
-    </div>
+    @{
+        Html.RenderPartial("_ProgressBar");
+    }
     <div class="row">
         <div class="col s12">
             <div class="section">
@@ -21,8 +17,8 @@
                     <option value="7">Periodo Academico</option>
                     <option value="4">Profesores</option>
                     <option value="5">Profesor por materia</option>
-                    <option value="6">Secciones</option> 
-                    <option value="8">Usuarios</option>                      
+                    <option value="6">Secciones</option>
+                    <option value="8">Usuarios</option>
                 </select>
                 <label>Seleccione...</label>
             </div>
