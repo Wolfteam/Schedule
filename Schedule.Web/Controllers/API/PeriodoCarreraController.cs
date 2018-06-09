@@ -23,7 +23,7 @@ namespace Schedule.Web.Controllers.API
             _unitOfWork = new UnitOfWork(httpClientsFactory);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] PeriodoCarreraDTO periodo)
         {
@@ -34,7 +34,7 @@ namespace Schedule.Web.Controllers.API
             return CreatedAtRoute("GetPeriodoCarrera", new { id = 0 }, periodo);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpGet("{id}", Name = "GetPeriodoCarrera")]
         public async Task<PeriodoCarreraDTO> GetAsync(int id)
         {
@@ -42,7 +42,7 @@ namespace Schedule.Web.Controllers.API
             return await _unitOfWork.PeriodoCarreraRepository.GetAsync(id);
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpGet]
         public async Task<IEnumerable<PeriodoCarreraDTO>> GetAllAsync()
         {
@@ -57,7 +57,7 @@ namespace Schedule.Web.Controllers.API
             return await _unitOfWork.PeriodoCarreraRepository.GetCurrentPeriodoAsync();
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveAsync(int id)
         {
@@ -68,7 +68,7 @@ namespace Schedule.Web.Controllers.API
             return NoContent();
         }
 
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] PeriodoCarreraDTO periodo)
         {
