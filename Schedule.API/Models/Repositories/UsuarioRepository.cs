@@ -11,7 +11,7 @@ namespace Schedule.API.Models.Repositories
         {
             get { return _context as HorariosContext; }
         }
-        
+
         public UsuarioRepository(DbContext context)
             : base(context)
         {
@@ -38,8 +38,11 @@ namespace Schedule.API.Models.Repositories
         /// <returns>True en caso de existir</returns>
         public bool UserExists(string username, string password)
         {
-            var usuario = HorariosContext.Admin.FirstOrDefault(x => x.Username == username && x.Password == password);
-            if (usuario != null)
+            var usuarioExist = HorariosContext.Admin
+                .AsNoTracking()
+                .Where(x => x.Username == username && x.Password == password)
+                .Count() == 1;
+            if (usuarioExist)
                 return true;
             else
                 return false;
@@ -54,6 +57,33 @@ namespace Schedule.API.Models.Repositories
         {
             var privilegio = (Entities.Privilegios)HorariosContext.Admin.FirstOrDefault(u => u.Username == username).IdPrivilegio;
             return privilegio.Equals(Entities.Privilegios.Administrador);
+        }
+
+        /// <summary>
+        /// Verifica si la <paramref name="password"/> corresponde a la <paramref name="cedula"/> dada
+        /// </summary>
+        /// <param name="cedula">Cedula del usuario</param>
+        /// <param name="password">Password asociada a la cedula</param>
+        /// <returns>True en caso de que la cedula tenga el password indicado</returns>
+        public bool IsCurrentPasswordValid(uint cedula, string password)
+        {
+            bool isCurrentPasswordValid = HorariosContext.Admin
+                .AsNoTracking()
+                .Where(x => x.Cedula == cedula && x.Password == password)
+                .Count() == 1;
+            return isCurrentPasswordValid;
+        }
+
+        /// <summary>
+        /// Actualiza el password de un usuario en particular
+        /// </summary>
+        /// <param name="cedula">Cedula del usuario</param>
+        /// <param name="newPassowrd">Password a colocar</param>
+        public void ChangePassword(uint cedula, string newPassowrd)
+        {
+            var usuario = base.Get(cedula);
+            usuario.Password = newPassowrd;
+            Update(usuario);
         }
     }
 }
