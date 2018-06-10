@@ -89,79 +89,75 @@ gulp.task("copy-files", function () {
 //Esto no ta completo todavia, quizas quitar document ready de los js para poder
 //concatenarlos a todos
 gulp.task("concat-minify-js", function () {
+    //data.min.js
+    gulp.src([
+        paths.webroot + "js/Data/*.js",
+        "!" + paths.webroot + 'js/Data/*.min.js'
+    ])
+    .pipe(concat("data.min.js"))
+    .pipe(uglify())
+    .pipe(gulp.dest(paths.webroot + "js/Data"));
     //changePassword.min.js
-    gulp.src(
-            [
-                paths.webroot + "js/Account/*.js",
-                "!" + paths.webroot + 'js/Account/*.min.js'
-            ]
-        )
+    gulp.src([
+            paths.webroot + "js/Account/*.js",
+            "!" + paths.webroot + 'js/Account/*.min.js'
+        ])
         .pipe(concat("account.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/Account"));
     //cargarDisponibilidad.min.js
-    gulp.src(
-            [
-                paths.webroot + "js/CargarDisponibilidad/*.js",
-                "!" + paths.webroot + 'js/CargarDisponibilidad/*.min.js'
-            ]
-        )
+    gulp.src([
+            paths.webroot + "js/CargarDisponibilidad/*.js",
+            "!" + paths.webroot + 'js/CargarDisponibilidad/*.min.js'
+        ])
         .pipe(concat("cargarDisponibilidad.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/CargarDisponibilidad"));
     //editarDB.min.js
-    gulp.src(
-            [
-                paths.webroot + "js/EditarDB/*.js",
-                "!" + paths.webroot + 'js/EditarDB/*.min.js'
-            ]
-        )
+    gulp.src([
+            paths.webroot + "js/EditarDB/*.js",
+            "!" + paths.webroot + 'js/EditarDB/*.min.js'
+        ])
         .pipe(concat("editarDB.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/EditarDB"));
     //home.min.js
-    gulp.src(
-            [
-                paths.webroot + "js/Home/*.js",
-                paths.webroot + "js/EditarDB/periodoCarrera.js",
-                "!" + paths.webroot + 'js/Home/*.min.js'
-            ]
-        )
+    gulp.src([
+            paths.webroot + "js/Home/*.js",
+            paths.webroot + "js/EditarDB/periodoCarrera.js",
+            "!" + paths.webroot + 'js/Home/*.min.js'
+        ])
         .pipe(concat("home.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js/home"));
-
 });
 
 //Esto concatena y minifca los js de las librerias/plugin utilizados ademas de las cosas comunes
 gulp.task("concat-minify", function () {
     //site.min.js
-    return gulp.src(
-            [
-                paths.webroot + "lib/jquery/jquery.min.js",
-                paths.webroot + "lib/materialize-css/js/materialize.min.js",
-                paths.webroot + "lib/jszip/jszip.min.js",
-                paths.webroot + "lib/pdfmake.min.js",
-                paths.webroot + "lib/pdfmake/vfs_fonts.js",
-                paths.webroot + "lib/datatables.net/jquery.dataTables.js",
-                paths.webroot + "lib/datatables.net-buttons/dataTables.buttons.min.js",
-                paths.webroot + "lib/datatables.net-buttons/buttons.colVis.min.js",
-                paths.webroot + "lib/datatables.net-buttons/buttons.flash.min.js",
-                paths.webroot + "lib/datatables.net-buttons/buttons.html5.min.js",
-                paths.webroot + "lib/datatables.net-buttons/buttons.print.min.js",
-                paths.webroot + "lib/datatables.net-keytable/dataTables.keyTable.min.js",
-                paths.webroot + "lib/datatables.net-responsive/dataTables.responsive.min.js",
-                paths.webroot + "lib/datatables.net-select/dataTables.select.min.js",
-                paths.webroot + "lib/jquery-confirm/jquery-confirm.min.js",
-                paths.webroot + "lib/jquery-validation/jquery.validate.min.js",
-                paths.webroot + "lib/select2/select2.min.js",
-                paths.webroot + "lib/select2/i18n/es.js",
-                paths.webroot + "js/common.js",
-                paths.webroot + "js/utilidades.js"
-            ]
-        )
+    return gulp.src([
+            paths.webroot + "lib/jquery/jquery.min.js",
+            paths.webroot + "lib/materialize-css/js/materialize.min.js",
+            paths.webroot + "lib/jszip/jszip.min.js",
+            paths.webroot + "lib/pdfmake.min.js",
+            paths.webroot + "lib/pdfmake/vfs_fonts.js",
+            paths.webroot + "lib/datatables.net/jquery.dataTables.js",
+            paths.webroot + "lib/datatables.net-buttons/dataTables.buttons.min.js",
+            paths.webroot + "lib/datatables.net-buttons/buttons.colVis.min.js",
+            paths.webroot + "lib/datatables.net-buttons/buttons.flash.min.js",
+            paths.webroot + "lib/datatables.net-buttons/buttons.html5.min.js",
+            paths.webroot + "lib/datatables.net-buttons/buttons.print.min.js",
+            paths.webroot + "lib/datatables.net-keytable/dataTables.keyTable.min.js",
+            paths.webroot + "lib/datatables.net-responsive/dataTables.responsive.min.js",
+            paths.webroot + "lib/datatables.net-select/dataTables.select.min.js",
+            paths.webroot + "lib/jquery-confirm/jquery-confirm.min.js",
+            paths.webroot + "lib/jquery-validation/jquery.validate.min.js",
+            paths.webroot + "lib/select2/select2.min.js",
+            paths.webroot + "lib/select2/i18n/es.js",
+            paths.webroot + "js/common.js",
+            paths.webroot + "js/utilidades.js"
+        ])
         .pipe(concat("site.min.js"))
         .pipe(uglify())
         .pipe(gulp.dest(paths.webroot + "js"));
-
 });
