@@ -144,7 +144,7 @@ function deleteSecciones(arrayCodigos) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la(s) seccion(es).");
                 return;
             }
-        });
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -156,7 +156,7 @@ function deleteSecciones(arrayCodigos) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(false);
     };
     checkPendingRequest();
 }

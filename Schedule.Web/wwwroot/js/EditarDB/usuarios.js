@@ -162,7 +162,7 @@ function deleteUsuarios(cedulaArray) {
                 confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el usuario.");
                 return;
             }
-        });
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -174,7 +174,7 @@ function deleteUsuarios(cedulaArray) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        showLoading(true);
+        showLoading(false);
     };
     checkPendingRequest();
 }

@@ -71,7 +71,7 @@ function getAllUsuarios(onSucceedCallback, onErrorCallback = null, onCompleteCal
     makeAjaxCall(apiAccount,
         (response, textStatus, xhr) => onSucceedCallback(response, textStatus, xhr),
         (error) => onErrorCallback === null ? onError(error) : onErrorCallback(error),
-        onError, null, "GET",
+        null, "GET",
         () => onCompleteCallback === null ? onComplete() : onCompleteCallback()
     );
 }

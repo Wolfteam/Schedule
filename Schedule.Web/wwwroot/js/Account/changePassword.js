@@ -46,7 +46,7 @@ function validateChangePasswordHandler(selector = "#div_change_password") {
                 required: true,
                 minlength: 8,
                 maxlength: 10,
-                // equalsTo: password
+                equalTo: "#password"
             }
         },
         messages: {

@@ -41,7 +41,7 @@ function getAllPeriodos(onSucceedCallback, onErrorCallback = null, onCompleteCal
     makeAjaxCall(apiPeriodoCarrera,
         (response, textStatus, xhr) => onSucceedCallback(response, textStatus, xhr),
         (error) => onErrorCallback === null ? onError(error) : onErrorCallback(error),
-        onError, null, "GET",
+        null, "GET",
         () => onCompleteCallback === null ? onComplete() : onCompleteCallback()
     );
 }
@@ -52,7 +52,7 @@ function getAllPeriodos(onSucceedCallback, onErrorCallback = null, onCompleteCal
  * @param {Function} onErrorCallback Funcion de callback en caso de error. Null por default
  * @param {Function} onCompleteCallback Funcion de callback al completar el ajax. Null por default
  */
-function getCurrentPeriodo(callback) {
+function getCurrentPeriodo(onSucceedCallback, onErrorCallback = null, onCompleteCallback = null) {
     makeAjaxCall(apiPeriodoCarrera + "/Current",
         (response, textStatus, xhr) => onSucceedCallback(response, textStatus, xhr),
         (error) => onErrorCallback === null ? onError(error) : onErrorCallback(error),

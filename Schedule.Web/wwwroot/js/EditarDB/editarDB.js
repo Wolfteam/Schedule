@@ -1,7 +1,3 @@
-var onComplete = function () {
-    $("#barra-progeso").hide();
-};
-
 $(document).ready(function () {
     $("#btn_buscar").click(btnBuscarOnClick);
 
