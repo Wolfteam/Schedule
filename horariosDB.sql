@@ -122,7 +122,7 @@ CREATE TABLE secciones(
 	numero_secciones TINYINT UNSIGNED NOT NULL,
 	cantidad_alumnos TINYINT UNSIGNED NOT NULL,
 	id_periodo INT NOT NULL,
-	PRIMARY KEY (codigo),
+	PRIMARY KEY (codigo, id_periodo),
 	FOREIGN KEY (codigo) REFERENCES materias (codigo)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
