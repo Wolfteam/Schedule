@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Schedule.API.Models;
+using Newtonsoft.Json;
 using Schedule.API.Helpers;
+using Schedule.API.Models;
 using Schedule.Entities;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Text;
-using Swashbuckle.AspNetCore.Swagger;
-using Newtonsoft.Json;
 
 namespace Schedule.API
 {
