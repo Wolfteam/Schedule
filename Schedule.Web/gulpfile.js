@@ -89,6 +89,16 @@ gulp.task("copy-files", function () {
 //Esto no ta completo todavia, quizas quitar document ready de los js para poder
 //concatenarlos a todos
 gulp.task("concat-minify-js", function () {
+    //changePassword.min.js
+    gulp.src(
+            [
+                paths.webroot + "js/Account/*.js",
+                "!" + paths.webroot + 'js/Account/*.min.js'
+            ]
+        )
+        .pipe(concat("account.min.js"))
+        .pipe(uglify())
+        .pipe(gulp.dest(paths.webroot + "js/Account"));
     //cargarDisponibilidad.min.js
     gulp.src(
             [

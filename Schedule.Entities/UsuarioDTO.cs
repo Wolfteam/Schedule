@@ -2,12 +2,6 @@
 
 namespace Schedule.Entities
 {
-    public enum Privilegios
-    {
-        Profesor = 1,
-        Administrador = 2
-    }
-
     public class UsuarioBaseDTO : PersonaBase
     {
         [Required]

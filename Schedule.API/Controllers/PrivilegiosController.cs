@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class PrivilegiosController : BaseController
     {
         public PrivilegiosController(HorariosContext context) 

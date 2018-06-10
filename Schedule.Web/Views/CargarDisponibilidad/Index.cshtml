@@ -4,13 +4,9 @@
 }
 
 <div class="container">
-    <div class="row" id="barra-progeso" style="display:none">
-        <div class="col s12">
-            <div class="progress">
-                <div class="indeterminate"></div>
-            </div>
-        </div>
-    </div>
+    @{
+        Html.RenderPartial("_ProgressBar");
+    }
     <div class="row">
         <div class="col s12">
             <div class="section">
@@ -20,178 +16,178 @@
         </div>
     </div>
     <div class="row">
-		<div class="col s12 m6">
-		
-				<div class="input-field">
-					<i class="material-icons prefix">check</i>   
-					<select id="select_profesor">
-						<option value="-1" disabled selected>Seleccione...</option>
-					@foreach (var item in Model)
-					{
-						<option value="@item.Cedula">@item.Nombre @item.Apellido</option>        
-					}
-					</select>
-				</div>
-		
-		</div>
-		<div class="col s12 m3">
-			
-				<div class="input-field">
-					<i class="material-icons prefix">hourglass_full</i>   
-					<label for="horas_a_cumplir">Horas a cumplir</label>    
-					<input type="text" id="horas_a_cumplir" maxlength="2" value="0" disabled>
-				</div>  
-		
-		</div>
-		<div class="col s12 m3">
-			
-				<div class="input-field">
-					<i class="material-icons prefix">hourglass_empty</i>
-					<label for="horas_restantes">Horas restantes</label>
-					<input type="text" id="horas_restantes" maxlength="2" value="0" disabled>
-				</div>
-		
-		</div>
+        <div class="col s12 m6">
+
+            <div class="input-field">
+                <i class="material-icons prefix">check</i>
+                <select id="select_profesor">
+                    <option value="-1" disabled selected>Seleccione...</option>
+                    @foreach (var item in Model)
+                    {
+                        <option value="@item.Cedula">@item.Nombre @item.Apellido</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+        <div class="col s12 m3">
+
+            <div class="input-field">
+                <i class="material-icons prefix">hourglass_full</i>
+                <label for="horas_a_cumplir">Horas a cumplir</label>
+                <input type="text" id="horas_a_cumplir" maxlength="2" value="0" disabled>
+            </div>
+
+        </div>
+        <div class="col s12 m3">
+
+            <div class="input-field">
+                <i class="material-icons prefix">hourglass_empty</i>
+                <label for="horas_restantes">Horas restantes</label>
+                <input type="text" id="horas_restantes" maxlength="2" value="0" disabled>
+            </div>
+
+        </div>
     </div>
     <div class="row">
         <div class="col s12">
             <table class="bordered centered responsive-table" id="tabla_horario">
-			    <thead>
-				    <tr>
-				    	<th>Hora</th>
-				        <th>Lunes</th>
-				        <th>Martes</th>
-				        <th>Miercoles</th> 
-				        <th>Jueves</th>
-				        <th>Viernes</th>
-				        <th>Sabado</th>
-				    </tr>    	
-			    </thead>
-			    <tbody>
-			    	<tr>
-			    		<td class="hora">7:00am a 7:50am</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">7:50am a 8:40am</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">8:40am a 9:30am</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">9:30am a 10:20am</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">10:20am a 11:10am</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">11:10am a 12:00pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-					<tr>
-			    		<td class="hora">12:00pm a 1:00pm</td>
-			    		<td class="hora_almuerzo grey darken-4 white-text text-darken-2" colspan="6">Hora de almuerzo</td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">1:00pm a 1:50pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">1:50pm a 2:40pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">2:40pm a 3:30pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">3:30pm a 4:20pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">4:20pm a 5:10pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    	<tr>
-			    		<td class="hora">5:10pm a 6:00pm</td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    		<td></td>
-			    	</tr>
-			    </tbody>      
-			</table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miercoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Sabado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="hora">7:00am a 7:50am</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">7:50am a 8:40am</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">8:40am a 9:30am</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">9:30am a 10:20am</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">10:20am a 11:10am</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">11:10am a 12:00pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">12:00pm a 1:00pm</td>
+                        <td class="hora_almuerzo grey darken-4 white-text text-darken-2" colspan="6">Hora de almuerzo</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">1:00pm a 1:50pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">1:50pm a 2:40pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">2:40pm a 3:30pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">3:30pm a 4:20pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">4:20pm a 5:10pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">5:10pm a 6:00pm</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-	<div class="row">
-		<div class="col s12 center">
-			<button id="btn_guardar_cambios" class="hoverable z-depth-3 btn blue waves-effect waves-light" style="display:none">
-				Guardar Cambios
-				<i class="fa fa-floppy-o right"></i>
-			</button>
-		</div>
-	</div>
+    <div class="row">
+        <div class="col s12 center">
+            <button id="btn_guardar_cambios" class="hoverable z-depth-3 btn blue waves-effect waves-light" style="display:none">
+                Guardar Cambios
+                <i class="fa fa-floppy-o right"></i>
+            </button>
+        </div>
+    </div>
 </div>
 
 @section Scripts{

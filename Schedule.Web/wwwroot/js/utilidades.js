@@ -45,6 +45,7 @@ function confirmAlert(title, type, iconClass, content, buttons = null, onContent
 function toast(contenido, duration = 3000) {
     var toastContent = $("<span>" + contenido + "</span>").add($('<button class="btn-flat toast-action dismissToast">Ok</button>'));
     Materialize.toast(toastContent, duration);
+    $(".dismissToast").unbind("click").click(() => Materialize.Toast.removeAll());
 }
 
 /**
@@ -286,8 +287,7 @@ function createSelectOptions(arrayData, selector) {
 /**
  * Variable que contiene una funcion a ejecutar luego de llamar a checkPendingRequest
  */
-var globalFunction = function () {
-};
+var globalFunction = function () {};
 
 /**
  * Revisa si existen peticiones ajax pendientes,
@@ -311,7 +311,7 @@ function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
@@ -321,4 +321,16 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+/**
+ * Muestra la barra de progreso
+ * @param {boolean} show True para mostrarla, false para ocultarla
+ * @param {string} selector Selector de la barra de progreso (Default: "#barra-progeso")
+ */
+function showLoading(show, selector = "#barra-progeso") {
+    if (show)
+        $(selector).show();
+    else
+        $(selector).hide();
 }

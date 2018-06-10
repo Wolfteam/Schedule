@@ -8,7 +8,7 @@ using Schedule.API.Models;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class CarrerasController : BaseController
     {
         public CarrerasController(HorariosContext context) 

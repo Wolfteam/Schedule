@@ -7,7 +7,7 @@ using Schedule.Web.Models;
 
 namespace Schedule.Web.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class EditarDBController : BaseController
     {
         public EditarDBController(IOptions<AppSettings> appSettings, IHttpClientsFactory httpClientsFactory)
