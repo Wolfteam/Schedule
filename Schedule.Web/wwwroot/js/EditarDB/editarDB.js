@@ -1,7 +1,3 @@
-var onComplete = function () {
-    $("#barra-progeso").hide();
-};
-
 $(document).ready(function () {
     $("#btn_buscar").click(btnBuscarOnClick);
 
@@ -24,10 +20,10 @@ function btnBuscarOnClick() {
     $("#btn-flotante").show();
 
     var opcionSeleccionada = $("#select_editarDB").val();
-
+    showLoading(true);
     switch (opcionSeleccionada) {
         case "1": //Aulas
-            getAllAulas(function (data, textStatus, xhr) {
+            getAllAulas((data, textStatus, xhr) => {
                 titulos = ["Id", "Nombre", "Capacidad", "Tipo Aula"];
                 columnsData = [{
                         "data": "idAula"
@@ -47,7 +43,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "3": //Materias
-            getAllMaterias(function (data, textStatus, xhr) {
+            getAllMaterias((data, textStatus, xhr) => {
                 var titulos = ["Codigo", "Asignatura", "IdSemestre", "Semestre",
                     "IdCarrera", "Carrera", "IdTipoAulaMateria", "Tipo Materia",
                     "Horas Academicas Semanales", "Horas Academicas Totales"
@@ -89,7 +85,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "4": //Profesores
-            getAllProfesores(function (data, textStatus, xhr) {
+            getAllProfesores((data, textStatus, xhr) => {
                 var titulos = [
                     "Cedula", "Nombre", "Apellido",
                     "IdPrioridad", "Prioridad", "Horas a Cumplir"
@@ -119,7 +115,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "5": //ProfesorxMateria
-            getAllProfesoresMateria(function (data, textStatus, xhr) {
+            getAllProfesoresMateria((data, textStatus, xhr) => {
                 var titulos = [
                     "Id", "Cedula", "Nombre", "Apellido",
                     "Codigo", "Asignatura", "Semestre", "Carrera"
@@ -154,7 +150,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "6": //Secciones
-            getAllSecciones(function (data, textStatus, xhr) {
+            getAllSecciones((data, textStatus, xhr) => {
                 var titulos = [
                     "Codigo Materia", "Asignatura", "Semestre",
                     "Secciones", "Cantidad Alumnos", "Carrera"
@@ -184,7 +180,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "7": //Periodo Carrera
-            getAllPeriodos(function (data, textStatus, xhr) {
+            getAllPeriodos((data, textStatus, xhr) => {
                 var titulos = [
                     "Id", "Periodo", "Status", "Fecha Creacion"
                 ];
@@ -219,7 +215,7 @@ function btnBuscarOnClick() {
             });
             break;
         case "8": //Usuario
-            getAllUsuarios(function (data, textStatus, xhr) {
+            getAllUsuarios((data, textStatus, xhr) => {
                 var titulos = [
                     "Cedula", "Username", "Password", "Nombre", "Apellido", "IdPrivilegio", "Privilegio",
                 ];
@@ -251,7 +247,7 @@ function btnBuscarOnClick() {
             break;
         default:
             toast("Debe seleccionar una opcion");
-            $("#barra-progeso").hide();
+            showLoading(false);
             $("#btn-flotante").hide();
             break;
     }
@@ -325,6 +321,7 @@ function btnEditarOnClick() {
             break;
         default:
             toast("Debe seleccionar una opcion.");
+            showLoading(false);
             break;
     }
 }

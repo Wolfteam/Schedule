@@ -9,6 +9,7 @@ function onBtnSaveChangesClick() {
         return false;
     }
     let request = getChangePasswordData();
+    showLoading(true);
     changePassword(request, (response) => {
         toast(response.message);            
         $('input').val("");
@@ -22,20 +23,6 @@ function getChangePasswordData() {
         newPasswordConfirmation: $("#password_confirm").val()
     };
     return request;
-}
-
-/**
- * Cambia la password al usuario que se encuentra actualmente logeado
- * @param {Object} request Contiene la password actual, la nueva y la confirmacion de la nueva
- * @param {Function} callback Funcion de callback en caso de success
- */
-function changePassword(request, callback) {
-    showLoading(true);
-    makeAjaxCall("/" + apiAccount + "/ChangePassword",
-        (response) => callback(response),
-        (error) => onError(error),
-        request, "PUT", () => showLoading(false)
-    );
 }
 
 /**
@@ -59,7 +46,7 @@ function validateChangePasswordHandler(selector = "#div_change_password") {
                 required: true,
                 minlength: 8,
                 maxlength: 10,
-                // equalsTo: password
+                equalTo: "#password"
             }
         },
         messages: {

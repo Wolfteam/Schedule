@@ -4,11 +4,26 @@ function confirmCreateSecciones() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_secciones").valid();        
+                var isValid = $("#form_secciones").valid();
                 if (!isValid)
                     return false;
                 var seccion = prepareSeccionData(this.$content);
-                createSecciones(seccion);
+                showLoading(true);
+                createSecciones(seccion, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la(s) seccion(es) correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar la(s) seccion(es).");
+                });
             }
         },
         Cancelar: {
@@ -29,7 +44,7 @@ function confirmCreateSecciones() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_materia").append(options);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_secciones");
@@ -63,11 +78,26 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                var isValid = $("#form_secciones").valid();        
+                var isValid = $("#form_secciones").valid();
                 if (!isValid)
                     return false;
                 var seccion = prepareSeccionData(this.$content);
-                updateSeccion(codigo, seccion);
+                showLoading(true);
+                updateSeccion(codigo, seccion, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la seccion correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la seccion.");
+                });
             }
         },
         Cancelar: {
@@ -87,7 +117,7 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_materia").append(options).val(codigo);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_secciones");
@@ -103,55 +133,18 @@ function confirmEditSecciones(codigo, cantidadAlumnos, numeroSecciones) {
 }
 
 /**
- * Crea una seccion
- * @param {Object} seccion Objeto de tipo Seccion
- */
-function createSecciones(seccion) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiSecciones,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la(s) seccion(es) correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar la(s) seccion(es).");
-        },
-        onError, seccion, "POST", onComplete
-    );
-}
-
-/**
- * Elimina las secciones correspondientes a la materia indicada
- * @param {number} codigo Cedula del profesor a eliminar
- */
-function deleteSeccion(codigo) {
-    makeAjaxCall(apiSecciones + "/" + codigo,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la(s) seccion(es).");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
-/**
  * Elimina  las secciones correspondientes a los codigos en el array
  * @param {number[]} arrayCodigos Array de codigos de las materias a las cuales se eliminaran las secciones
  */
 function deleteSecciones(arrayCodigos) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < arrayCodigos.length; i++) {
-        deleteSeccion(arrayCodigos[i].materia.codigo);
+        deleteSeccion(arrayCodigos[i].materia.codigo, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la(s) seccion(es).");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -163,7 +156,7 @@ function deleteSecciones(arrayCodigos) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(false);
     };
     checkPendingRequest();
 }
@@ -183,46 +176,6 @@ function prepareSeccionData(object) {
 }
 
 /**
- * Obtiene todas las secciones
- * @param {Function} callback Funcion de callback
- */
-function getAllSecciones(callback) {
-    makeAjaxCall(apiSecciones,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
-}
-
-/**
- * Actualiza una seccion en particular
- * @param {number} codigo Codigo de la materia a actualizar
- * @param {Object} seccion Objeto de tipo seccion
- */
-function updateSeccion(codigo, seccion) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiSecciones + "/" + codigo,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la seccion correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la seccion.");
-        },
-        onError, seccion, "PUT", onComplete
-    );
-}
-
-/**
  * Valdia que una seccion tenga todas sus propiedades
  * @param {string} selector Selector del formulario seccion (#form_secciones por defecto)
  */
@@ -231,11 +184,11 @@ function validateSeccionHandler(selector = "#form_secciones") {
         rules: {
             numero_secciones: {
                 required: true,
-                range:[1,9]
+                range: [1, 9]
             },
             cantidad_alumnos: {
                 required: true,
-                range:[10,45]
+                range: [10, 45]
             },
             select_materia: {
                 required: true
@@ -244,7 +197,7 @@ function validateSeccionHandler(selector = "#form_secciones") {
         messages: {
             numero_secciones: {
                 required: "El numero de secciones es requerido. ",
-                range:"El numero de secciones debe estar entre 1-9. "
+                range: "El numero de secciones debe estar entre 1-9. "
             },
             cantidad_alumnos: {
                 required: "La cantidad de alumnos de la seccion es requerida. ",

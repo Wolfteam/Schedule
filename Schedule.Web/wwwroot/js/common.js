@@ -56,6 +56,16 @@ let apiAccount = "api/Usuarios",
     apiSemestres = "api/Semestres",
     apiTipoAulaMateria = "api/TipoAulaMateria";
 
-var onError = function (error) {
+/**
+ * Funcion usada por default en todos los llamados ajax
+ * en caso de error
+ * @param {*} error Objeto error proveniente del ajax
+ */
+let onError = (error) =>
     toast("Error, Fallo al comunicar con la api. Codigo: " + error.status + ", " + error.statusText);
-};
+
+/**
+ * Funcion usada por default en todos los llamados ajax 
+ * al completarla
+ */
+let onComplete = () => showLoading(false);

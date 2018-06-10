@@ -8,7 +8,22 @@ function confirmCreateAulas() {
                 if (!isValid)
                     return false;
                 var aula = prepareAulaData();
-                createAula(aula);
+                showLoading(true);
+                createAula(aula, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el aula correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear el aula.");
+                });
             }
         },
         Cancelar: {
@@ -28,7 +43,7 @@ function confirmCreateAulas() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_tipo_aula").append(options);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_aulas");
@@ -66,7 +81,23 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
                 if (!isValid)
                     return false;
                 var aula = prepareAulaData();
-                updateAula(this.$content.find("#id_aula").val(), aula);
+                let aulaId = this.$content.find("#id_aula").val();
+                showLoading(true);
+                updateAula(aulaId, aula, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el aula correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el aula.");
+                });
             }
         },
         Cancelar: {
@@ -86,7 +117,7 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_tipo_aula").append(options).val(idTipoAula);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_aulas");
@@ -103,55 +134,18 @@ function confirmEditAulas(idAula, nombreAula, capacidad, idTipoAula) {
 }
 
 /**
- * Crea una aula
- * @param {Object} aula Objeto de tipo aula
- */
-function createAula(aula) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiAula,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el aula correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear el aula.");
-        },
-        onError, aula, "POST", onComplete
-    );
-}
-
-/**
- * Elimina el aula
- * @param {number} id Id del aula a eliminar
- */
-function deleteAula(id) {
-    makeAjaxCall(apiAula + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el aula.");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
-/**
  * Elimina varias aulas selecionadas
  * @param {number[]} idArray Array de Ids de las aulas a eliminar
  */
 function deleteAulas(idArray) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < idArray.length; i++) {
-        deleteAula(idArray[i].idAula);
+        deleteAula(idArray[i].idAula, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el aula.");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -163,23 +157,9 @@ function deleteAulas(idArray) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(false);
     };
     checkPendingRequest();
-}
-
-/**
- * Obtiene todas las aulas
- * @param {Function} callback Funcion de callback
- */
-function getAllAulas(callback) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiAula,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
 }
 
 /**
@@ -194,33 +174,6 @@ function prepareAulaData() {
         idTipo: $("#select_tipo_aula").val()
     };
     return aula;
-}
-
-/**
- * Actualiza una aula
- * @param {number} id Id del aula a actualizar
- * @param {Object} aula Objeto de tipo aula
- */
-function updateAula(id, aula) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiAula + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el aula correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el aula.");
-        },
-        onError, aula, "PUT", onComplete
-    );
 }
 
 /**

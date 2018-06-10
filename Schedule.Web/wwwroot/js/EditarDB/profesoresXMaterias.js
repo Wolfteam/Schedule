@@ -4,11 +4,26 @@ function confirmCreateProfesorMateria() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_profesores_materias").valid();        
+                var isValid = $("#form_profesores_materias").valid();
                 if (!isValid)
                     return false;
                 var relacion = prepareProfesorMateriaData(this.$content);
-                createProfesorMateria(relacion);
+                showLoading(true);
+                createProfesorMateria(relacion, (data, textStatus, xhr) => {
+                    if (xhr.status !== 200) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la relacion correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear la relacion.");
+                });
             }
         },
         Cancelar: {
@@ -18,7 +33,7 @@ function confirmCreateProfesorMateria() {
     };
     var onContentReady = function () {
         var content = this.$content;
-        getAllProfesores(function (data) {
+        getAllProfesores((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.cedula,
@@ -27,9 +42,9 @@ function confirmCreateProfesorMateria() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_profesor").append(options);
-        });
+        }, onError, () => {});
 
-        getAllMaterias(function (data) {
+        getAllMaterias((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.codigo,
@@ -38,7 +53,7 @@ function confirmCreateProfesorMateria() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_materia").append(options);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_profesores_materias");
@@ -72,11 +87,26 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                var isValid = $("#form_profesores_materias").valid();        
+                var isValid = $("#form_profesores_materias").valid();
                 if (!isValid)
                     return false;
                 var relacion = prepareProfesorMateriaData(this.$content);
-                updateProfesorMateria(id, relacion);
+                showLoading(true);
+                updateProfesorMateria(id, relacion, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la relacion correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la relacion.");
+                });
             }
         },
         Cancelar: {
@@ -87,7 +117,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
 
     var onContentReady = function () {
         var content = this.$content;
-        getAllProfesores(function (data) {
+        getAllProfesores((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.cedula,
@@ -96,9 +126,9 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_profesor").append(options).val(cedula);
-        });
+        }, onError, () => {});
 
-        getAllMaterias(function (data) {
+        getAllMaterias((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.codigo,
@@ -107,7 +137,7 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_materia").append(options).val(codigo);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_profesores_materias");
@@ -119,55 +149,18 @@ function confirmEditProfesorMateria(id, cedula, codigo) {
 }
 
 /**
- * Crea una relacion entre un profesor y una materia
- * @param {Object} relacion Objeto de tipo ProfesorMateria
- */
-function createProfesorMateria(relacion) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiProfesorMateria,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 200) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la relacion correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear la relacion.");
-        },
-        onError, relacion, "POST", onComplete
-    );
-}
-
-/**
- * Elimina una relacion indicada
- * @param {number} id Id de la relacion a eliminar
- */
-function deleteProfesorMateria(id) {
-    makeAjaxCall(apiProfesorMateria + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la relacion.");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
-/**
  * Elimina las relaciones indicadas
  * @param {number[]} arrayID Array de ID de las relaciones a eliminar
  */
 function deleteProfesoresMateria(arrayID) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < arrayID.length; i++) {
-        deleteProfesorMateria(arrayID[i].id);
+        deleteProfesorMateria(arrayID[i].id, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la relacion.");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -179,22 +172,9 @@ function deleteProfesoresMateria(arrayID) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(false);
     };
     checkPendingRequest();
-}
-
-/**
- * Obtiene todos los profesores x materias
- * @param {Function} callback Funcion de callback
- */
-function getAllProfesoresMateria(callback) {
-    makeAjaxCall(apiProfesorMateria,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
 }
 
 /**
@@ -208,33 +188,6 @@ function prepareProfesorMateriaData(object) {
         codigo: object.find("#select_materia").val()
     };
     return relacion;
-}
-
-/**
- * Actualiza una relacion en particular
- * @param {number} id Id de la relacion
- * @param {Object} relacion Objeto de tipo ProfesorMateria
- */
-function updateProfesorMateria(id, relacion) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiProfesorMateria + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la relacion correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la relacion.");
-        },
-        onError, relacion, "PUT", onComplete
-    );
 }
 
 /**

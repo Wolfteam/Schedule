@@ -8,7 +8,22 @@ function confirmCreateMaterias() {
                 if (!isValid)
                     return false;
                 var materia = prepareMateriaData(this.$content);
-                createMateria(materia);
+                showLoading(true);
+                createMateria(materia, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la materia correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear la materia.");
+                });
             }
         },
         Cancelar: {
@@ -30,9 +45,9 @@ function confirmCreateMaterias() {
             var options = createSelectOptions(arrayData);
             content.find("#select_semestre").append(options);
 
-        });
+        }, onError, () => {});
 
-        getAllCarreras(function (data) {
+        getAllCarreras((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.idCarrera,
@@ -41,7 +56,7 @@ function confirmCreateMaterias() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_carrera").append(options);
-        });
+        }, onError, () => {});
 
         getAllTipoAulaMateria(function (data) {
             var arrayData = data.map(function (obj) {
@@ -52,7 +67,7 @@ function confirmCreateMaterias() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_tipo_materia").append(options);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_materias");
@@ -89,8 +104,23 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoMateria, idCa
                 var isValid = $("#form_materias").valid();
                 if (!isValid)
                     return false;
+                showLoading(true)
                 var materia = prepareMateriaData(this.$content);
-                updateMateria(codigo, materia);
+                updateMateria(codigo, materia, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la materia correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la materia.");
+                });
             }
         },
         Cancelar: {
@@ -110,7 +140,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoMateria, idCa
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_semestre").append(options).val(idSemestre);
-        });
+        }, onError, () => {});
 
         getAllCarreras(function (data) {
             var arrayData = data.map(function (obj) {
@@ -121,7 +151,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoMateria, idCa
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_carrera").append(options).val(idCarrera);
-        });
+        }, onError, () => {});
 
         getAllTipoAulaMateria(function (data) {
             var arrayData = data.map(function (obj) {
@@ -132,7 +162,7 @@ function confirmEditMaterias(codigo, asignatura, idSemestre, idTipoMateria, idCa
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_tipo_materia").append(options).val(idTipoMateria);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_materias");
@@ -168,55 +198,18 @@ function prepareMateriaData(object) {
 }
 
 /**
- * Crea una materia
- * @param {Object} materia Objeto de tipo materia 
- */
-function createMateria(materia) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiMaterias,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo la materia correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear la materia.");
-        },
-        onError, materia, "POST", onComplete
-    );
-}
-
-/**
- * Elimina la materia indicada
- * @param {number} codigo Codigo de la materia a eliminar
- */
-function deleteMateria(codigo) {
-    makeAjaxCall(apiMaterias + "/" + codigo,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la materia.");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
-/**
  * Elimina las materias indicadas
  * @param {number[]} arrayCodigos Array de codigos de las materias a eliminar
  */
 function deleteMaterias(arrayCodigos) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < arrayCodigos.length; i++) {
-        deleteMateria(arrayCodigos[i].codigo);
+        deleteMateria(arrayCodigos[i].codigo, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar la materia.");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -228,50 +221,9 @@ function deleteMaterias(arrayCodigos) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(false);
     };
     checkPendingRequest();
-}
-
-/**
- * Obtiene todas las materias
- * @param {Function} callback Funcion de callback
- */
-function getAllMaterias(callback) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiMaterias,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
-}
-
-/**
- * Actualiza una Materia en particular
- * @param {number} codigo Codigo de la Materia a actualizar
- * @param {Object} materia Objeto de tipo Materia
- */
-function updateMateria(codigo, materia) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiMaterias + "/" + codigo,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo la materia correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar la materia.");
-        },
-        onError, materia, "PUT", onComplete
-    );
 }
 
 /**
