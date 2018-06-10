@@ -31,6 +31,7 @@
             {
                 <li><a asp-controller="EditarDB" asp-action="Index" class="waves-effect waves-red">Editar Base de Datos<i class="fa fa-database fa-2x" aria-hidden="true"></i></a></li>
             }
+            <li><a asp-controller="Account" asp-action="ChangePassword" class="waves-effect waves-red">Cambiar Password<i class="fa fa-lock fa-2x" aria-hidden="true"></i></a></li>
             <!-- <li><div class="divider"></div></li>
             <li class="no-padding">
                 <ul class="collapsible collapsible-accordion">
@@ -54,11 +55,11 @@
             </li> -->
             <li><div class="divider"></div></li>
             <li>
-                <a id="logout" class="red-text waves-effect waves-red">Cerrar Sesión
+                <a id="logout" class="red-text waves-effect waves-red">
+                    Cerrar Sesión
                     <i class="fa fa-sign-out fa-2x" aria-hidden="true"></i>
                 </a>
-                <form id="logout_form" method = "post" asp-controller = "Account" asp-action = "Logout">
-                </form>
+                <form id="logout_form" method="post" asp-controller="Account" asp-action="Logout"></form>
             </li>
             <!-- <li><div class="divider"></div></li> -->
         </ul>

@@ -18,7 +18,7 @@ namespace Schedule.API.Controllers
         }
 
         // POST api/Profesor
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorDTO profesor)
         {
@@ -32,7 +32,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Profesor/21255727
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpDelete("{cedula}")]
         public IActionResult Delete(uint cedula)
         {
@@ -44,6 +44,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Profesor?cedulas=1,2,3,4
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpDelete]
         public IActionResult Delete([FromQuery] string cedulas)
         {
@@ -57,7 +58,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Profesor
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpGet]
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
@@ -66,7 +67,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Profesor/1
-        [Authorize(Roles = "Administrador, Profesor")]
+        [Authorize(Roles = Roles.ADMINISTRADOR + ", " + Roles.PROFESOR)]
         [HttpGet("{cedula}", Name = "GetProfesor")]
         public IActionResult Get(uint cedula)
         {
@@ -77,7 +78,7 @@ namespace Schedule.API.Controllers
         }
 
         // PUT api/Profesor/21255727
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] ProfesorDTO profesor)
         {

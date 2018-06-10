@@ -9,7 +9,7 @@ using System.Linq;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class AulasController : BaseController
     {
         public AulasController(HorariosContext context)

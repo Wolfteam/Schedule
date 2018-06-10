@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Schedule.Web.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class ProfesorMateriaController : BaseController
     {
         private UnitOfWork _unitOfWork;

@@ -87,7 +87,7 @@ namespace Schedule.Web.Controllers
 
                 var tokenAuthProperties = TokenHelper.GetTokenAuthProperties(token);
                 await HttpContext.SignInAsync(principal, tokenAuthProperties);
-                
+
                 //returnUrl es pasado automaticamente si es que hay algo en esa variable
                 if (String.IsNullOrEmpty(returnUrl))
                     return RedirectToAction("Index", "Home");
@@ -103,6 +103,11 @@ namespace Schedule.Web.Controllers
             return View("Index", model);
         }
 
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Logout()

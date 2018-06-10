@@ -9,7 +9,7 @@ using System.Linq;
 namespace Schedule.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize]
     public class AccountController : BaseController
     {
         public AccountController(HorariosContext context)
@@ -18,6 +18,7 @@ namespace Schedule.API.Controllers
         }
 
         // POST api/Account
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPost]
         public IActionResult Add([FromBody] UsuarioDTO usuario)
         {
@@ -32,6 +33,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Account
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpGet]
         public IEnumerable<UsuarioDetailsDTO> GetAll()
         {
@@ -40,6 +42,7 @@ namespace Schedule.API.Controllers
         }
 
         // GET api/Account/21255727
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpGet("{cedula}", Name = "GetUsuario")]
         public IActionResult Get(uint cedula)
         {
@@ -51,6 +54,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Account/21255727
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpDelete("{cedula}")]
         public IActionResult Remove(uint cedula)
         {
@@ -62,6 +66,7 @@ namespace Schedule.API.Controllers
         }
 
         // DELETE api/Account?cedulas=1,2,3,4
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpDelete]
         public IActionResult Delete([FromQuery] string cedulas)
         {
@@ -75,6 +80,7 @@ namespace Schedule.API.Controllers
         }
 
         // PUT api/Account/21255727
+        [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPut("{cedula}")]
         public IActionResult Update(uint cedula, [FromBody] UsuarioDTO usuario)
         {
@@ -85,6 +91,45 @@ namespace Schedule.API.Controllers
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el usuario {cedula}");
             return new NoContentResult();
+        }
+
+        [HttpPut("{cedula}/ChangePassword")]
+        public IActionResult ChangePassword(uint cedula, [FromBody] ChangePasswordDTO request)
+        {
+            var resultDTO = new ResultDTO
+            {
+                Succeed = false
+            };
+
+            if (request.NewPassword != request.NewPasswordConfirmation)
+            {
+                resultDTO.Message = "Las password introducidas no concuerdan";
+                return BadRequest(resultDTO);
+            }
+
+            bool userExists = UserExists(cedula);
+            if (!userExists)
+            {
+                resultDTO.Message = $"No existe un usuario con la cedula {cedula}";
+                return BadRequest(resultDTO);
+            }
+
+            bool isCurrentPasswordValid = _db.UsuarioRepository.IsCurrentPasswordValid(cedula, request.CurrentPassword);
+            if (!isCurrentPasswordValid)
+            {
+                resultDTO.Message = "La password actual no coincide con la enviada";
+                return BadRequest(resultDTO);
+            }
+
+            _db.UsuarioRepository.ChangePassword(cedula, request.NewPassword);
+            resultDTO.Succeed = _db.Save();
+            if (!resultDTO.Succeed)
+            {
+                resultDTO.Message = $"Ocurrio un error al actualizar la password del usuario {cedula}";
+                return StatusCode(500, resultDTO);
+            }
+            resultDTO.Message = "Password actualizado exitosamente";
+            return Ok(resultDTO);
         }
 
         private bool UserExists(uint cedula)

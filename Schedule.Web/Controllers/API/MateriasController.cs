@@ -12,7 +12,7 @@ using Schedule.Web.Models;
 namespace Schedule.Web.Controllers.API
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class MateriasController : BaseController
     {
         private UnitOfWork _unitOfWork;

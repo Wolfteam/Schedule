@@ -42,7 +42,7 @@ $("#logout").click(function (e) {
     $("#logout_form").submit();
 });
 
-var apiAccount = "api/Usuarios",
+let apiAccount = "api/Usuarios",
     apiAula = "api/Aulas",
     apiCarreras = "api/Carreras",
     apiDisponibilidad = "api/Disponibilidad",
@@ -55,3 +55,7 @@ var apiAccount = "api/Usuarios",
     apiSecciones = "api/Secciones",
     apiSemestres = "api/Semestres",
     apiTipoAulaMateria = "api/TipoAulaMateria";
+
+var onError = function (error) {
+    toast("Error, Fallo al comunicar con la api. Codigo: " + error.status + ", " + error.statusText);
+};
