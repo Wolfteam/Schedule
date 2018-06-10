@@ -59,8 +59,6 @@ namespace Schedule.API.Controllers
         public IActionResult Get(int cedula)
         {
             var disponibilidad = _db.DisponibilidadProfesorRepository.GetByCedula(cedula);
-            if (disponibilidad.Disponibilidad != null)
-                return new ObjectResult(disponibilidad);
             disponibilidad.HorasACumplir = _db.ProfesorRepository.GetHorasACumplir(cedula);
             return new ObjectResult(disponibilidad);
         }
