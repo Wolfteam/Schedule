@@ -3,13 +3,7 @@ var horasRestantes = 5,
     horasACumplir,
     colorAzul = "#057D97",
     colorBlanco = "#fff",
-    colorVerde = "#5cb85c",
-    onError = function (error) {
-        toast("Error, Fallo al comunicar con la api. Codigo: " + error.status + ", " + error.statusText);
-    },
-    onComplete = function () {
-        $("#barra-progeso").hide();
-    };
+    colorVerde = "#5cb85c"
 
 $(document).ready(function () {
     $("#btn_guardar_cambios").click(btnGuardarCambiosOnClick);
@@ -64,23 +58,21 @@ function btnGuardarCambiosOnClick() {
     if (!validateData(data))
         confirmAlert("Error", "red", "fa fa-exclamation", "Un dia contiene menos de 2 horas academicas consecutivas");
     else {
-        console.log(decodeData(data));
-        $("#barra-progeso").show();
-        createDisponibilidadProfesor(decodeData(data),
-            function (data, textStatus, xhr) {
-                if (xhr.status === 201) {
-                    var buttons = {
-                        ok: {
-                            text: 'Ok',
-                            btnClass: 'btn-green',
-                            action: function () {}
-                        }
-                    };
-                    confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);
-                } else
-                    confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");
-            }
-        );
+        showLoading(true);
+        let decodedData = decodeData(data);
+        createDisponibilidadProfesor(decodedData, (data, textStatus, xhr) => {
+            if (xhr.status === 201) {
+                var buttons = {
+                    ok: {
+                        text: 'Ok',
+                        btnClass: 'btn-green',
+                        action: function () {}
+                    }
+                };
+                confirmAlert("Operacion exitosa", "green", "fa fa-check", "Se guardo la disponibilidad correctamente", buttons);
+            } else
+                confirmAlert("Error", "red", "fa fa-exclamation", "Ocurrio un error al guardar la disponibilidad");
+        });
     }
 }
 
@@ -88,9 +80,11 @@ function selectProfesorOnChange() {
     cleanCells();
     var cedula = $("#select_profesor").val();
     if (cedula === null || cedula === "-1") return;
-    $("#barra-progeso").show();
+
     $("#btn_guardar_cambios").hide();
-    getDisponibilidadProfesor(cedula, function (data) {
+    showLoading(true);
+
+    getDisponibilidadProfesor(cedula, (data) => {
         $("#btn_guardar_cambios").show();
         horasACumplir = data.horasACumplir;
         if (data.disponibilidad === null || data.disponibilidad.length === 0) {
@@ -125,20 +119,6 @@ function changeCellBackgroundColor(backgroundColor, celda) {
 function cleanCells() {
     $("#tabla_horario tbody tr td:not(.hora_almuerzo)").attr("bgcolor", "#fff");
     $('input').val("");
-}
-
-/**
- * Guarda la disponibilidad a un profesor en particular
- * @param {Object[]} data Array de objetos que contiene la data de la disponibilidad del profesor 
- * @param {Function} callback Funcion de callback
- */
-function createDisponibilidadProfesor(data, callback) {
-    makeAjaxCall(apiDisponibilidad,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, data, "POST", onComplete
-    );
 }
 
 /**
@@ -216,20 +196,6 @@ function fillCells(data) {
             }
         }
     }
-}
-
-/**
- * Obtiene la disponibilidad de un profesor en particular
- * @param {Number} cedula Cedula del profesor
- * @param {Function} callback Funcion de callback
- */
-function getDisponibilidadProfesor(cedula, callback) {
-    makeAjaxCall(apiDisponibilidad + "/" + cedula,
-        function (data, textStatus, xhr) {
-            return callback(data);
-        },
-        onError, null, "GET", onComplete
-    );
 }
 
 /**

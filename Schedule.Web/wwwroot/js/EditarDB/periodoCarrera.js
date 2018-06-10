@@ -8,7 +8,22 @@ function confirmCreatePeriodo() {
                 if (!isValid)
                     return false;
                 var periodo = preparePeriodoData(this.$content);
-                createPeriodo(periodo);
+                showLoading(true);
+                createPeriodo(periodo, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el periodo academico correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar el periodo academico.");
+                });
             }
         },
         Cancelar: {
@@ -53,7 +68,22 @@ function confirmEditPeriodo(id, nombre, status) {
                 if (!isValid)
                     return false;
                 var periodo = preparePeriodoData(this.$content);
-                updatePeriodo(id, periodo);
+                showLoading(true);
+                updatePeriodo(id, periodo, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el periodo correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el periodo.");
+                });
             }
         },
         Cancelar: {
@@ -74,57 +104,19 @@ function confirmEditPeriodo(id, nombre, status) {
     confirmAlert("Editar Periodos", "orange", "fa fa-plus", "url:" + urlBase + "modals/Periodo.html", buttons, onContentReady);
 }
 
-
-/**
- * Crea un periodo academico
- * @param {Object} periodo Objeto de tipo periodo
- */
-function createPeriodo(periodo) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiPeriodoCarrera,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el periodo academico correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar el periodo academico.");
-        },
-        onError, periodo, "POST", onComplete
-    );
-}
-
-/**
- * Elimina el periodo academico correspondiente al id
- * @param {number} id Id del periodo academico a eliminar
- */
-function deletePeriodo(id) {
-    makeAjaxCall(apiPeriodoCarrera + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el(los) periodo(s) academico(s).");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
 /**
  * Elimina los periodos academicos correspondientes a los ids en el array
  * @param {number[]} arrayIds Array de ids de los periodos academicos seleccionados
  */
 function deletePeriodos(arrayIds) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < arrayIds.length; i++) {
-        deletePeriodo(arrayIds[i].idPeriodo);
+        deletePeriodo(arrayIds[i].idPeriodo, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el(los) periodo(s) academico(s).");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -142,32 +134,6 @@ function deletePeriodos(arrayIds) {
 }
 
 /**
- * Obtiene todos los periodos academicos
- * @param {Function} callback Funcion de callback
- */
-function getAllPeriodos(callback) {
-    makeAjaxCall(apiPeriodoCarrera,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
-}
-
-/**
- * Obtiene el periodo academico actual
- * @param {Function} callback Funcion de callback
- */
-function getCurrentPeriodo(callback) {
-    makeAjaxCall(apiPeriodoCarrera + "/Current",
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
-}
-
-/**
  * Prepara la data introducida/existente de los modales y devuelve un objeto de tipo periodo
  * @param {Object} object Objeto de tipo Jquery-Confirm
  * @returns {Object} Objeto de tipo periodo
@@ -178,33 +144,6 @@ function preparePeriodoData(object) {
         status: object.find("#periodo_status").is(":checked")
     };
     return periodo;
-}
-
-/**
- * Actualiza un periodo en en particular
- * @param {number} id Id del periodo a actualizar
- * @param {Object} periodo Objeto de tipo periodo
- */
-function updatePeriodo(id, periodo) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiPeriodoCarrera + "/" + id,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el periodo correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el periodo.");
-        },
-        onError, periodo, "PUT", onComplete
-    );
 }
 
 /**

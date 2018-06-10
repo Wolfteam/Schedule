@@ -4,11 +4,26 @@ function confirmCreateUsuarios() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_usuarios").valid();        
+                var isValid = $("#form_usuarios").valid();
                 if (!isValid)
-                    return false;  
+                    return false;
                 var usuario = prepareUsuarioData(this.$content);
-                createUsuario(usuario);
+                showLoading(true);
+                createUsuario(usuario, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el usuario correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear el usuario.");
+                });
             }
         },
         Cancelar: {
@@ -27,9 +42,9 @@ function confirmCreateUsuarios() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_profesor").append(options);
-        });
+        }, onError, () => {});
 
-        getAllPrivilegios(function (data, textStatus, xhr) {
+        getAllPrivilegios((data, textStatus, xhr) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.idPrivilegio,
@@ -38,7 +53,7 @@ function confirmCreateUsuarios() {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_prioridad").append(options);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_usuarios");
@@ -76,7 +91,22 @@ function confirmEditUsuario(cedula, username, password, idPrivilegio) {
                 if (!isValid)
                     return false;
                 var usuario = prepareUsuarioData(this.$content);
-                updateUsuario(cedula, usuario);
+                showLoading(true);
+                updateUsuario(cedula, usuario, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el usuario correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el usuario.");
+                });
             }
         },
         Cancelar: {
@@ -95,9 +125,9 @@ function confirmEditUsuario(cedula, username, password, idPrivilegio) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_profesor").append(options).val(cedula);
-        });
+        }, onError, () => {});
 
-        getAllPrivilegios(function (data, textStatus, xhr) {
+        getAllPrivilegios((data, textStatus, xhr) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.idPrivilegio,
@@ -106,7 +136,7 @@ function confirmEditUsuario(cedula, username, password, idPrivilegio) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_prioridad").append(options).val(idPrivilegio);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_usuarios");
@@ -120,57 +150,19 @@ function confirmEditUsuario(cedula, username, password, idPrivilegio) {
     confirmAlert("Editar Usuario", "orange", "fa fa-pencil-square-o", "url:" + urlBase + "modals/Usuarios.html", buttons, onContentReady);
 }
 
-
-/**
- * Crea una usuario
- * @param {Object} usuario Objeto de tipo usuario
- */
-function createUsuario(usuario) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiAccount,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se creo el usuario correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo crear el usuario.");
-        },
-        onError, usuario, "POST", onComplete
-    );
-}
-
-/**
- * Elimina el usuario indicado
- * @param {number} cedula cedula del usuario a eliminar
- */
-function deleteUsuario(cedula) {
-    makeAjaxCall(apiAccount + "/" + cedula,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el usuario.");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
 /**
  * Elimina varios usuarios selecionadas
  * @param {number[]} cedulaArray Array de cedulas de los usuarios a eliminar
  */
 function deleteUsuarios(cedulaArray) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < cedulaArray.length; i++) {
-        deleteUsuario(cedulaArray[i].cedula);
+        deleteUsuario(cedulaArray[i].cedula, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el usuario.");
+                return;
+            }
+        });
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -182,24 +174,10 @@ function deleteUsuarios(cedulaArray) {
             }
         };
         confirmAlert("Proceso completado", "green", "fa fa-check", "Se completo el proceso correctamente.", buttons);
-        $("#barra-progeso").hide();
+        showLoading(true);
     };
     checkPendingRequest();
 }
-
-/**
- * Obtiene todos los usuarios registrados
- * @param {Function} callback Funcion de callback
- */
-function getAllUsuarios(callback) {
-    makeAjaxCall(apiAccount,
-        function (data, textStatus, xhr) {
-            return callback(data);
-        },
-        onError, null, "GET", onComplete
-    );
-}
-
 
 /**
  * Prepara la data introducida/existente de los modales y devuelve un objeto
@@ -215,33 +193,6 @@ function prepareUsuarioData(content) {
         idPrivilegio: content.find("#select_prioridad").val()
     };
     return usuario;
-}
-
-/**
- * Actualiza un usuario
- * @param {number} cedula Cedula del usuario a actualizar
- * @param {Object} usuario Objeto de tipo usuario
- */
-function updateUsuario(cedula, usuario) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiAccount + "/" + cedula,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el usuario correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el usuario.");
-        },
-        onError, usuario, "PUT", onComplete
-    );
 }
 
 /**

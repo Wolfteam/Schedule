@@ -4,11 +4,26 @@ function confirmCreateProfesores() {
             text: 'Guardar',
             btnClass: 'btn-blue',
             action: function () {
-                var isValid = $("#form_profesores").valid();        
+                var isValid = $("#form_profesores").valid();
                 if (!isValid)
-                    return false; 
+                    return false;
                 var profesor = prepareProfesorData(this.$content);
-                createProfesor(profesor);
+                showLoading(true);
+                createProfesor(profesor, (data, textStatus, xhr) => {
+                    if (xhr.status !== 500) {
+                        var buttons = {
+                            Ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se guardo el profesor correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar el profesor.");
+                });
             }
         },
         Cancelar: {
@@ -20,16 +35,16 @@ function confirmCreateProfesores() {
         var content = this.$content;
         content.find(".onlyNum").on("keypress", onlyNum);
 
-        getAllPrioridades(function (data) {
+        getAllPrioridades((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
                     text: obj.codigoPrioridad + ". Horas a cumplir: " + obj.horasACumplir
                 };
-            });
+            }, onError, () => {});
             var options = createSelectOptions(arrayData);
             content.find("#select_prioridad").append(options);
-        });
+        }, onError, () => { });
 
         globalFunction = function () {
             onRequestsFinished("#form_profesores");
@@ -63,11 +78,26 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
             text: 'Actualizar',
             btnClass: 'btn-orange',
             action: function () {
-                var isValid = $("#form_profesores").valid();        
+                var isValid = $("#form_profesores").valid();
                 if (!isValid)
-                    return false; 
+                    return false;
                 var profesor = prepareProfesorData(this.$content);
-                updateProfesor(cedula, profesor);
+                showLoading(true);
+                updateProfesor(cedula, profesor, (data, textStatus, xhr) => {
+                    if (xhr.status === 204) {
+                        var buttons = {
+                            ok: {
+                                text: 'Ok',
+                                btnClass: 'btn-green',
+                                action: function () {}
+                            }
+                        };
+                        confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el profesor correctamente.", buttons);
+                        $("#btn_buscar").trigger("click");
+                        return;
+                    }
+                    confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el profesor.");
+                });
             }
         },
         Cancelar: {
@@ -78,7 +108,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
 
     var onContentReady = function () {
         var content = this.$content;
-        getAllPrioridades(function (data) {
+        getAllPrioridades((data) => {
             var arrayData = data.map(function (obj) {
                 return {
                     id: obj.id,
@@ -87,7 +117,7 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
             });
             var options = createSelectOptions(arrayData);
             content.find("#select_prioridad").append(options).val(idPrioridad);
-        });
+        }, onError, () => {});
 
         globalFunction = function () {
             onRequestsFinished("#form_profesores");
@@ -104,55 +134,18 @@ function confirmEditProfesores(cedula, nombre, apellido, idPrioridad) {
 }
 
 /**
- * Crea un profesor
- * @param {Object} profesor Objeto de tipo profesor 
- */
-function createProfesor(profesor) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiProfesores,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 500) {
-                var buttons = {
-                    Ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se guardo el profesor correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo guardar el profesor.");
-        },
-        onError, profesor, "POST", onComplete
-    );
-}
-
-/**
- * Elimina el profesor indicado
- * @param {number} cedula Cedula del profesor a eliminar
- */
-function deleteProfesor(cedula) {
-    makeAjaxCall(apiProfesores + "/" + cedula,
-        function (data, textStatus, xhr) {
-            if (xhr.status !== 204) {
-                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el profesor.");
-                return;
-            }
-        },
-        onError, null, "DELETE"
-    );
-}
-
-/**
  * Elimina los profesores indicados
  * @param {number[]} arrayCedulas Array de cedulas de los profesores a eliminar
  */
 function deleteProfesores(arrayCedulas) {
-    $("#barra-progeso").show();
+    showLoading(true);
     for (var i = 0; i < arrayCedulas.length; i++) {
-        deleteProfesor(arrayCedulas[i].cedula);
+        deleteProfesor(arrayCedulas[i].cedula, (data, textStatus, xhr) => {
+            if (xhr.status !== 204) {
+                confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo borrar el profesor.");
+                return;
+            }
+        }, onError, () => {});
     }
     globalFunction = function () {
         $("#btn_buscar").trigger("click");
@@ -167,19 +160,6 @@ function deleteProfesores(arrayCedulas) {
         $("#barra-progeso").hide();
     };
     checkPendingRequest();
-}
-
-/**
- * Obtiene todos los profesores
- * @param {Function} callback Funcion de callback
- */
-function getAllProfesores(callback) {
-    makeAjaxCall(apiProfesores,
-        function (data, textStatus, xhr) {
-            return callback(data, textStatus, xhr);
-        },
-        onError, null, "GET", onComplete
-    );
 }
 
 /**
@@ -198,39 +178,12 @@ function prepareProfesorData(object) {
 }
 
 /**
- * Actualiza una Materia en particular
- * @param {number} cedula Cedula del profesor a actualizar
- * @param {Object} profesor Objeto de tipo Profesor
- */
-function updateProfesor(cedula, profesor) {
-    $("#barra-progeso").show();
-    makeAjaxCall(apiProfesores + "/" + cedula,
-        function (data, textStatus, xhr) {
-            if (xhr.status === 204) {
-                var buttons = {
-                    ok: {
-                        text: 'Ok',
-                        btnClass: 'btn-green',
-                        action: function () {}
-                    }
-                };
-                confirmAlert("Proceso completado", "green", "fa fa-check", "Se actualizo el profesor correctamente.", buttons);
-                $("#btn_buscar").trigger("click");
-                return;
-            }
-            confirmAlert("Error", "red", "fa fa-exclamation-triangle", "No se pudo actualizar el profesor.");
-        },
-        onError, profesor, "PUT", onComplete
-    );
-}
-
-/**
  * Valdia que una profesor tenga todas sus propiedades
  * @param {string} selector Selector del formulario profesor (#form_profesores por defecto)
  */
-function validateProfesorHandler(selector = "#form_profesores"){
+function validateProfesorHandler(selector = "#form_profesores") {
     var valdiate = $(selector).validate({
-        ignore:[],
+        ignore: [],
         rules: {
             cedula: {
                 required: true,
