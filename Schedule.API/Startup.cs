@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Schedule.API.Models;
+using Newtonsoft.Json;
 using Schedule.API.Helpers;
+using Schedule.API.Models;
 using Schedule.Entities;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Text;
 
@@ -35,8 +37,26 @@ namespace Schedule.API
             //Con esto puedes hacer el ajax
             services.AddCors();
             //Esto es necesario para que me deje incluir propiedades extras de un model de ef
-            services.AddMvc().AddJsonOptions(x =>
-                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddMvc().AddJsonOptions(options => {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.Formatting = Formatting.Indented;
+            });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info 
+                { 
+                    Version = "v1",
+                    Title = "Schedule API",
+                    Description = "This is the schedule sample api",
+                    TermsOfService = "None",
+                    Contact = new Contact
+                    {
+                        Name = "Efrain Bastidas",
+                        Email = "mimo4325@gmail.com",
+                        Url = "https://github.com/Wolfteam"
+                    }
+                });
+            });
             services.AddAutoMapper();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddDbContext<HorariosContext>(options =>
@@ -108,8 +128,20 @@ namespace Schedule.API
                 => builder.AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowAnyOrigin());
+
+            app.UseDefaultFiles();
             //Esto para que muestre las paginas de errores?
             app.UseStaticFiles();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                // To serve the Swagger UI at the app's root (http://localhost:<random_port>/)
+                c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.DocumentTitle = "Schedule API";            
+            });
 
             // Add JWT generation endpoint:
             //Con estas lineas se generan los tokens, notese que se usa la clase personalizada
