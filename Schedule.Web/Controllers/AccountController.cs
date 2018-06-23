@@ -67,7 +67,8 @@ namespace Schedule.Web.Controllers
             var nvc = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("username", model.Username),
-                new KeyValuePair<string, string>("password", model.Password)
+                new KeyValuePair<string, string>("password", model.Password),
+                new KeyValuePair<string, string>("currentDate", DateTime.Now.ToString())
             };
             //token es la ruta a donde ir a pedir token( e.g:localhost:5050/token)
             var req = new HttpRequestMessage(HttpMethod.Post, _appSettings.Value.URLBaseAPI + "token")

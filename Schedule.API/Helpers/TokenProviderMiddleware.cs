@@ -60,6 +60,9 @@ namespace Schedule.API.Helpers
             var password = context.Request.Form["password"];
             bool rememberMe = context.Request.Form["rememberme"] == "true" ? true : false;
             bool isMobile = context.Request.Form["ismobile"] == "true" ? true : false;
+            
+            if (!DateTime.TryParse(context.Request.Form["currentDate"], out DateTime now))
+                now = DateTime.Now;
 
             var identity = await GetIdentityAsync(username, password);
             if (identity == null)
@@ -69,7 +72,6 @@ namespace Schedule.API.Helpers
                 return;
             }
 
-            DateTime now = DateTime.Now;
             var claims = GetUserRoles(username, now);
             TimeSpan expiricyTime;
             string audience = isMobile ? _options.Audience[1] : _options.Audience[0];
