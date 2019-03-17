@@ -4,9 +4,7 @@
 }
 
 <div class="container">
-    @{
-        Html.RenderPartial("_ProgressBar");
-    }
+    <partial name="_ProgressBar" />
     <div class="row">
         <div class="col s12">
             <div class="section">
@@ -42,7 +40,7 @@
                 <div class="card-content white-text">
                     <span class="card-title">Periodo Academico</span>
                     <p>Actualmente el periodo academico es:</p>
-                    <h5 id="periodo" style="text-align:center"><h5>
+                    <h5 id="periodo" style="text-align:center" />
                 </div>
             </div>
         </div>
@@ -53,7 +51,7 @@
     <environment names="Development">
         <script src="~/js/Home/home.js"></script>
     </environment>
-  
+
     <environment names="Staging,Production">
         <script src="~/js/Home/home.min.js"></script>
     </environment>

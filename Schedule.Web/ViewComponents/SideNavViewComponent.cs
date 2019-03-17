@@ -39,7 +39,8 @@ namespace Schedule.Web.ViewComponents
                 Privilegios = privilegios,
                 Username = User.Identity.Name
             };
-            return View(model);
+            //kinda hack to avoid the async warning
+            return await Task.FromResult(View(model));
         }
     }
 }

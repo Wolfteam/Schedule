@@ -61,9 +61,7 @@
                         </div>
                     </div>
                 </div>
-                @{
-                    Html.RenderPartial("_ProgressBar");
-                }
+                <partial name="_ProgressBar" />
                 @* Si existe algun error en el modelo se genera esto *@
                 @if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
                 {
