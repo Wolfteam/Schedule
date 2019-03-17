@@ -1,3 +1,4 @@
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
@@ -8,14 +9,17 @@ namespace Schedule.API.Models.Repositories
     public class PeriodoCarreraRepository 
         : Repository<PeriodoCarrera>, IPeriodoCarreraRepository
     {
+        private readonly IMapper _mapper;
+
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public PeriodoCarreraRepository(DbContext context) 
+        public PeriodoCarreraRepository(HorariosContext context, IMapper mapper) 
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace Schedule.API.Models.Repositories
         public PeriodoCarreraDTO GetCurrentPeriodo()
         {
             return HorariosContext.PeriodoCarrera
-                .ProjectTo<PeriodoCarreraDTO>()
+                .ProjectTo<PeriodoCarreraDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefault(x => x.Status == true);
         }
 

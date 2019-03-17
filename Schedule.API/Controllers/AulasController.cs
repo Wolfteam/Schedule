@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class AulasController : BaseController
     {
-        public AulasController(HorariosContext context)
-            : base(context)
+        public AulasController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -21,7 +22,7 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] AulasDTO aula)
         {
-            _db.AulasRepository.Add(Mapper.Map<AulasDTO, Aulas>(aula));
+            _db.AulasRepository.Add(_mapper.Map<AulasDTO, Aulas>(aula));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al crear el aula {aula.NombreAula}");
@@ -57,7 +58,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<AulasDetailsDTO> GetAll()
         {
             var aulas = _db.AulasRepository.Get(includeProperties: "TipoAulaMateria");
-            return Mapper.Map<IEnumerable<Aulas>, IEnumerable<AulasDetailsDTO>>(aulas);
+            return _mapper.Map<IEnumerable<Aulas>, IEnumerable<AulasDetailsDTO>>(aulas);
         }
 
         // GET api/Aulas/Tipo/2/Capacidad/20
@@ -75,7 +76,7 @@ namespace Schedule.API.Controllers
             var aula = _db.AulasRepository.Get(id);
             if (aula == null)
                 return NotFound("No se encontro el aula buscada.");
-            return new ObjectResult(Mapper.Map<AulasDetailsDTO>(aula));
+            return new ObjectResult(_mapper.Map<AulasDetailsDTO>(aula));
         }
 
         // PUT api/Aulas/1
@@ -85,7 +86,7 @@ namespace Schedule.API.Controllers
             if (!AulaExist(id))
                 return NotFound($"No existe el aula {id} a actualizar");
             aula.IdAula = id;
-            _db.AulasRepository.Update(Mapper.Map<Aulas>(aula));
+            _db.AulasRepository.Update(_mapper.Map<Aulas>(aula));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el aula {aula.IdAula} : {aula.NombreAula}");

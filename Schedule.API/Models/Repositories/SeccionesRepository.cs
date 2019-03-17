@@ -1,4 +1,5 @@
-﻿using AutoMapper.QueryableExtensions;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System.Collections.Generic;
@@ -8,14 +9,17 @@ namespace Schedule.API.Models.Repositories
 {
     public class SeccionesRepository : Repository<Secciones>, ISeccionesRepository
     {
+        private readonly IMapper _mapper;
+
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
         
-        public SeccionesRepository(DbContext context)
+        public SeccionesRepository(HorariosContext context, IMapper mapper)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -27,7 +31,7 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)
-                .ProjectTo<SeccionesDetailsDTO>();
+                .ProjectTo<SeccionesDetailsDTO>(_mapper.ConfigurationProvider);
         }
 
         /// <summary>
@@ -39,7 +43,7 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)
-                .ProjectTo<SeccionesDetailsDTO>()
+                .ProjectTo<SeccionesDetailsDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefault(x => x.Materia.Codigo == codigo);
         }
     }

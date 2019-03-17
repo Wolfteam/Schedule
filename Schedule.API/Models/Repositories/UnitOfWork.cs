@@ -5,44 +5,75 @@ namespace Schedule.API.Models.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         #region Propiedades
-        public AulasRepository AulasRepository { get; private set; }
-        public CarrerasRepository CarrerasRepository { get; private set; }
-        public DisponibilidadProfesorRepository DisponibilidadProfesorRepository { get; private set; }
-        public HorarioProfesorRepository HorarioProfesorRepository { get; private set; }
-        public MateriasRepository MateriasRepository { get; private set; }
-        public PeriodoCarreraRepository PeriodoCarreraRepository { get; private set; }
-        public PrioridadesRepository PrioridadesRepository { get; private set; }
-        public PrivilegiosRepository PrivilegiosRepository { get; private set; }
-        public ProfesorMateriaRepository ProfesorMateriaRepository { get; private set; }
-        public ProfesorRepository ProfesorRepository { get; private set; }
-        public SeccionesRepository SeccionesRepository { get; private set; }
-        public SemestresRepository SemestresRepository { get; private set; }
-        public UsuarioRepository UsuarioRepository { get; private set; }
-        public TipoAulaMateriaRepository TipoAulaMateriaRepository { get; private set; }
-        public TokenRepository TokenRepository { get; private set; }
+        public IAulasRepository AulasRepository { get; }
+
+        public ICarrerasRepository CarrerasRepository { get; }
+
+        public IDisponibilidadProfesorRepository DisponibilidadProfesorRepository { get; }
+
+        public IHorarioProfesorRepository HorarioProfesorRepository { get; }
+
+        public IMateriasRepository MateriasRepository { get; }
+
+        public IPeriodoCarreraRepository PeriodoCarreraRepository { get; }
+
+        public IPrioridadesRepository PrioridadesRepository { get; }
+
+        public IPrivilegiosRepository PrivilegiosRepository { get; }
+
+        public IProfesorMateriaRepository ProfesorMateriaRepository { get; }
+
+        public IProfesorRepository ProfesorRepository { get; }
+
+        public ISeccionesRepository SeccionesRepository { get; }
+
+        public ISemestresRepository SemestresRepository { get; }
+
+        public IUsuarioRepository UsuarioRepository { get; }
+
+        public ITipoAulaMateriaRepository TipoAulaMateriaRepository { get; }
+
+        public ITokenRepository TokenRepository { get; }
+
         #endregion
 
         private readonly HorariosContext _horariosContext;
         private bool disposedValue = false; // To detect redundant calls
 
-        public UnitOfWork(HorariosContext horariosContext)
+        public UnitOfWork(
+            HorariosContext horariosContext,
+            IAulasRepository aulas,
+            ICarrerasRepository carreras,
+            IDisponibilidadProfesorRepository disponibilidadProfesor,
+            IHorarioProfesorRepository horarioProfesor,
+            IMateriasRepository materias,
+            IPeriodoCarreraRepository periodoCarrera,
+            IPrioridadesRepository prioridades,
+            IPrivilegiosRepository privilegios,
+            IProfesorMateriaRepository profesorMateria,
+            IProfesorRepository profesor,
+            ISeccionesRepository secciones,
+            ISemestresRepository semestres,
+            IUsuarioRepository usuario,
+            ITipoAulaMateriaRepository tipoAulaMateria,
+            ITokenRepository token)
         {
             _horariosContext = horariosContext;
-            AulasRepository = new AulasRepository(_horariosContext);
-            CarrerasRepository = new CarrerasRepository(_horariosContext);
-            DisponibilidadProfesorRepository = new DisponibilidadProfesorRepository(_horariosContext);
-            HorarioProfesorRepository = new HorarioProfesorRepository(_horariosContext);
-            MateriasRepository = new MateriasRepository(_horariosContext);
-            PeriodoCarreraRepository = new PeriodoCarreraRepository(_horariosContext);
-            PrioridadesRepository = new PrioridadesRepository(_horariosContext);
-            PrivilegiosRepository = new PrivilegiosRepository(_horariosContext);
-            ProfesorMateriaRepository = new ProfesorMateriaRepository(_horariosContext);
-            ProfesorRepository = new ProfesorRepository(_horariosContext);
-            SeccionesRepository = new SeccionesRepository(_horariosContext);
-            SemestresRepository = new SemestresRepository(_horariosContext);
-            UsuarioRepository = new UsuarioRepository(_horariosContext);
-            TipoAulaMateriaRepository = new TipoAulaMateriaRepository(_horariosContext);
-            TokenRepository = new TokenRepository(_horariosContext);
+            AulasRepository = aulas;
+            CarrerasRepository = carreras;
+            DisponibilidadProfesorRepository = disponibilidadProfesor;
+            HorarioProfesorRepository = horarioProfesor;
+            MateriasRepository = materias;
+            PeriodoCarreraRepository = periodoCarrera;
+            PrioridadesRepository = prioridades;
+            PrivilegiosRepository = privilegios;
+            ProfesorMateriaRepository = profesorMateria;
+            ProfesorRepository = profesor;
+            SeccionesRepository = secciones;
+            SemestresRepository = semestres;
+            UsuarioRepository = usuario;
+            TipoAulaMateriaRepository = tipoAulaMateria;
+            TokenRepository = token;
         }
 
         /// <summary>

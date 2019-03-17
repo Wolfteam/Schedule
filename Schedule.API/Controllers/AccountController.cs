@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize]
     public class AccountController : BaseController
     {
-        public AccountController(HorariosContext context)
-            : base(context)
+        public AccountController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -25,7 +26,7 @@ namespace Schedule.API.Controllers
             bool userAlreadyExist = UserExists(usuario.Cedula);
             if (userAlreadyExist)
                 return BadRequest("El usuario ya existe");
-            _db.UsuarioRepository.Add(Mapper.Map<Admin>(usuario));
+            _db.UsuarioRepository.Add(_mapper.Map<Admin>(usuario));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, "Ocurrio un error al crear el usuario");
@@ -38,7 +39,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<UsuarioDetailsDTO> GetAll()
         {
             var usuarios = _db.UsuarioRepository.Get(includeProperties: "CedulaNavigation, IdPrivilegioNavigation");
-            return Mapper.Map<IEnumerable<UsuarioDetailsDTO>>(usuarios);
+            return _mapper.Map<IEnumerable<UsuarioDetailsDTO>>(usuarios);
         }
 
         // GET api/Account/21255727
@@ -50,7 +51,7 @@ namespace Schedule.API.Controllers
             var usuario = _db.UsuarioRepository.Get(cedula);
             if (usuario == null)
                 return NotFound("No se encontro el usuario buscado.");
-            return new ObjectResult(Mapper.Map<UsuarioDetailsDTO>(usuario));
+            return new ObjectResult(_mapper.Map<UsuarioDetailsDTO>(usuario));
         }
 
         // DELETE api/Account/21255727
@@ -86,7 +87,7 @@ namespace Schedule.API.Controllers
         {
             if (!UserExists(cedula) || (cedula != usuario.Cedula && UserExists(usuario.Cedula)))
                 return NotFound($"No existe el usuario {cedula} a actualizar o la nueva cedula {usuario.Cedula} no existe.");
-            _db.UsuarioRepository.Update(cedula, Mapper.Map<Admin>(usuario));
+            _db.UsuarioRepository.Update(cedula, _mapper.Map<Admin>(usuario));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el usuario {cedula}");

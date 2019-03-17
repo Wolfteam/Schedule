@@ -5,19 +5,22 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace Schedule.API.Models.Repositories
 {
     public class AulasRepository : Repository<Aulas>, IAulasRepository
     {
+        private readonly IMapper _mapper;
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public AulasRepository(HorariosContext context)
+        public AulasRepository(IMapper mapper, HorariosContext context)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         #region Metodos de prueba con Datatables server side el incoveniente yace en la parte del sort debido a que quizas pueda implementarlo mejor
@@ -28,7 +31,7 @@ namespace Schedule.API.Models.Repositories
 
             var result = HorariosContext.Aulas
                 .AsExpandable()
-                .ProjectTo<AulasDetailsDTO>()
+                .ProjectTo<AulasDetailsDTO>(_mapper.ConfigurationProvider)
                 .Where(whereClause);
 
             switch (sortBy.ToLower())
@@ -48,7 +51,7 @@ namespace Schedule.API.Models.Repositories
             }
             result = result.Skip(skip).Take(take);
 
-            filteredResultsCount = HorariosContext.Aulas.AsExpandable().ProjectTo<AulasDetailsDTO>().Where(whereClause).Count();
+            filteredResultsCount = HorariosContext.Aulas.AsExpandable().ProjectTo<AulasDetailsDTO>(_mapper.ConfigurationProvider).Where(whereClause).Count();
             totalResultsCount = HorariosContext.Aulas.Count();
 
             return result.ToList();
@@ -81,7 +84,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de AulasDTO</returns>
         public IEnumerable<AulasDTO> GetByTipoCapacidad(byte idTipo, byte capacidad)
         {
-            return HorariosContext.Aulas.ProjectTo<AulasDTO>()
+            return HorariosContext.Aulas.ProjectTo<AulasDTO>(_mapper.ConfigurationProvider)
                 .Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad)
                 .OrderBy(au => au.Capacidad);
         }

@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 
@@ -11,8 +12,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class PrivilegiosController : BaseController
     {
-        public PrivilegiosController(HorariosContext context) 
-            : base(context)
+        public PrivilegiosController(IUnitOfWork uow, IMapper mapper) 
+            : base(uow, mapper)
         {
         }
 
@@ -21,7 +22,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<PrivilegiosDTO> GetAll()
         {
             var privilegios = _db.PrivilegiosRepository.GetAll();
-            return Mapper.Map<IEnumerable<PrivilegiosDTO>>(privilegios);
+            return _mapper.Map<IEnumerable<PrivilegiosDTO>>(privilegios);
         }
     }
 }

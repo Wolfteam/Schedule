@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class ProfesorMateriaController : BaseController
     {
-        public ProfesorMateriaController(HorariosContext context)
-            : base(context)
+        public ProfesorMateriaController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -21,7 +22,7 @@ namespace Schedule.API.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] ProfesorMateriaDTO pm)
         {
-            _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            _db.ProfesorMateriaRepository.Add(_mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al crear la relacion {pm.Cedula} - {pm.Codigo}");
@@ -59,7 +60,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<ProfesorMateriaDetailsDTO> GetAll()
         {
             var relaciones = _db.ProfesorMateriaRepository.Get(includeProperties: "Profesores, Materias, Materias.Semestres, Materias.Carreras, Materias.TipoAulaMaterias");
-            return Mapper.Map<IEnumerable<ProfesorMateriaDetailsDTO>>(relaciones);
+            return _mapper.Map<IEnumerable<ProfesorMateriaDetailsDTO>>(relaciones);
         }
 
         // GET api/ProfesorMateria/1234
@@ -67,7 +68,7 @@ namespace Schedule.API.Controllers
         public ProfesorMateriaDetailsDTO Get(uint id)
         {
             var relacion = _db.ProfesorMateriaRepository.Get(id);
-            return Mapper.Map<ProfesoresMaterias, ProfesorMateriaDetailsDTO>(relacion);
+            return _mapper.Map<ProfesoresMaterias, ProfesorMateriaDetailsDTO>(relacion);
         }
 
         // PUT api/ProfesorMateria/4
@@ -79,7 +80,7 @@ namespace Schedule.API.Controllers
             if (oldEntity == null)
                 return NotFound("La relacion a actualizar no existe");
             _db.ProfesorMateriaRepository.Remove(oldEntity);
-            _db.ProfesorMateriaRepository.Add(Mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
+            _db.ProfesorMateriaRepository.Add(_mapper.Map<ProfesorMateriaDTO, ProfesoresMaterias>(pm));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al intentar actualizar la relacion {id} : {pm.Cedula} - {pm.Codigo}.");

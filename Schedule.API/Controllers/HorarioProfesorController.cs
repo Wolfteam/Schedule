@@ -12,6 +12,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using Schedule.API.Models.Repositories;
 
 namespace Schedule.API.Controllers
 {
@@ -26,9 +27,12 @@ namespace Schedule.API.Controllers
         private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         #endregion
-        public HorarioProfesorController(IHostingEnvironment environment, 
-            IOptions<AppSettings> appSettings, HorariosContext context)
-            :base (context)
+        public HorarioProfesorController(
+            IUnitOfWork uow,
+            IMapper mapper,
+            IHostingEnvironment environment, 
+            IOptions<AppSettings> appSettings)
+            :base (uow, mapper)
         {
             _hostingEnvironment = environment;
             _contentRootPath = environment.ContentRootPath;
@@ -51,7 +55,7 @@ namespace Schedule.API.Controllers
                 for (int idSemestre = 3; idSemestre <= 14; idSemestre++)
                 {
                     string titulo = GetPlanifacionAcademicaReportHeaderTitle(idSemestre, _tituloPA, periodoAcademico);
-                    planificacion.Cells[String.Format("B{0}:I{0}", limiteInferior - 2)].Value = titulo;
+                    planificacion.Cells[string.Format("B{0}:I{0}", limiteInferior - 2)].Value = titulo;
                     var materias = _db.MateriasRepository.GetBySemestre(idSemestre);
                     var listaHorarios = _db.HorarioProfesorRepository.GetBySemestre(idSemestre);
                     foreach (MateriasDTO materia in materias)
@@ -64,8 +68,8 @@ namespace Schedule.API.Controllers
                         var secciones = horariosByMateria.Select(h => h.NumeroSeccion).Distinct();
 
                         limiteSuperior = limiteInferior + numeroSecciones - 1;
-                        string celdaCodigo = String.Format("B{0}:B{1}", limiteInferior, limiteSuperior);
-                        string celdaAsignatura = String.Format("C{0}:C{1}", limiteInferior, limiteSuperior);
+                        string celdaCodigo = string.Format("B{0}:B{1}", limiteInferior, limiteSuperior);
+                        string celdaAsignatura = string.Format("C{0}:C{1}", limiteInferior, limiteSuperior);
                         bool merge = true;
                         foreach (int seccion in secciones)
                         {
@@ -596,7 +600,7 @@ namespace Schedule.API.Controllers
                 return false;
 
             _db.HorarioProfesorRepository
-                .AddRange(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+                .AddRange(_mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
             return _db.Save();
         }
 
@@ -676,7 +680,7 @@ namespace Schedule.API.Controllers
                 return false;
 
             _db.HorarioProfesorRepository
-                .AddRange(Mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
+                .AddRange(_mapper.Map<IEnumerable<HorarioProfesorDTO>, IEnumerable<HorarioProfesores>>(horariosGenerados));
             return _db.Save();
         }
 

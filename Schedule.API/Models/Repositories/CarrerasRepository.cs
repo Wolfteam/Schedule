@@ -12,7 +12,7 @@ namespace Schedule.API.Models.Repositories
             }
         }
 
-        public CarrerasRepository(DbContext context)
+        public CarrerasRepository(HorariosContext context)
             : base(context)
         {
         }

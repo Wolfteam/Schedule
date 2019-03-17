@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class SeccionesController : BaseController
     {
-        public SeccionesController(HorariosContext context) 
-            : base(context)
+        public SeccionesController(IUnitOfWork uow, IMapper mapper) 
+            : base(uow, mapper)
         {
         }
 
@@ -24,7 +25,7 @@ namespace Schedule.API.Controllers
             if (SeccionExists(seccion.Codigo))
                 return BadRequest($"La seccion ya existe {seccion.Codigo}");
             seccion.IdPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
-            _db.SeccionesRepository.Add(Mapper.Map<SeccionesDTO, Secciones>(seccion));
+            _db.SeccionesRepository.Add(_mapper.Map<SeccionesDTO, Secciones>(seccion));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al crear la seccion {seccion.Codigo}");
@@ -79,7 +80,7 @@ namespace Schedule.API.Controllers
             if (!SeccionExists(codigo) || (codigo != seccion.Codigo && SeccionExists(seccion.Codigo)))
                 return NotFound($"No existe la materia {codigo} o ya existe una seccion para {seccion.Codigo}");
             seccion.IdPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
-            _db.SeccionesRepository.Update(codigo, Mapper.Map<SeccionesDTO, Secciones>(seccion));
+            _db.SeccionesRepository.Update(codigo, _mapper.Map<SeccionesDTO, Secciones>(seccion));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar la seccion {codigo}");

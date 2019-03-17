@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class MateriasController : BaseController
     {
-        public MateriasController(HorariosContext context)
-            : base(context)
+        public MateriasController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -23,7 +24,7 @@ namespace Schedule.API.Controllers
         {
             if (MateriaExists(materia.Codigo))
                 return BadRequest($"La materia {materia.Codigo} ya existe");
-            _db.MateriasRepository.Add(Mapper.Map<MateriasDTO, Materias>(materia));
+            _db.MateriasRepository.Add(_mapper.Map<MateriasDTO, Materias>(materia));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al crear la materia {materia.Codigo}");
@@ -59,7 +60,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<MateriasDetailsDTO> GetAll()
         {
             var materias = _db.MateriasRepository.Get(includeProperties: "Carreras, Semestres, TipoAulaMaterias");
-            return Mapper.Map<IEnumerable<MateriasDetailsDTO>>(materias);
+            return _mapper.Map<IEnumerable<MateriasDetailsDTO>>(materias);
         }
 
         // GET api/Materias/1
@@ -69,7 +70,7 @@ namespace Schedule.API.Controllers
             var materia = _db.MateriasRepository.Get(codigo);
             if (materia == null)
                 return NotFound("No se encontro la materia buscada.");
-            return new ObjectResult(Mapper.Map<MateriasDetailsDTO>(materia));
+            return new ObjectResult(_mapper.Map<MateriasDetailsDTO>(materia));
         }
 
         // PUT api/Materias/1
@@ -78,7 +79,7 @@ namespace Schedule.API.Controllers
         {
             if (!MateriaExists(codigo) || (codigo != materia.Codigo && MateriaExists(materia.Codigo)))
                 return NotFound($"La materia {codigo} no existe o el codigo: {materia.Codigo} ya existe");
-            _db.MateriasRepository.Update(codigo, Mapper.Map<Materias>(materia));
+            _db.MateriasRepository.Update(codigo, _mapper.Map<Materias>(materia));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al tratar de actualizar la materia {codigo}.");

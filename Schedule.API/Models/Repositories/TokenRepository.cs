@@ -1,4 +1,5 @@
-﻿using AutoMapper.QueryableExtensions;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System;
@@ -14,10 +15,12 @@ namespace Schedule.API.Models.Repositories
             get { return _context as HorariosContext; }
         }
         private const int _expiricyTime = 12000;
+        private readonly IMapper _mapper;
 
-        public TokenRepository(DbContext context)
+        public TokenRepository(HorariosContext context, IMapper mapper)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>Objeto de la clase TokenDTO</returns>
         public TokenDTO Get(string token)
         {
-            return HorariosContext.Tokens.ProjectTo<TokenDTO>()
+            return HorariosContext.Tokens.ProjectTo<TokenDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefault(x => x.AuthenticationToken == token);
         }
 
@@ -95,7 +98,7 @@ namespace Schedule.API.Models.Repositories
                     pk => pk.Cedula,
                     (fk, pk) => new { Profesor = pk }
                 )
-                .Select(x => x.Profesor).ProjectTo<ProfesorDetailsDTO>().FirstOrDefault();
+                .Select(x => x.Profesor).ProjectTo<ProfesorDetailsDTO>(_mapper.ConfigurationProvider).FirstOrDefault();
         }
 
         /// <summary>

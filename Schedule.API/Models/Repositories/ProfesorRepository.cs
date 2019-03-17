@@ -11,7 +11,7 @@ namespace Schedule.API.Models.Repositories
             get { return _context as HorariosContext; }
         }
 
-        public ProfesorRepository(DbContext context) 
+        public ProfesorRepository(HorariosContext context) 
             : base(context)
         {
         }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.API.Helpers;
@@ -10,14 +11,17 @@ namespace Schedule.API.Models.Repositories
     public class HorarioProfesorRepository 
         : Repository<HorarioProfesores>, IHorarioProfesorRepository
     {
+        private readonly IMapper _mapper;
+
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public HorarioProfesorRepository(DbContext context) 
+        public HorarioProfesorRepository(HorariosContext context, IMapper mapper) 
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -74,7 +78,7 @@ namespace Schedule.API.Models.Repositories
         public IEnumerable<HorarioProfesorDTO> GetByCedulaDia(uint cedula, byte idDia)
         {
             return HorariosContext.HorarioProfesores
-                .ProjectTo<HorarioProfesorDTO>()
+                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider)
                 .Where(hp => hp.Cedula == cedula && hp.IdDia == idDia);
         }
 
@@ -89,7 +93,7 @@ namespace Schedule.API.Models.Repositories
             return HorariosContext.HorarioProfesores
                 .Include(pc => pc.PeriodoCarrera)
                 .Where(hp => hp.PeriodoCarrera.Status == true && hp.IdDia == idDia && hp.IdAula == idAula)
-                .ProjectTo<HorarioProfesorDTO>();
+                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider);
         }
 
         /// <summary>
@@ -117,7 +121,7 @@ namespace Schedule.API.Models.Repositories
                     && x.HorarioProfesor.IdDia == idDia
                 )
                 .Select(hp => hp.HorarioProfesor)
-                .ProjectTo<HorarioProfesorDTO>();
+                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider);
         }
 
         /// <summary>

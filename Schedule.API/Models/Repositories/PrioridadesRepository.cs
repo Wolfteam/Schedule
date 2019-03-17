@@ -10,7 +10,7 @@ namespace Schedule.API.Models.Repositories
             get { return _context as HorariosContext; }
         }
 
-        public PrioridadesRepository(DbContext context)
+        public PrioridadesRepository(HorariosContext context)
             : base(context)
         {
         }

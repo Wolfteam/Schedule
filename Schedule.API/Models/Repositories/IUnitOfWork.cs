@@ -6,20 +6,21 @@ namespace Schedule.API.Models.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
-        AulasRepository AulasRepository { get; }
-        CarrerasRepository CarrerasRepository { get; }
-        DisponibilidadProfesorRepository DisponibilidadProfesorRepository { get; }
-        HorarioProfesorRepository HorarioProfesorRepository { get; }
-        MateriasRepository MateriasRepository { get; }
-        PeriodoCarreraRepository PeriodoCarreraRepository { get; }
-        PrioridadesRepository PrioridadesRepository { get; }
-        ProfesorMateriaRepository ProfesorMateriaRepository { get; }
-        ProfesorRepository ProfesorRepository { get; }
-        SeccionesRepository SeccionesRepository { get; }
-        SemestresRepository SemestresRepository { get; }
-        UsuarioRepository UsuarioRepository { get; }
-        TipoAulaMateriaRepository TipoAulaMateriaRepository { get; }
-        TokenRepository TokenRepository { get; }
+        IAulasRepository AulasRepository { get; }
+        ICarrerasRepository CarrerasRepository { get; }
+        IDisponibilidadProfesorRepository DisponibilidadProfesorRepository { get; }
+        IHorarioProfesorRepository HorarioProfesorRepository { get; }
+        IMateriasRepository MateriasRepository { get; }
+        IPeriodoCarreraRepository PeriodoCarreraRepository { get; }
+        IPrioridadesRepository PrioridadesRepository { get; }
+        IPrivilegiosRepository PrivilegiosRepository { get; }
+        IProfesorMateriaRepository ProfesorMateriaRepository { get; }
+        IProfesorRepository ProfesorRepository { get; }
+        ISeccionesRepository SeccionesRepository { get; }
+        ISemestresRepository SemestresRepository { get; }
+        IUsuarioRepository UsuarioRepository { get; }
+        ITipoAulaMateriaRepository TipoAulaMateriaRepository { get; }
+        ITokenRepository TokenRepository { get; }
         bool Save();
     }
 }

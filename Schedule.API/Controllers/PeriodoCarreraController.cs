@@ -6,6 +6,7 @@ using Schedule.Entities;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Schedule.API.Models.Repositories;
 
 namespace Schedule.API.Controllers
 {
@@ -13,8 +14,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class PeriodoCarreraController : BaseController
     {
-        public PeriodoCarreraController(HorariosContext context)
-            : base(context)
+        public PeriodoCarreraController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -23,7 +24,7 @@ namespace Schedule.API.Controllers
         public IActionResult Create([FromBody] PeriodoCarreraDTO periodo)
         {
             SetPeriodoDefaults(periodo);
-            _db.PeriodoCarreraRepository.Add(Mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Add(_mapper.Map<PeriodoCarreraDTO, PeriodoCarrera>(periodo));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al crear el periodo {periodo.NombrePeriodo}");
@@ -59,7 +60,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<PeriodoCarreraDTO> GetAll()
         {
             var periodosCarrera = _db.PeriodoCarreraRepository.GetAll();
-            return Mapper.Map<IEnumerable<PeriodoCarreraDTO>>(periodosCarrera);
+            return _mapper.Map<IEnumerable<PeriodoCarreraDTO>>(periodosCarrera);
         }
 
         // GET api/PeriodoCarrera/Current
@@ -77,7 +78,7 @@ namespace Schedule.API.Controllers
             var periodo = _db.PeriodoCarreraRepository.Get(id);
             if (periodo == null)
                 return NotFound("No se encontro el periodo academico buscado.");
-            return new ObjectResult(Mapper.Map<PeriodoCarreraDTO>(periodo));
+            return new ObjectResult(_mapper.Map<PeriodoCarreraDTO>(periodo));
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace Schedule.API.Controllers
                 return NotFound($"El periodo academico no existe {id}");
             SetPeriodoDefaults(periodo);
             periodo.IdPeriodo = id;
-            _db.PeriodoCarreraRepository.Update(Mapper.Map<PeriodoCarrera>(periodo));
+            _db.PeriodoCarreraRepository.Update(_mapper.Map<PeriodoCarrera>(periodo));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el periodo {periodo.NombrePeriodo}");

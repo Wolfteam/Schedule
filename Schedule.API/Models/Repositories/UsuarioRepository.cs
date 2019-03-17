@@ -2,19 +2,23 @@
 using Schedule.Entities;
 using System.Linq;
 using AutoMapper.QueryableExtensions;
+using AutoMapper;
 
 namespace Schedule.API.Models.Repositories
 {
     public class UsuarioRepository : Repository<Admin>, IUsuarioRepository
     {
+        private readonly IMapper _mapper;
+
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public UsuarioRepository(DbContext context)
+        public UsuarioRepository(HorariosContext context, IMapper mapper)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -26,7 +30,7 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.Admin
                 .Where(u => u.Cedula == cedula)
-                .ProjectTo<UsuarioDetailsDTO>()
+                .ProjectTo<UsuarioDetailsDTO>(_mapper.ConfigurationProvider)
                 .FirstOrDefault();
         }
 

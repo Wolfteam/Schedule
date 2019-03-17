@@ -1,6 +1,6 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Filters;
-using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 
 namespace Schedule.API.Controllers
@@ -9,11 +9,13 @@ namespace Schedule.API.Controllers
     [GlobalAttibute]
     public class BaseController : Controller
     {
-        protected readonly UnitOfWork _db;
+        protected readonly IUnitOfWork _db;
+        protected readonly IMapper _mapper;
 
-        protected BaseController(HorariosContext context)
+        protected BaseController(IUnitOfWork uow, IMapper mapper)
         {
-            _db = new UnitOfWork(context);
+            _db = uow;
+            _mapper = mapper;
         }
 
         protected override void Dispose(bool disposing)

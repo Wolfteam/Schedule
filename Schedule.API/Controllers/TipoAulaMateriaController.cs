@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
-using Schedule.API.Models;
 
 namespace Schedule.API.Controllers
 {
@@ -11,8 +11,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR)]
     public class TipoAulaMateriaController : BaseController
     {
-        public TipoAulaMateriaController(HorariosContext context) 
-            : base(context)
+        public TipoAulaMateriaController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<TipoAulaMateriaDTO> GetAll()
         {
             var tipos = _db.TipoAulaMateriaRepository.GetAll();
-            return Mapper.Map<IEnumerable<TipoAulaMateriaDTO>>(tipos);
+            return _mapper.Map<IEnumerable<TipoAulaMateriaDTO>>(tipos);
         }
     }
 }

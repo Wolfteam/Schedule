@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize(Roles = Roles.ADMINISTRADOR + ", " + Roles.PROFESOR)]
     public class DisponibilidadController : BaseController
     {
-        public DisponibilidadController(HorariosContext context) 
-            : base(context)
+        public DisponibilidadController(IUnitOfWork uow, IMapper mapper) 
+            : base(uow, mapper)
         {
         }
 
@@ -24,7 +25,7 @@ namespace Schedule.API.Controllers
             int idPeriodoActual = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             disponibilidad.ToList().ForEach(d => d.IdPeriodo = idPeriodoActual);
 
-            _db.DisponibilidadProfesorRepository.AddRange(Mapper.Map<IEnumerable<DisponibilidadProfesores>>(disponibilidad));
+            _db.DisponibilidadProfesorRepository.AddRange(_mapper.Map<IEnumerable<DisponibilidadProfesores>>(disponibilidad));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500);

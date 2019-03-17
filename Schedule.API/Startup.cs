@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Schedule.API.Helpers;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
@@ -37,14 +38,15 @@ namespace Schedule.API
             //Con esto puedes hacer el ajax
             services.AddCors();
             //Esto es necesario para que me deje incluir propiedades extras de un model de ef
-            services.AddMvc().AddJsonOptions(options => {
+            services.AddMvc().AddJsonOptions(options =>
+            {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.Formatting = Formatting.Indented;
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info 
-                { 
+                c.SwaggerDoc("v1", new Info
+                {
                     Version = "v1",
                     Title = "Schedule API",
                     Description = "This is the schedule sample api",
@@ -58,9 +60,27 @@ namespace Schedule.API
                 });
             });
             services.AddAutoMapper();
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
             services.AddDbContext<HorariosContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("HorariosContext")));
+                options.UseMySql(Configuration.GetConnectionString(nameof(HorariosContext))));
+
+
+            services.AddScoped<IAulasRepository, AulasRepository>();
+            services.AddScoped<ICarrerasRepository, CarrerasRepository>();
+            services.AddScoped<IDisponibilidadProfesorRepository, DisponibilidadProfesorRepository>();
+            services.AddScoped<IHorarioProfesorRepository, HorarioProfesorRepository>();
+            services.AddScoped<IMateriasRepository, MateriasRepository>();
+            services.AddScoped<IPeriodoCarreraRepository, PeriodoCarreraRepository>();
+            services.AddScoped<IPrioridadesRepository, PrioridadesRepository>();
+            services.AddScoped<IPrivilegiosRepository, PrivilegiosRepository>();
+            services.AddScoped<IProfesorMateriaRepository, ProfesorMateriaRepository>();
+            services.AddScoped<IProfesorRepository, ProfesorRepository>();
+            services.AddScoped<ISeccionesRepository, SeccionesRepository>();
+            services.AddScoped<ISemestresRepository, SemestresRepository>();
+            services.AddScoped<ITipoAulaMateriaRepository, TipoAulaMateriaRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             _appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
             secretKey = _appSettings.TokenSettings.SecretKey; //Configuration.GetSection("AppSettings").Get<AppSettings>().Token.SecretKey;
@@ -137,10 +157,9 @@ namespace Schedule.API
 
             app.UseSwaggerUI(c =>
             {
-                // To serve the Swagger UI at the app's root (http://localhost:<random_port>/)
-                c.RoutePrefix = string.Empty;
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.DocumentTitle = "Schedule API";            
+                // To serve the Swagger UI at (http://localhost:<random_port>/swagger)
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", $"Schedule Api V1 {(env.IsDevelopment() ? "Debug" : "Production")} mode");
+                c.DocumentTitle = "Schedule API";
             });
 
             // Add JWT generation endpoint:

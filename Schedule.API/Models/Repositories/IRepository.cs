@@ -13,6 +13,11 @@ namespace Schedule.API.Models.Repositories
         bool Exists(Expression<Func<TEntity, bool>> predicate);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
         TEntity Get(object id);
+        IEnumerable<TEntity> Get(
+            Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            string includeProperties = "");
+
         IEnumerable<TEntity> GetAll();
         void Remove(object id);
         void Remove(TEntity entity);

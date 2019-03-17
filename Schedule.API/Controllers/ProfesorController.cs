@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace Schedule.API.Controllers
     [Authorize]
     public class ProfesorController : BaseController
     {
-        public ProfesorController(HorariosContext context)
-            : base(context)
+        public ProfesorController(IUnitOfWork uow, IMapper mapper)
+            : base(uow, mapper)
         {
         }
 
@@ -24,7 +25,7 @@ namespace Schedule.API.Controllers
         {
             if (ProfesorExists(profesor.Cedula))
                 return BadRequest($"El profesor {profesor.Cedula} ya existe");
-            _db.ProfesorRepository.Add(Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            _db.ProfesorRepository.Add(_mapper.Map<ProfesorDTO, Profesores>(profesor));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualzar el profesor {profesor.Cedula}");
@@ -63,7 +64,7 @@ namespace Schedule.API.Controllers
         public IEnumerable<ProfesorDetailsDTO> GetAll()
         {
             var profesores = _db.ProfesorRepository.Get(includeProperties: "PrioridadProfesor");
-            return Mapper.Map<IEnumerable<ProfesorDetailsDTO>>(profesores);
+            return _mapper.Map<IEnumerable<ProfesorDetailsDTO>>(profesores);
         }
 
         // GET api/Profesor/1
@@ -74,7 +75,7 @@ namespace Schedule.API.Controllers
             var profesor = _db.ProfesorRepository.Get(cedula);
             if (profesor == null)
                 return NotFound("No se encontro el profesor buscado.");
-            return new ObjectResult(Mapper.Map<ProfesorDetailsDTO>(profesor));
+            return new ObjectResult(_mapper.Map<ProfesorDetailsDTO>(profesor));
         }
 
         // PUT api/Profesor/21255727
@@ -84,7 +85,7 @@ namespace Schedule.API.Controllers
         {
             if (!ProfesorExists(cedula) || (cedula != profesor.Cedula && ProfesorExists(profesor.Cedula)))
                 return NotFound($"El profesor {cedula} no existe o la ci:{profesor.Cedula} ya existe");
-            _db.ProfesorRepository.Update(cedula, Mapper.Map<ProfesorDTO, Profesores>(profesor));
+            _db.ProfesorRepository.Update(cedula, _mapper.Map<ProfesorDTO, Profesores>(profesor));
             bool result = _db.Save();
             if (!result)
                 return StatusCode(500, $"Ocurrio un error al actualizar el profesor {profesor.Cedula}.");

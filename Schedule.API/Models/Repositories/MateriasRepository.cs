@@ -3,20 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System.Linq;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace Schedule.API.Models.Repositories
 {
     public class MateriasRepository : Repository<Materias>, IMateriasRepository
     {
+        private readonly IMapper _mapper;
 
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public MateriasRepository(DbContext context)
+        public MateriasRepository(HorariosContext context, IMapper mapper)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de MateriasDTO</returns>
         public IEnumerable<MateriasDTO> GetBySemestre(int idSemestre)
         {
-            return HorariosContext.Materias.ProjectTo<MateriasDTO>().Where(m => m.IdSemestre == idSemestre);
+            return HorariosContext.Materias.ProjectTo<MateriasDTO>(_mapper.ConfigurationProvider).Where(m => m.IdSemestre == idSemestre);
         }
     }
 }

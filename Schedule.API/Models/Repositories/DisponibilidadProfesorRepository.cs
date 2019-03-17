@@ -1,4 +1,5 @@
-﻿using AutoMapper.QueryableExtensions;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Schedule.Entities;
 using System.Collections.Generic;
@@ -9,14 +10,17 @@ namespace Schedule.API.Models.Repositories
     public class DisponibilidadProfesorRepository
         : Repository<DisponibilidadProfesores>, IDisponibilidadProfesorRepository
     {
+        private readonly IMapper _mapper;
+
         public HorariosContext HorariosContext
         {
             get { return _context as HorariosContext; }
         }
 
-        public DisponibilidadProfesorRepository(DbContext context)
+        public DisponibilidadProfesorRepository(HorariosContext context, IMapper mapper)
             : base(context)
         {
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace Schedule.API.Models.Repositories
                 DisponibilidadProfesorDetailsDTO dto = new DisponibilidadProfesorDetailsDTO
                 {
                     Cedula = cedula,
-                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(),
+                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider),
                     HorasACumplir = disp.FirstOrDefault(d => d.Cedula == cedula).Profesores.PrioridadProfesor.HorasACumplir,
                     HorasAsignadas = (byte)(disp.Sum(hf => hf.IdHoraFin) - disp.Sum(hi => hi.IdHoraInicio))
                 };
@@ -71,7 +75,7 @@ namespace Schedule.API.Models.Repositories
             if (disponibilidad.Count() == 0)
                 return result;
 
-            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>();
+            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider);
             result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
 
             return result;
@@ -94,7 +98,7 @@ namespace Schedule.API.Models.Repositories
             if (disponibilidad.Count() == 0)
                 return result;
 
-            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>();
+            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider);
             result.HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir;
             result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
 
@@ -129,7 +133,7 @@ namespace Schedule.API.Models.Repositories
                 DisponibilidadProfesorDetailsDTO dto = new DisponibilidadProfesorDetailsDTO
                 {
                     Cedula = cedula,
-                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(),
+                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider),
                     HorasACumplir = disp.FirstOrDefault(d => d.Cedula == cedula).Profesores.PrioridadProfesor.HorasACumplir,
                     HorasAsignadas = (byte)(disp.Sum(hf => hf.IdHoraFin) - disp.Sum(hi => hi.IdHoraInicio))
                 };

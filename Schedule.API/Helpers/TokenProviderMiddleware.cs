@@ -19,21 +19,20 @@ namespace Schedule.API.Helpers
         private readonly RequestDelegate _next;
         private readonly TokenProviderOptions _options;
         private IOptions<AppSettings> _appSettings;
-        private UnitOfWork _db;
+        private IUnitOfWork _db;
 
         public TokenProviderMiddleware(
             RequestDelegate next,
-            IOptions<TokenProviderOptions> options
-            )
+            IOptions<TokenProviderOptions> options)
         {
             _next = next;
             _options = options.Value;
         }
 
-        public Task Invoke(HttpContext context, HorariosContext db, IOptions<AppSettings> appSettings)
+        public Task Invoke(HttpContext context, IUnitOfWork uow, IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings;
-            _db = new UnitOfWork(db);
+            _db = uow;
             // If the request path doesn't match, skip
             if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
             {
@@ -61,6 +60,9 @@ namespace Schedule.API.Helpers
             bool rememberMe = context.Request.Form["rememberme"] == "true" ? true : false;
             bool isMobile = context.Request.Form["ismobile"] == "true" ? true : false;
             
+            if (!DateTime.TryParse(context.Request.Form["currentDate"], out DateTime now))
+                now = DateTime.Now;
+
             if (!DateTime.TryParse(context.Request.Form["currentDate"], out DateTime now))
                 now = DateTime.Now;
 
