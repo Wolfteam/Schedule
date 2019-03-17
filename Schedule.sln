@@ -8,8 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.Entities", "Schedu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.API", "Schedule.API\Schedule.API.csproj", "{8C61C667-B851-4027-A2B0-8AEE451A8FB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Schedule.Tests", "Schedule.Tests\Schedule.Tests.csproj", "{64A42C44-9144-4938-9572-4272377394EF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,18 +54,6 @@ Global
 		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Release|x64.Build.0 = Release|Any CPU
 		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C61C667-B851-4027-A2B0-8AEE451A8FB7}.Release|x86.Build.0 = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|x64.Build.0 = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Debug|x86.Build.0 = Debug|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|x64.ActiveCfg = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|x64.Build.0 = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|x86.ActiveCfg = Release|Any CPU
-		{64A42C44-9144-4938-9572-4272377394EF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
