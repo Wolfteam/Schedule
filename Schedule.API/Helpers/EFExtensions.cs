@@ -24,7 +24,7 @@ namespace Schedule.API.Helpers
             var cmd = context.Database.GetDbConnection().CreateCommand();
             if (prependDefaultSchema)
             {
-                var schemaName = context.Model.Relational().DefaultSchema;
+                var schemaName = context.Model.GetDefaultSchema();
                 if (schemaName != null)
                 {
                     storedProcName = $"{schemaName}.{storedProcName}";

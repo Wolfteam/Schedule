@@ -29,7 +29,7 @@ namespace Schedule.API.Models.Repositories
         /// <returns>IEnumerable de MateriasDTO</returns>
         public IEnumerable<MateriasDTO> GetBySemestre(int idSemestre)
         {
-            return HorariosContext.Materias.ProjectTo<MateriasDTO>(_mapper.ConfigurationProvider).Where(m => m.IdSemestre == idSemestre);
+            return HorariosContext.Materias.ProjectTo<MateriasDTO>(_mapper.ConfigurationProvider).Where(m => m.IdSemestre == idSemestre).ToList();
         }
     }
 }

@@ -31,7 +31,8 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.Secciones
                 .Where(x => x.PeriodoCarrera.Status == true)
-                .ProjectTo<SeccionesDetailsDTO>(_mapper.ConfigurationProvider);
+                .ProjectTo<SeccionesDetailsDTO>(_mapper.ConfigurationProvider)
+                .ToList();
         }
 
         /// <summary>

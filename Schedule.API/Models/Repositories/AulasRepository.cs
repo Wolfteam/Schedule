@@ -86,7 +86,8 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.Aulas.ProjectTo<AulasDTO>(_mapper.ConfigurationProvider)
                 .Where(au => au.IdTipo == idTipo && au.Capacidad >= capacidad)
-                .OrderBy(au => au.Capacidad);
+                .OrderBy(au => au.Capacidad)
+                .ToList();
         }
     }
 }

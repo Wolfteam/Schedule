@@ -6,13 +6,13 @@ using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using Schedule.API.Models;
+using Schedule.API.Models.Repositories;
 using Schedule.Entities;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Schedule.API.Models.Repositories;
 
 namespace Schedule.API.Controllers
 {
@@ -21,18 +21,19 @@ namespace Schedule.API.Controllers
     public class HorarioProfesorController : BaseController
     {
         #region Variables
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly string _contentRootPath;
-        private ExcelHorarioProfesorSettings _excelSettings;
+        private readonly ExcelHorarioProfesorSettings _excelSettings;
         private const string _tituloPA = "PLANIFICACION ACADEMICA DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         private const string _tituloPH = "HORARIO DEPARTAMENTO DE INGENIERIA DE SISTEMAS PERIODO ";
         #endregion
+
         public HorarioProfesorController(
             IUnitOfWork uow,
             IMapper mapper,
-            IHostingEnvironment environment, 
+            IWebHostEnvironment environment,
             IOptions<AppSettings> appSettings)
-            :base (uow, mapper)
+            : base(uow, mapper)
         {
             _hostingEnvironment = environment;
             _contentRootPath = environment.ContentRootPath;
@@ -452,7 +453,7 @@ namespace Schedule.API.Controllers
             int idPeriodo = _db.PeriodoCarreraRepository.GetCurrentPeriodo().IdPeriodo;
             var secciones = _db.SeccionesRepository.GetAllCurrent();
 
-            if (secciones.Count() == 0)
+            if (!secciones.Any())
                 return;
 
             for (byte idPrioridad = 1; idPrioridad <= 6; idPrioridad++)
@@ -480,7 +481,7 @@ namespace Schedule.API.Controllers
                                     break;
 
                                 var aulas = _db.AulasRepository.GetByTipoCapacidad(seccion.Materia.TipoMateria.IdTipo, seccion.CantidadAlumnos);
-                                if (aulas.Count() == 0)
+                                if (!aulas.Any())
                                     break;
 
                                 bool result = false;

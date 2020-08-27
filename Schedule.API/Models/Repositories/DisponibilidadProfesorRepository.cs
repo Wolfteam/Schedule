@@ -44,14 +44,16 @@ namespace Schedule.API.Models.Repositories
                  .Include(p => p.Profesores.PrioridadProfesor)
                  .Where(c => c.PeriodoCarrera.Status == true);
 
-            List<DisponibilidadProfesorDetailsDTO> result = new List<DisponibilidadProfesorDetailsDTO>();
-            foreach (uint cedula in disponibilidades.Select(d => d.Cedula).Distinct())
+            var cedulas = disponibilidades.Select(d => d.Cedula).Distinct().ToList();
+
+            var result = new List<DisponibilidadProfesorDetailsDTO>();
+            foreach (uint cedula in cedulas)
             {
                 var disp = disponibilidades.Where(d => d.Cedula == cedula);
-                DisponibilidadProfesorDetailsDTO dto = new DisponibilidadProfesorDetailsDTO
+                var dto = new DisponibilidadProfesorDetailsDTO
                 {
                     Cedula = cedula,
-                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider),
+                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider).ToList(),
                     HorasACumplir = disp.FirstOrDefault(d => d.Cedula == cedula).Profesores.PrioridadProfesor.HorasACumplir,
                     HorasAsignadas = (byte)(disp.Sum(hf => hf.IdHoraFin) - disp.Sum(hi => hi.IdHoraInicio))
                 };
@@ -68,15 +70,17 @@ namespace Schedule.API.Models.Repositories
         public DisponibilidadProfesorDetailsDTO GetByCedula(int cedula)
         {
             var disponibilidad = HorariosContext.DisponibilidadProfesores
-                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true);
+                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status)
+                .ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider)
+                .ToList();
 
-            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO();
-            result.Cedula = (uint)cedula;
-            if (disponibilidad.Count() == 0)
-                return result;
-
-            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider);
-            result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
+            var result = new DisponibilidadProfesorDetailsDTO
+            {
+                Cedula = (uint)cedula,
+                Disponibilidad = disponibilidad,
+                HorasAsignadas =
+                    (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio))
+            };
 
             return result;
         }
@@ -91,14 +95,17 @@ namespace Schedule.API.Models.Repositories
         {
             var disponibilidad = HorariosContext.DisponibilidadProfesores
                 .Include(p => p.Profesores.PrioridadProfesor)
-                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true && c.IdDia == idDia);
+                .Where(c => c.Cedula == cedula && c.PeriodoCarrera.Status == true && c.IdDia == idDia)
+                .ToList();
 
-            DisponibilidadProfesorDetailsDTO result = new DisponibilidadProfesorDetailsDTO();
-            result.Cedula = (uint)cedula;
-            if (disponibilidad.Count() == 0)
+            var result = new DisponibilidadProfesorDetailsDTO
+            {
+                Cedula = (uint)cedula
+            };
+            if (!disponibilidad.Any())
                 return result;
 
-            result.Disponibilidad = disponibilidad.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider);
+            result.Disponibilidad = _mapper.Map<List<DisponibilidadProfesorDTO>>(disponibilidad);
             result.HorasACumplir = disponibilidad.FirstOrDefault().Profesores.PrioridadProfesor.HorasACumplir;
             result.HorasAsignadas = (byte)(disponibilidad.Sum(hf => hf.IdHoraFin) - disponibilidad.Sum(hi => hi.IdHoraInicio));
 
@@ -116,24 +123,26 @@ namespace Schedule.API.Models.Repositories
         public IEnumerable<DisponibilidadProfesorDetailsDTO> GetByPrioridadMateria(byte idPrioridad, ushort codigo)
         {
             var disponibilidades = HorariosContext.DisponibilidadProfesores
-                 .Include(pc => pc.PeriodoCarrera)
-                 .Include(pm => pm.Profesores.ProfesoresMaterias)
-                 .Include(p => p.Profesores.PrioridadProfesor)
-                 .Where
-                 (
-                     c => c.PeriodoCarrera.Status == true &&
-                     c.Profesores.PrioridadProfesor.IdPrioridad == idPrioridad &&
-                     c.Profesores.ProfesoresMaterias.FirstOrDefault(pm => pm.Codigo == codigo) != null
-                 );
+                .Include(pc => pc.PeriodoCarrera)
+                .Include(pm => pm.Profesores.ProfesoresMaterias)
+                .Include(p => p.Profesores.PrioridadProfesor)
+                .Where
+                (
+                    c => c.PeriodoCarrera.Status == true &&
+                    c.Profesores.PrioridadProfesor.IdPrioridad == idPrioridad &&
+                    c.Profesores.ProfesoresMaterias.FirstOrDefault(pm => pm.Codigo == codigo) != null
+                );
 
-            List<DisponibilidadProfesorDetailsDTO> result = new List<DisponibilidadProfesorDetailsDTO>();
-            foreach (uint cedula in disponibilidades.Select(d => d.Cedula).Distinct())
+            var cedulas = disponibilidades.Select(d => d.Cedula).Distinct().ToList();
+
+            var result = new List<DisponibilidadProfesorDetailsDTO>();
+            foreach (uint cedula in cedulas)
             {
                 var disp = disponibilidades.Where(d => d.Cedula == cedula);
-                DisponibilidadProfesorDetailsDTO dto = new DisponibilidadProfesorDetailsDTO
+                var dto = new DisponibilidadProfesorDetailsDTO
                 {
                     Cedula = cedula,
-                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider),
+                    Disponibilidad = disp.ProjectTo<DisponibilidadProfesorDTO>(_mapper.ConfigurationProvider).ToList(),
                     HorasACumplir = disp.FirstOrDefault(d => d.Cedula == cedula).Profesores.PrioridadProfesor.HorasACumplir,
                     HorasAsignadas = (byte)(disp.Sum(hf => hf.IdHoraFin) - disp.Sum(hi => hi.IdHoraInicio))
                 };

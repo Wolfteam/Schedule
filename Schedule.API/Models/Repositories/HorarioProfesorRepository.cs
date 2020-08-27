@@ -79,7 +79,8 @@ namespace Schedule.API.Models.Repositories
         {
             return HorariosContext.HorarioProfesores
                 .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider)
-                .Where(hp => hp.Cedula == cedula && hp.IdDia == idDia);
+                .Where(hp => hp.Cedula == cedula && hp.IdDia == idDia)
+                .ToList();
         }
 
         /// <summary>
@@ -93,7 +94,8 @@ namespace Schedule.API.Models.Repositories
             return HorariosContext.HorarioProfesores
                 .Include(pc => pc.PeriodoCarrera)
                 .Where(hp => hp.PeriodoCarrera.Status == true && hp.IdDia == idDia && hp.IdAula == idAula)
-                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider);
+                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider)
+                .ToList();
         }
 
         /// <summary>
@@ -121,7 +123,8 @@ namespace Schedule.API.Models.Repositories
                     && x.HorarioProfesor.IdDia == idDia
                 )
                 .Select(hp => hp.HorarioProfesor)
-                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider);
+                .ProjectTo<HorarioProfesorDTO>(_mapper.ConfigurationProvider)
+                .ToList();
         }
 
         /// <summary>

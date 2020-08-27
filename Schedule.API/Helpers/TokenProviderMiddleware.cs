@@ -63,9 +63,6 @@ namespace Schedule.API.Helpers
             if (!DateTime.TryParse(context.Request.Form["currentDate"], out DateTime now))
                 now = DateTime.Now;
 
-            if (!DateTime.TryParse(context.Request.Form["currentDate"], out DateTime now))
-                now = DateTime.Now;
-
             var identity = await GetIdentityAsync(username, password);
             if (identity == null)
             {

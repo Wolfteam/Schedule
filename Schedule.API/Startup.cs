@@ -5,16 +5,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Schedule.API.Helpers;
 using Schedule.API.Models;
 using Schedule.API.Models.Repositories;
 using Schedule.Entities;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.IO;
+using System.Linq;
 using System.Text;
+using OfficeOpenXml;
 
 namespace Schedule.API
 {
@@ -23,6 +27,9 @@ namespace Schedule.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            //this is required, otherwise logs are not created
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
 
         public IConfiguration Configuration { get; }
@@ -35,52 +42,51 @@ namespace Schedule.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Con esto puedes hacer el ajax
-            services.AddCors();
-            //Esto es necesario para que me deje incluir propiedades extras de un model de ef
-            services.AddMvc().AddJsonOptions(options =>
+            var securityScheme = new OpenApiSecurityScheme
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.Formatting = Formatting.Indented;
-            });
+                Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            };
+
+            var securityReq = new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    }, Enumerable.Empty<string>().ToList()
+                }
+            };
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "Schedule API",
-                    Description = "This is the schedule sample api",
-                    TermsOfService = "None",
-                    Contact = new Contact
+                    Description = "This is the schedule api",
+                    Contact = new OpenApiContact
                     {
                         Name = "Efrain Bastidas",
                         Email = "mimo4325@gmail.com",
-                        Url = "https://github.com/Wolfteam"
+                        Url = new Uri("https://github.com/Wolfteam")
                     }
                 });
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+                c.AddSecurityRequirement(securityReq);
             });
-            services.AddAutoMapper();
+
+            services.AddAutoMapper(typeof(MappingProfile));
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
-            services.AddDbContext<HorariosContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString(nameof(HorariosContext))));
+            services.AddDbContext<HorariosContext>(options => options.UseMySql(Configuration.GetConnectionString(nameof(HorariosContext))));
 
-
-            services.AddScoped<IAulasRepository, AulasRepository>();
-            services.AddScoped<ICarrerasRepository, CarrerasRepository>();
-            services.AddScoped<IDisponibilidadProfesorRepository, DisponibilidadProfesorRepository>();
-            services.AddScoped<IHorarioProfesorRepository, HorarioProfesorRepository>();
-            services.AddScoped<IMateriasRepository, MateriasRepository>();
-            services.AddScoped<IPeriodoCarreraRepository, PeriodoCarreraRepository>();
-            services.AddScoped<IPrioridadesRepository, PrioridadesRepository>();
-            services.AddScoped<IPrivilegiosRepository, PrivilegiosRepository>();
-            services.AddScoped<IProfesorMateriaRepository, ProfesorMateriaRepository>();
-            services.AddScoped<IProfesorRepository, ProfesorRepository>();
-            services.AddScoped<ISeccionesRepository, SeccionesRepository>();
-            services.AddScoped<ISemestresRepository, SemestresRepository>();
-            services.AddScoped<ITipoAulaMateriaRepository, TipoAulaMateriaRepository>();
-            services.AddScoped<ITokenRepository, TokenRepository>();
-            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            SetupRepos(services);
 
             _appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
             secretKey = _appSettings.TokenSettings.SecretKey; //Configuration.GetSection("AppSettings").Get<AppSettings>().Token.SecretKey;
@@ -106,6 +112,19 @@ namespace Schedule.API
                 // If you want to allow a certain amount of clock drift, set that here:
                 ClockSkew = TimeSpan.Zero
             };
+
+            //Con esto puedes hacer el ajax
+            services.AddCors()
+                .AddMvcCore()
+                .AddNewtonsoftJson(options =>
+                {
+                    //Esto es necesario para que me deje incluir propiedades extras de un model de ef
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Formatting = Formatting.Indented;
+                })
+                .AddApiExplorer()
+                .AddAuthorization();
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -137,21 +156,28 @@ namespace Schedule.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            //Con esto puedes hacer el ajax, abria q checar bien las opciones
-            app.UseCors(builder
-                => builder.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin());
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
             app.UseDefaultFiles();
             //Esto para que muestre las paginas de errores?
             app.UseStaticFiles();
+            app.UseRouting();
+
+            //Con esto puedes hacer el ajax, abria q checar bien las opciones
+            app.UseCors(builder
+                => builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin());
 
             app.UseSwagger();
 
@@ -178,9 +204,33 @@ namespace Schedule.API
 
             //Esta linea habilita que se pueda usar Authorize en los metodos
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                //endpoints.MapRazorPages();
+            });
+        }
 
+        private static void SetupRepos(IServiceCollection services)
+        {
+            services.AddScoped<IAulasRepository, AulasRepository>();
+            services.AddScoped<ICarrerasRepository, CarrerasRepository>();
+            services.AddScoped<IDisponibilidadProfesorRepository, DisponibilidadProfesorRepository>();
+            services.AddScoped<IHorarioProfesorRepository, HorarioProfesorRepository>();
+            services.AddScoped<IMateriasRepository, MateriasRepository>();
+            services.AddScoped<IPeriodoCarreraRepository, PeriodoCarreraRepository>();
+            services.AddScoped<IPrioridadesRepository, PrioridadesRepository>();
+            services.AddScoped<IPrivilegiosRepository, PrivilegiosRepository>();
+            services.AddScoped<IProfesorMateriaRepository, ProfesorMateriaRepository>();
+            services.AddScoped<IProfesorRepository, ProfesorRepository>();
+            services.AddScoped<ISeccionesRepository, SeccionesRepository>();
+            services.AddScoped<ISemestresRepository, SemestresRepository>();
+            services.AddScoped<ITipoAulaMateriaRepository, TipoAulaMateriaRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }
