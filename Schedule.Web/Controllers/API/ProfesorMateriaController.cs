@@ -59,7 +59,7 @@ namespace Schedule.Web.Controllers.API
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] ProfesorMateriaDTO pm)
+        public async Task<IActionResult> UpdateAsync(int id, ProfesorMateriaDTO pm)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.ProfesorMateriaRepository.UpdateAsync(id, pm);

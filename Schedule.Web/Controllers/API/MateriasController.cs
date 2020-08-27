@@ -23,7 +23,7 @@ namespace Schedule.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] MateriasDTO materia)
+        public async Task<IActionResult> AddAsync(MateriasDTO materia)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.MateriasRepository.AddAsync(materia);
@@ -57,7 +57,7 @@ namespace Schedule.Web.Controllers.API
         }
 
         [HttpPut("{codigo}")]
-        public async Task<IActionResult> UpdateAsync(int codigo, [FromBody] MateriasDTO materia)
+        public async Task<IActionResult> UpdateAsync(int codigo, MateriasDTO materia)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.MateriasRepository.UpdateAsync(codigo, materia);

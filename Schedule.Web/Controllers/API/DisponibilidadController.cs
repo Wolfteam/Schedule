@@ -24,7 +24,7 @@ namespace Schedule.Web.Controllers.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRangeAsync([FromBody] IEnumerable<DisponibilidadProfesorDTO> disponibilidad)
+        public async Task<IActionResult> AddRangeAsync(List<DisponibilidadProfesorDTO> disponibilidad)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.DisponibilidadRepository.AddRangeAsync(disponibilidad);

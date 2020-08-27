@@ -63,12 +63,11 @@ function makeAjaxCall(url, onSucess, onError, data = null, type = "POST", onComp
     if (data !== null) {
         d = JSON.stringify(data);
     }
+    console.log(data);
     $.ajax({
         url: url,
-        data: d,
-        dataType: "json",
+        data: data,
         type: type,
-        contentType: "application/json; charset=utf-8",
         success: function (data, textStatus, xhr) {
             return onSucess(data, textStatus, xhr);
         },

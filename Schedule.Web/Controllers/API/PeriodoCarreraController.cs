@@ -25,7 +25,7 @@ namespace Schedule.Web.Controllers.API
 
         [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] PeriodoCarreraDTO periodo)
+        public async Task<IActionResult> AddAsync(PeriodoCarreraDTO periodo)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.PeriodoCarreraRepository.AddAsync(periodo);
@@ -70,7 +70,7 @@ namespace Schedule.Web.Controllers.API
 
         [Authorize(Roles = Roles.ADMINISTRADOR)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] PeriodoCarreraDTO periodo)
+        public async Task<IActionResult> UpdateAsync(int id, PeriodoCarreraDTO periodo)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.PeriodoCarreraRepository.UpdateAsync(id, periodo);

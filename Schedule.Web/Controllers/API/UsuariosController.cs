@@ -24,7 +24,7 @@ namespace Schedule.Web.Controllers.API
 
         [HttpPost]
         [Authorize(Roles = Roles.ADMINISTRADOR)]
-        public async Task<IActionResult> AddAsync([FromBody] UsuarioDTO usuario)
+        public async Task<IActionResult> AddAsync(UsuarioDTO usuario)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.UsuarioRepository.AddAsync(usuario);
@@ -62,7 +62,7 @@ namespace Schedule.Web.Controllers.API
 
         [HttpPut("{cedula}")]
         [Authorize(Roles = Roles.ADMINISTRADOR)]
-        public async Task<IActionResult> UpdateAsync(int cedula, [FromBody] UsuarioDTO usuario)
+        public async Task<IActionResult> UpdateAsync(int cedula, UsuarioDTO usuario)
         {
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);
             bool result = await _unitOfWork.UsuarioRepository.UpdateAsync(cedula, usuario);
@@ -72,7 +72,7 @@ namespace Schedule.Web.Controllers.API
         }
 
         [HttpPut("ChangePassword")]
-        public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordDTO request)
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO request)
         {
             uint cedula = uint.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             _unitOfWork.Token = await HttpContext.GetTokenAsync(_tokenName);

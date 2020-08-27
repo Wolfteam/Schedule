@@ -1,9 +1,5 @@
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Schedule.Web.Models.Repository
